@@ -1,3 +1,3 @@
 <?php
 
-$string['modulename'] = 'Arete Plugin';
+$string['modulename'] = 'Augmented Reality Experience';
