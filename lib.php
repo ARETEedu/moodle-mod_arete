@@ -45,3 +45,37 @@ function arete_supports($feature) {
         default: return null;
     }
 }
+
+/**
+ * Given an ID of an instance of this module,
+ * this function will permanently delete the instance
+ * and any data that depends on it.
+ *
+ * @global object
+ * @param int $id
+ * @return bool
+ */
+function arete_delete_instance($id) {
+    global $DB;
+
+    
+    if (! $arete = $DB->get_record('arete', array('id' => $id))) {
+        return false;
+    }
+
+    $result = true;
+
+    // Delete any dependent records here.
+
+    if (! $DB->delete_records('arete', array('id' => $arete->id))) {
+        $result = false;
+    }
+    
+    
+    //delete records from arete_arlem table
+//    if (! $DB->delete_records("arete_arlem", array("id"=>"$data->id"))) {
+//        $result = false;
+//    }
+
+    return $result;
+}
