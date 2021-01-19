@@ -79,3 +79,5 @@ function arete_delete_instance($id) {
 
     return $result;
 }
+
+
