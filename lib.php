@@ -2,15 +2,34 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+
+
 function arete_add_instance($data, $mform)
 {
-    global $DB;
+    global $DB , $selectedfiles;
     
     $data-> timecreated = time();
     $data-> timemodified = $data-> timecreated;
-    
+
     $data->id = $DB->insert_record('arete', $data);
     
+    $formdata = $mform->get_data();
+    
+    $idfinder = new mod_arete_arlems_utilities();
+    
+    //insert selected arlem files into arete_arlem which keeps the arlems of each module 
+    if(isset($formdata))
+    {
+        foreach ($selectedfiles as $file) {
+            $arlems = new stdClass();
+            $arlems->areteid = $data->id;
+            $arlems->timecreated = time();
+            $arlems->arlemid = $idfinder->get_arlemid_from_db($file);
+            $DB->insert_record("arete_arlem", $arlems);
+        }
+    }
+
 
     return $data->id;
 }
@@ -35,6 +54,8 @@ function arete_update_instance($arete) {
 
     return $DB->update_record("arete", $arete);
 }
+
+
 
 function arete_supports($feature) {
     switch($feature) {

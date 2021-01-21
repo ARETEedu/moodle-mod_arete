@@ -37,7 +37,7 @@ $capabilities = array(
         )
     ),
     
-        'mod/arete:arlemfile' => array(
+        'mod/arete:assignedarlemfile' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
