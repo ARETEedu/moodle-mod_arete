@@ -4,6 +4,7 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_update_arlems_list.php');
+require_once($CFG->dirroot.'/mod/page/locallib.php');
 
 $allarlemitems =array();
 $selectedfiles = array();
@@ -19,6 +20,7 @@ class mod_arete_mod_form extends moodleform_mod {
         
         $mform = $this->_form;
         
+        $config = get_config('page');
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
         
@@ -46,6 +48,57 @@ class mod_arete_mod_form extends moodleform_mod {
         $this->add_checkbox_controller(1); //create a check/uncheck for all checkboxes
 
 //-------------------------------------------------------------------------------
+
+        $mform->addElement('header', 'appearancehdr', get_string('appearance'));
+
+        if ($this->current->instance) {
+            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions), $this->current->display);
+        } else {
+            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions));
+        }
+        if (count($options) == 1) {
+            $mform->addElement('hidden', 'display');
+            $mform->setType('display', PARAM_INT);
+            reset($options);
+            $mform->setDefault('display', key($options));
+        } else {
+            $mform->addElement('select', 'display', get_string('displayselect', 'page'), $options);
+            $mform->setDefault('display', $config->display);
+        }
+
+        if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
+            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'page'), array('size'=>3));
+            if (count($options) > 1) {
+                $mform->hideIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
+            }
+            $mform->setType('popupwidth', PARAM_INT);
+            $mform->setDefault('popupwidth', $config->popupwidth);
+
+            $mform->addElement('text', 'popupheight', get_string('popupheight', 'page'), array('size'=>3));
+            if (count($options) > 1) {
+                $mform->hideIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
+            }
+            $mform->setType('popupheight', PARAM_INT);
+            $mform->setDefault('popupheight', $config->popupheight);
+        }
+
+        $mform->addElement('advcheckbox', 'printheading', get_string('printheading', 'page'));
+        $mform->setDefault('printheading', $config->printheading);
+        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'page'));
+        $mform->setDefault('printintro', $config->printintro);
+        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'page'));
+        $mform->setDefault('printlastmodified', $config->printlastmodified);
+
+        // add legacy files flag only if used
+        if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {
+            $options = array(RESOURCELIB_LEGACYFILES_DONE   => get_string('legacyfilesdone', 'page'),
+                             RESOURCELIB_LEGACYFILES_ACTIVE => get_string('legacyfilesactive', 'page'));
+            $mform->addElement('select', 'legacyfiles', get_string('legacyfiles', 'page'), $options);
+            $mform->setAdvanced('legacyfiles', 1);
+        }
+        
+//-------------------------------------------------------
+        
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }

@@ -35,7 +35,6 @@ function arete_add_instance($data, $mform)
 }
 
 
-
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -60,8 +59,9 @@ function arete_update_instance($arete) {
 function arete_supports($feature) {
     switch($feature) {
         case FEATURE_MOD_INTRO:               
-            return false;
-
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
             
         default: return null;
     }
