@@ -7,7 +7,7 @@ require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities
 
 function arete_add_instance($data, $mform)
 {
-    global $DB , $selectedfiles;
+    global $DB;
     
     $data-> timecreated = time();
     $data-> timemodified = $data-> timecreated;
@@ -21,15 +21,12 @@ function arete_add_instance($data, $mform)
     //insert selected arlem files into arete_arlem which keeps the arlems of each module 
     if(isset($formdata))
     {
-        foreach ($selectedfiles as $file) {
-            $arlems = new stdClass();
-            $arlems->areteid = $data->id;
-            $arlems->timecreated = time();
-            $arlems->arlemid = $idfinder->get_arlemid_from_db($file);
-            $DB->insert_record("arete_arlem", $arlems);
-        }
+        $arlems = new stdClass();
+        $arlems->areteid = $data->id;
+        $arlems->timecreated = time();
+        $arlems->arlemid = $idfinder->get_arlemid_from_db($formdata->arlem);
+        $DB->insert_record("arete_arlem", $arlems);
     }
-
 
     return $data->id;
 }
@@ -44,14 +41,43 @@ function arete_add_instance($data, $mform)
  * @param object $php
  * @return bool
  */
-function arete_update_instance($arete) {
+function arete_update_instance($data, $mform) {
     global $DB;
 
-    $arete->id = $arete->instance;
-    $arete->timemodified = time();
+    $data->id = $data->instance;
+    $data->timemodified = time();
 
+    $formdata = $mform->get_data();
+    
+    $utilities = new mod_arete_arlems_utilities();
 
-    return $DB->update_record("arete", $arete);
+    //insert the new assigned arlems or delete those one which is unassigened
+    if(isset($formdata))
+    {
+        //not assigned before
+        if(!$utilities->is_arlem_assigned($data->id, $utilities->get_arlemid_from_db($formdata->arlem)))
+        {
+            $arlems = new stdClass();
+            $arlems->areteid = $data->id;
+            $arlems->timecreated = time();
+            $arlems->arlemid = $utilities->get_arlemid_from_db($formdata->arlem);
+            $DB->insert_record("arete_arlem", $arlems); 
+        }
+
+        //delete the remove assigned arlems
+        $arlems_on_db = $DB->get_records('arete_allarlems');
+        foreach ($arlems_on_db as $arlem) 
+        {
+            if($arlem->name != $data->arlem)
+            {
+                $DB->delete_records("arete_arlem",array('arlemid' => $utilities->get_arlemid_from_db($arlem->name)) ); 
+            }
+        }
+    }
+
+    $DB->update_record("arete", $data);
+        
+    return $data->id;
 }
 
 
@@ -92,11 +118,12 @@ function arete_delete_instance($id) {
         $result = false;
     }
     
+
     
     //delete records from arete_arlem table
-//    if (! $DB->delete_records("arete_arlem", array("id"=>"$data->id"))) {
-//        $result = false;
-//    }
+    if (! $DB->delete_records("arete_arlem", array("areteid"=>$arete->id))) {
+        $result = false;
+    }
 
     return $result;
 }

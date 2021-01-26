@@ -25,14 +25,12 @@ $moduleid = $cm->instance;
 
 //Print the description
 $description = $DB->get_field('arete', 'intro', array('id' => $moduleid));
-echo '<h5>'.$description.'<h5></br>';
-
-echo '<h4><b>'. get_string('arleminactivity' , 'arete') .'</b></h4><br>';
+echo '<h5>'.$description.'</h5></br>';
 
 $context = context_course::instance($course->id);
 
 
-$arlem_utilities = new mod_arete_arlems_utilities();
+$utilities = new mod_arete_arlems_utilities();
 
 //Students
 if(has_capability('mod/arete:assignedarlemfile', $context))
@@ -41,8 +39,8 @@ if(has_capability('mod/arete:assignedarlemfile', $context))
    
    foreach ($arlems_of_this_module as $arlem) 
    {
-       $name = $arlem_utilities->get_arlemname_from_db($arlem->arlemid);
-       $url = $arlem_utilities->get_arlemurl_from_db($arlem->arlemid);
+       $name = $utilities->get_arlemname_from_db($arlem->arlemid);
+       $url = $utilities->get_arlemurl_from_db($arlem->arlemid);
 
        echo  '<a href="' .  $url . '">' . $name . '</a><br>';
    }
@@ -62,15 +60,19 @@ if(has_capability('mod/arete:arlemfulllist', $context))
         return;
     } else if (($data = $mform->get_data())) 
     {
-        foreach ($selectedfiles as $arlem) 
-        {
-           $data->id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid, 'arlemid' => $arlem->id ));
-           $data->areteid = $moduleid;
-           $data->arlemid = $arlem->id;
-           // form has been submitted
-           update_assignment($data);
-        }
-
+        $utilities = new mod_arete_arlems_utilities();
+        
+        $update_record = new stdClass();
+        $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
+        $update_record-> areteid = $moduleid;
+        $update_record-> arlemid = $utilities->get_arlemid_from_db($data->arlem);
+        $update_record->timecreated = time();
+        
+        // update the record with this id. $data comes from update_form
+        $DB->update_record('arete_arlem', $update_record);
+        
+        $mform->display();
+        
     } else 
     {
         // Form has not been submitted or there was an error

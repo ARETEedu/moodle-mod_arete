@@ -3,78 +3,59 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
 
-$arlems_full_list =array();
-$selectedfiles = array();
-$moduleid = new stdClass();
-    
+$arlemsList = array();
+
 class update_form extends moodleform{
 
     function definition() {
-        global $DB,$arlems_full_list,$moduleid;
-                
+        global $DB,$arlemsList,$moduleid;
+
        $id = required_param('id', PARAM_INT); 
        list ($course, $cm) = get_course_and_cm_from_cmid($id, 'arete');
        $moduleid = $cm->instance;
        
-
-
         $mform = $this->_form;
-
+        
         //get the list of arlem files from 
-        $arlems_full_list = $DB->get_records('arete_allarlems');
+        $arlemsList = $DB->get_records('arete_allarlems');
         
+        $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
         
-        foreach($arlems_full_list as $arlem){
-            
-            $mform->addElement('checkbox', $arlem->name , $arlem->name);
+        $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
+        
+        $arlemsGroup = array();
+        foreach($arlemsList as $key){
+             $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $key->name, $key->name);
         }
+        $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
 
-        $mform->addElement('hidden', 'id', $id);
+        $mform->setDefault('arlem', $arlemsList[1]->name); //set the first element as default
+        
+        $mform->addElement('hidden', 'id', $moduleid);
         $mform->setType('id', PARAM_INT);
-        $mform->addElement('hidden', 'cmid', $moduleid);
-        $mform->setType('cmid', PARAM_INT);
         
         $this->add_action_buttons();
     }
     
+    
+    
     public function definition_after_data() {
-       global $arlems_full_list,$DB,$moduleid;
+       global $arlemsList,$moduleid;
        
-        parent::definition_after_data(); 
+       parent::definition_after_data(); 
        
-
-          
        $mform = $this->_form;   
        
-       $arlem_utilities = new mod_arete_arlems_utilities();
-       
+       $utilities = new mod_arete_arlems_utilities();
 
-       foreach ($arlems_full_list as $arlem) 
+       foreach ($arlemsList as $arlem) 
         {
-               if(!empty($arlem_utilities->is_arlem_assigned($moduleid, $arlem->id)))
-               {
-                   $mform->setDefault($arlem->name, true);
-               }
+            if($utilities->is_arlem_assigned($moduleid, $arlem->id))
+            {
+                $mform->setDefault('arlem', $arlem->name);
+            }
         }
     }
     
-     public function validation($data, $files) {
-        global  $arlems_full_list,$selectedfiles;
-         
-        //cleare the list
-        $selectedfiles = array();
-       
-        $errors = parent::validation($data, $files);
-        
-        //check which files are selected and add them to a new array
-        foreach ($arlems_full_list as $item) {
-
-            if($data[$item] == true) {
-                array_push($selectedfiles, $item);
-            }
-        }
-
-        return $errors;
-    }
 
 }

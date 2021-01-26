@@ -6,13 +6,13 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_update_arlems_list.php');
 require_once($CFG->dirroot.'/mod/page/locallib.php');
 
-$allarlemitems =array();
-$selectedfiles = array();
-    
+
+$arlemsList = array();
+
 class mod_arete_mod_form extends moodleform_mod {
     
     public function definition() {
-        global $CFG, $DB, $selectedfiles, $allarlemitems;
+        global $CFG, $DB, $arlemsList;
         //check for new arlems files
         $arlem_update_manager = new mod_arete_update_arlems_list();
         $arlem_update_manager->arete_insert_new_arlems();
@@ -35,89 +35,96 @@ class mod_arete_mod_form extends moodleform_mod {
         
         $this->standard_intro_elements(get_string('description', 'arete'));
         
+//-------------------------------------------------------------------------------
         
-        $mform->addElement('static', 'arlemlisttitle', get_string('arlemlisttitle', 'arete'));
+        $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
+        
+        $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
+         
         //get the list of arlem files from 
-        $arlems = $DB->get_records('arete_allarlems');
+        $arlemsList = $DB->get_records('arete_allarlems');
         
-        foreach($arlems as $key){
-             $mform->addElement('advcheckbox', $key->name , $key->name, null, array('group' => 1));
-             array_push($allarlemitems, $key->name);
+        $arlemsGroup = array();
+        foreach($arlemsList as $key){
+             $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $key->name, $key->name);
         }
-        
-        $this->add_checkbox_controller(1); //create a check/uncheck for all checkboxes
+        $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
 
+        $mform->setDefault('arlem', $arlemsList[1]->name); //set the first element as default
+        
 //-------------------------------------------------------------------------------
 
-        $mform->addElement('header', 'appearancehdr', get_string('appearance'));
-
-        if ($this->current->instance) {
-            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions), $this->current->display);
-        } else {
-            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions));
-        }
-        if (count($options) == 1) {
-            $mform->addElement('hidden', 'display');
-            $mform->setType('display', PARAM_INT);
-            reset($options);
-            $mform->setDefault('display', key($options));
-        } else {
-            $mform->addElement('select', 'display', get_string('displayselect', 'page'), $options);
-            $mform->setDefault('display', $config->display);
-        }
-
-        if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
-            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'page'), array('size'=>3));
-            if (count($options) > 1) {
-                $mform->hideIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
-            }
-            $mform->setType('popupwidth', PARAM_INT);
-            $mform->setDefault('popupwidth', $config->popupwidth);
-
-            $mform->addElement('text', 'popupheight', get_string('popupheight', 'page'), array('size'=>3));
-            if (count($options) > 1) {
-                $mform->hideIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
-            }
-            $mform->setType('popupheight', PARAM_INT);
-            $mform->setDefault('popupheight', $config->popupheight);
-        }
-
-        $mform->addElement('advcheckbox', 'printheading', get_string('printheading', 'page'));
-        $mform->setDefault('printheading', $config->printheading);
-        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'page'));
-        $mform->setDefault('printintro', $config->printintro);
-        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'page'));
-        $mform->setDefault('printlastmodified', $config->printlastmodified);
-
-        // add legacy files flag only if used
-        if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {
-            $options = array(RESOURCELIB_LEGACYFILES_DONE   => get_string('legacyfilesdone', 'page'),
-                             RESOURCELIB_LEGACYFILES_ACTIVE => get_string('legacyfilesactive', 'page'));
-            $mform->addElement('select', 'legacyfiles', get_string('legacyfiles', 'page'), $options);
-            $mform->setAdvanced('legacyfiles', 1);
-        }
-        
+//        $mform->addElement('header', 'appearancehdr', get_string('appearance'));
+//
+//        if ($this->current->instance) {
+//            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions), $this->current->display);
+//        } else {
+//            $options = resourcelib_get_displayoptions(explode(',', $config->displayoptions));
+//        }
+//        if (count($options) == 1) {
+//            $mform->addElement('hidden', 'display');
+//            $mform->setType('display', PARAM_INT);
+//            reset($options);
+//            $mform->setDefault('display', key($options));
+//        } else {
+//            $mform->addElement('select', 'display', get_string('displayselect', 'page'), $options);
+//            $mform->setDefault('display', $config->display);
+//        }
+//
+//        if (array_key_exists(RESOURCELIB_DISPLAY_POPUP, $options)) {
+//            $mform->addElement('text', 'popupwidth', get_string('popupwidth', 'page'), array('size'=>3));
+//            if (count($options) > 1) {
+//                $mform->hideIf('popupwidth', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
+//            }
+//            $mform->setType('popupwidth', PARAM_INT);
+//            $mform->setDefault('popupwidth', $config->popupwidth);
+//
+//            $mform->addElement('text', 'popupheight', get_string('popupheight', 'page'), array('size'=>3));
+//            if (count($options) > 1) {
+//                $mform->hideIf('popupheight', 'display', 'noteq', RESOURCELIB_DISPLAY_POPUP);
+//            }
+//            $mform->setType('popupheight', PARAM_INT);
+//            $mform->setDefault('popupheight', $config->popupheight);
+//        }
+//
+//        $mform->addElement('advcheckbox', 'printheading', get_string('printheading', 'page'));
+//        $mform->setDefault('printheading', $config->printheading);
+//        $mform->addElement('advcheckbox', 'printintro', get_string('printintro', 'page'));
+//        $mform->setDefault('printintro', $config->printintro);
+//        $mform->addElement('advcheckbox', 'printlastmodified', get_string('printlastmodified', 'page'));
+//        $mform->setDefault('printlastmodified', $config->printlastmodified);
+//
+//        // add legacy files flag only if used
+//        if (isset($this->current->legacyfiles) and $this->current->legacyfiles != RESOURCELIB_LEGACYFILES_NO) {
+//            $options = array(RESOURCELIB_LEGACYFILES_DONE   => get_string('legacyfilesdone', 'page'),
+//                             RESOURCELIB_LEGACYFILES_ACTIVE => get_string('legacyfilesactive', 'page'));
+//            $mform->addElement('select', 'legacyfiles', get_string('legacyfiles', 'page'), $options);
+//            $mform->setAdvanced('legacyfiles', 1);
+//        }
+//        
 //-------------------------------------------------------
-        
+
         $this->standard_coursemodule_elements();
         $this->add_action_buttons();
     }
 
-    
-     public function validation($data, $files) {
-        global  $allarlemitems,$selectedfiles;
-         
-        $errors = parent::validation($data, $files);
+    public function definition_after_data() 
+    {    
+       global $arlemsList;
         
-        //check which files are selected and add them to a new array
-        foreach ($allarlemitems as $item) {
+       $mform = $this->_form;
+        
+       parent::definition_after_data(); 
+       
+       $utilities = new mod_arete_arlems_utilities();
 
-            if($data[$item] == true) {
-                array_push($selectedfiles, $item);
+       foreach ($arlemsList as $arlem) 
+        {
+            if($utilities->is_arlem_assigned($this->_instance, $arlem->id))
+            {
+                $mform->setDefault('arlem', $arlem->name);
             }
         }
-
-        return $errors;
     }
-
+    
 }
