@@ -1,15 +1,6 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of mod_arete_get_arlemid_by_name
- *
- */
+defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 class mod_arete_arlems_utilities {
     

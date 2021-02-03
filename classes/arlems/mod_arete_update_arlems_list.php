@@ -3,8 +3,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 class mod_arete_update_arlems_list {
-    
-    
+   
     //Add a new record on db for the new arlems
     function arete_insert_new_arlems ()
     {

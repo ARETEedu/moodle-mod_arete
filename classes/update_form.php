@@ -2,6 +2,7 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 $arlemsList = array();
 
@@ -17,19 +18,22 @@ class update_form extends moodleform{
         $mform = $this->_form;
         
         //get the list of arlem files from 
-        $arlemsList = $DB->get_records('arete_allarlems');
+        $context = context_course::instance($course->id);
+        $arlemsList = getAllArlems($context);
         
         $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
         
         $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
         
         $arlemsGroup = array();
-        foreach($arlemsList as $key){
-             $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $key->name, $key->name);
+        foreach($arlemsList as $arlem){
+             $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $arlem->get_filename(), $arlem->get_filename());
         }
         $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
-
-        $mform->setDefault('arlem', $arlemsList[1]->name); //set the first element as default
+        
+        if(isset($arlemsList[1])){
+                    $mform->setDefault('arlem', $arlemsList[1]->get_filename()); //set the first element as default
+        }
         
         $mform->addElement('hidden', 'id', $moduleid);
         $mform->setType('id', PARAM_INT);
@@ -46,15 +50,15 @@ class update_form extends moodleform{
        
        $mform = $this->_form;   
        
-       $utilities = new mod_arete_arlems_utilities();
-
-       foreach ($arlemsList as $arlem) 
-        {
-            if($utilities->is_arlem_assigned($moduleid, $arlem->id))
-            {
-                $mform->setDefault('arlem', $arlem->name);
-            }
-        }
+//       $utilities = new mod_arete_arlems_utilities();
+//
+//       foreach ($arlemsList as $arlem) 
+//        {
+//            if($utilities->is_arlem_assigned($moduleid, $arlem->id))
+//            {
+//                $mform->setDefault('arlem', $arlem->name);
+//            }
+//        }
     }
     
 

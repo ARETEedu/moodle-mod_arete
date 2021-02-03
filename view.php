@@ -1,7 +1,8 @@
 <?php
 
-require_once("../../config.php");
+require_once(dirname(__FILE__). '/../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/mod_form.php');
 require_once($CFG->dirroot.'/mod/arete/classes/update_form.php');
 
@@ -53,32 +54,57 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 {
    $mform = new update_form();
 
-    if ($mform->is_cancelled()) 
+    if ($mform->is_cancelled()) //if form canceled
     {
         // form cancelled, redirect
         redirect($CFG->wwwroot . '/course/view.php?id='. $PAGE->course->id, array());
         return;
-    } else if (($data = $mform->get_data())) 
+    } else if (($data = $mform->get_data()))  //if form submitted
     {
-        $utilities = new mod_arete_arlems_utilities();
         
         $update_record = new stdClass();
         $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
         $update_record-> areteid = $moduleid;
-        $update_record-> arlemid = $utilities->get_arlemid_from_db($data->arlem);
+        
+        $arlemFile = getArlem($data->arlem, $context);
+        $update_record-> arlemid = $arlemFile->get_id();
         $update_record->timecreated = time();
         
         // update the record with this id. $data comes from update_form
         $DB->update_record('arete_arlem', $update_record);
         
+////
+        //creates a sample file
+//        if(!isArlemExist( $data->arlem ,$context ))
+//        {
+//            createArlem($data->arlem,'this is a text file is create on' . time(), $context);
+//        }
+//       
+//        //this will copy the file to temp folder
+//        copyArlemToTemp($data->arlem, $context);
+      
+//        //this will delete the file
+//        deleteArlem($data->arlem, $context);
+        
+ //     this will print all file in this filearea
+
+        
+//        get the real path by hash path
+//        urlByHash('da39a3ee5e6b4b0d3255bfef95601890afd80709');
+
         $mform->display();
         
-    } else 
+    } else //if no action has been done yet
     {
         // Form has not been submitted or there was an error
         // Just display the form
         $mform->set_data(array('id' => $id));
-            
+       
+//        $arlems = getAllArlems($context);
+//        foreach ($arlems as $arlem) {
+//          echo   $arlem->get_filename();
+//        }
+                  
         $mform->display();
     }
 }
