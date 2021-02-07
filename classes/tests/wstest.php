@@ -1,6 +1,6 @@
 <?php
 
-require_once('../../../config.php');
+require_once('../../../../config.php');
 require_once($CFG->dirroot.'/lib/filelib.php');
 
 $domainname = 'http://localhost/moodle';
@@ -11,7 +11,6 @@ $parameters = filter_input(INPUT_POST, 'parameters' , FILTER_SANITIZE_STRING, FI
 
 
 //split the unity parameters for all user parameter
-
 //multiply parameter
 if( strpos($parameters , '&') !== false){
     $params = explode('&' , $parameters );

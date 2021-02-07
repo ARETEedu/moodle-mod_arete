@@ -71,7 +71,7 @@ function getArlem($filename, $context)
     if ($file) {
         return $file;
     } else {
-        // file doesn't exist - do something
+        return null;
     }
 }
 

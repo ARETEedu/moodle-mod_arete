@@ -1,7 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__). '/../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/mod_form.php');
 require_once($CFG->dirroot.'/mod/arete/classes/update_form.php');
@@ -31,8 +31,6 @@ echo '<h5>'.$description.'</h5></br>';
 $context = context_course::instance($course->id);
 
 
-$utilities = new mod_arete_arlems_utilities();
-
 //Students
 if(has_capability('mod/arete:assignedarlemfile', $context))
 {
@@ -40,10 +38,10 @@ if(has_capability('mod/arete:assignedarlemfile', $context))
    
    foreach ($arlems_of_this_module as $arlem) 
    {
-       $name = $utilities->get_arlemname_from_db($arlem->arlemid);
-       $url = $utilities->get_arlemurl_from_db($arlem->arlemid);
+//       $name = get_arlemname_from_db($arlem->arlemid);
+//       $url = get_arlemurl_from_db($arlem->arlemid);
 
-       echo  '<a href="' .  $url . '">' . $name . '</a><br>';
+//       echo  '<a href="' .  $url . '">' . $name . '</a><br>';
    }
 }
 
@@ -104,7 +102,7 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 //        foreach ($arlems as $arlem) {
 //          echo   $arlem->get_filename();
 //        }
-                  
+
         $mform->display();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 $arlemsList = array();
@@ -49,16 +49,15 @@ class update_form extends moodleform{
        parent::definition_after_data(); 
        
        $mform = $this->_form;   
+//       
        
-//       $utilities = new mod_arete_arlems_utilities();
-//
-//       foreach ($arlemsList as $arlem) 
-//        {
-//            if($utilities->is_arlem_assigned($moduleid, $arlem->id))
-//            {
-//                $mform->setDefault('arlem', $arlem->name);
-//            }
-//        }
+       foreach ($arlemsList as $arlem) 
+        {
+            if(is_arlem_assigned($moduleid, $arlem->get_id()))
+            {
+                $mform->setDefault('arlem', $arlem->get_filename() );
+            }
+        }
     }
     
 

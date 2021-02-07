@@ -2,12 +2,12 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_arlems_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 function arete_add_instance($data, $mform)
 {
-    global $DB;
+    global $DB, $COURSE;
    
     $data-> timecreated = time();
     $data-> timemodified = $data-> timecreated;
@@ -17,7 +17,7 @@ function arete_add_instance($data, $mform)
     $formdata = $mform->get_data();
     
 //get context using cource id
-    $courseid = optional_param('course', null, PARAM_INT);
+    $courseid = $COURSE->id;
     $context = context_course::instance($courseid);
     
     //insert selected arlem files into arete_arlem which keeps the arlems of each module 
@@ -46,37 +46,36 @@ function arete_add_instance($data, $mform)
  * @return bool
  */
 function arete_update_instance($data, $mform) {
-    global $DB;
+    global $DB ,$COURSE;
 
+    //get context using cource id
+    $courseid = $COURSE->id;
+    $context = context_course::instance($courseid);
+    
     $data->id = $data->instance;
     $data->timemodified = time();
 
     $formdata = $mform->get_data();
-    
-    $utilities = new mod_arete_arlems_utilities();
 
     //insert the new assigned arlems or delete those one which is unassigened
-    if(isset($formdata))
+    //if arlem is exits in mdl_files
+    if(isset($formdata) && getArlem($formdata->arlem,$context) !== null)
     {
+        $arlemid_in_moodle_db = getArlem($formdata->arlem,$context)->get_id();
+    
         //not assigned before
-        if(!$utilities->is_arlem_assigned($data->id, $utilities->get_arlemid_from_db($formdata->arlem)))
+        if(!is_arlem_assigned($data->id, $arlemid_in_moodle_db))
         {
-            $arlems = new stdClass();
-            $arlems->areteid = $data->id;
-            $arlems->timecreated = time();
-            $arlems->arlemid = $utilities->get_arlemid_from_db($formdata->arlem);
-            $DB->insert_record("arete_arlem", $arlems); 
+            $current_record_on_arete_arlem = $DB->get_record('arete_arlem' , array ('areteid' => $data->id));
+
+            $arete_arlem = new stdClass();
+            $arete_arlem->id = $current_record_on_arete_arlem->id;
+            $arete_arlem->areteid = $current_record_on_arete_arlem->areteid;
+            $arete_arlem->timecreated = $current_record_on_arete_arlem->timecreated;
+            $arete_arlem->arlemid = $arlemid_in_moodle_db;
+            $DB->update_record("arete_arlem" , $arete_arlem); 
         }
 
-        //delete the remove assigned arlems
-        $arlems_on_db = $DB->get_records('arete_allarlems');
-        foreach ($arlems_on_db as $arlem) 
-        {
-            if($arlem->name != $data->arlem)
-            {
-                $DB->delete_records("arete_arlem",array('arlemid' => $utilities->get_arlemid_from_db($arlem->name)) ); 
-            }
-        }
     }
 
     $DB->update_record("arete", $data);
@@ -187,3 +186,4 @@ function mod_arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
     send_stored_file($file, 86400, 0, $forcedownload, $options);
 }
+

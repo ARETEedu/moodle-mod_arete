@@ -3,7 +3,6 @@
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/arete/classes/arlems/mod_arete_update_arlems_list.php');
 require_once($CFG->dirroot.'/mod/page/locallib.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
@@ -12,15 +11,31 @@ $arlemsList = array();
 class mod_arete_mod_form extends moodleform_mod {
     
     public function definition() {
-        global $CFG, $arlemsList;
+        global $CFG, $arlemsList , $COURSE;
         
-        $courseid = optional_param('course', null, PARAM_INT);
+        
+        $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
 
         /////test remove this
         if(!isArlemExist( 'test.gnt' ,$context ))
         {
             createArlem('test.gnt','this is a text file is create on' . time(), $context);
+        }
+        
+        if(!isArlemExist( 'test2.gnt' ,$context ))
+        {
+            createArlem('test2.gnt','this is a text file is create on' . time(), $context);
+        }
+        
+        if(!isArlemExist( 'test3.gnt' ,$context ))
+        {
+            createArlem('test3.gnt','this is a text file is create on' . time(), $context);
+        }
+        
+        if(!isArlemExist( 'test4.gnt' ,$context ))
+        {
+            createArlem('test4.gnt','this is a text file is create on' . time(), $context);
         }
         
 //        deleteArlem('test.gnt', $context);
@@ -58,7 +73,8 @@ class mod_arete_mod_form extends moodleform_mod {
              $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $arlem->get_filename(), $arlem->get_filename());
         }
         $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
-
+        $mform->addRule('arlemsButtons', null, 'required', null, 'client');
+        
         if(isset($arlemsList[1])){
             $mform->setDefault('arlem', $arlemsList[1]->get_filename()); //set the first element as default
         }
@@ -126,15 +142,14 @@ class mod_arete_mod_form extends moodleform_mod {
         
        parent::definition_after_data(); 
 //       
-//       $utilities = new mod_arete_arlems_utilities();
-//
-//       foreach ($arlemsList as $arlem) 
-//        {
-//            if($utilities->is_arlem_assigned($this->_instance, $arlem->id))
-//            {
-//                $mform->setDefault('arlem', $arlem->get_filename());
-//            }
-//        }
+       
+       foreach ($arlemsList as $arlem) 
+        {
+            if(is_arlem_assigned($this->_instance, $arlem->get_id()))
+            {
+                $mform->setDefault('arlem', $arlem->get_filename() );
+            }
+        }
     }
     
 }
