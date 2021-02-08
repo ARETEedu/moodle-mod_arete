@@ -1,50 +1,50 @@
 <?php
 
 require_once('../../../../config.php');
-//require_once($CFG->dirroot.'/lib/filelib.php');
+require_once($CFG->dirroot.'/mod/arete/classes/move_arlem_from_draft.php');
 
 $domainname = 'http://localhost/moodle';
 
 $token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$filename = filter_input(INPUT_POST, 'filename' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $base64file = filter_input(INPUT_POST, 'base64' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$userid = filter_input(INPUT_POST, 'userid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
-global $USER;
 
 //$token = '6c5e1a9a5827138c2eb6070fe996f880';
-$filename ='img.png';
 
 $function = "core_files_upload";
 $filepath = '/';
 
+$context = context_user::instance($userid);
+$contextid = $context->id;
 
+    
 if(isset($base64file))
-{
-
-
-    $filename = 'testi.png';
+{ 
     $parameters = array(
         'wstoken' => $token,
         'wsfunction' => $function,
+        'contextid' => $contextid,
         'component' => 'user', // usually = table name
         'filearea' => 'draft', // usually = table name
-        'itemid' => 0, // usually = ID of row in table
+        'itemid' => random_int(100000000, 999999999), // usually = ID of row in table
         'filepath' => '/', // any path beginning and ending in /
-        'filename' => $filename,
+        'filename' => $filename ,
         'filecontent' => $base64file, // any filename
         'contextlevel' => 'user',
-        'instanceid' => $USER->id,
+        'instanceid' => $userid,
     );
 
-    $myfile = fopen("base64.txt", "w") or die("Unable to open file!");
-    fwrite($myfile, $parameters['filecontent']);
-    fclose($myfile);
 
-//    print_r($parameters)  ;exit();
     $serverurl = $domainname . '/webservice/rest/server.php' ;
     $response = httpPost($serverurl , $parameters );
 
+    if($response == true){
+        move_file_from_draft_area_to_arete($filename, $userid, $parameters['itemid'], 1, 'arete', 'arlems', $parameters['itemid']);
+        echo $filename. ' Saved.';
+    }
 
-    print_r($response);
 }
 
     /// REST CALL
@@ -63,4 +63,6 @@ if(isset($base64file))
         
 
 
-
+    
+    
+    

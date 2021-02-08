@@ -16,31 +16,6 @@ class mod_arete_mod_form extends moodleform_mod {
         
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
-
-        /////test remove this
-        if(!isArlemExist( 'test.gnt' ,$context ))
-        {
-            createArlem('test.gnt','this is a text file is create on' . time(), $context);
-        }
-        
-        if(!isArlemExist( 'test2.gnt' ,$context ))
-        {
-            createArlem('test2.gnt','this is a text file is create on' . time(), $context);
-        }
-        
-        if(!isArlemExist( 'test3.gnt' ,$context ))
-        {
-            createArlem('test3.gnt','this is a text file is create on' . time(), $context);
-        }
-        
-        if(!isArlemExist( 'test4.gnt' ,$context ))
-        {
-            createArlem('test4.gnt','this is a text file is create on' . time(), $context);
-        }
-        
-//        deleteArlem('test.gnt', $context);
-        
-        /////
         
         $mform = $this->_form;
         
@@ -66,7 +41,7 @@ class mod_arete_mod_form extends moodleform_mod {
         $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
          
         //get the list of arlem files from 
-        $arlemsList = getAllArlems($context);
+        $arlemsList = getAllArlems();
         
         $arlemsGroup = array();
         foreach($arlemsList as $arlem){

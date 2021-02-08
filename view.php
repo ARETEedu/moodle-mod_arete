@@ -30,7 +30,6 @@ echo '<h5>'.$description.'</h5></br>';
 
 $context = context_course::instance($course->id);
 
-
 //Students
 if(has_capability('mod/arete:assignedarlemfile', $context))
 {
@@ -46,7 +45,7 @@ if(has_capability('mod/arete:assignedarlemfile', $context))
 }
 
 
-
+global $USER;
 //Teachers
 if(has_capability('mod/arete:arlemfulllist', $context))
 {
@@ -60,16 +59,16 @@ if(has_capability('mod/arete:arlemfulllist', $context))
     } else if (($data = $mform->get_data()))  //if form submitted
     {
         
-        $update_record = new stdClass();
-        $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
-        $update_record-> areteid = $moduleid;
-        
-        $arlemFile = getArlem($data->arlem, $context);
-        $update_record-> arlemid = $arlemFile->get_id();
-        $update_record->timecreated = time();
-        
-        // update the record with this id. $data comes from update_form
-        $DB->update_record('arete_arlem', $update_record);
+//        $update_record = new stdClass();
+//        $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
+//        $update_record-> areteid = $moduleid;
+//        
+//        $arlemFile = getUserArlem($data->arlem);
+//        $update_record-> arlemid = $arlemFile->get_id();
+//        $update_record->timecreated = time();
+//        
+////         update the record with this id. $data comes from update_form
+//        $DB->update_record('arete_arlem', $update_record);
         
 ////
         //creates a sample file
@@ -81,14 +80,13 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 //        //this will copy the file to temp folder
 //        copyArlemToTemp($data->arlem, $context);
       
-//        //this will delete the file
-//        deleteArlem($data->arlem, $context);
-        
- //     this will print all file in this filearea
-
-        
-//        get the real path by hash path
-//        urlByHash('da39a3ee5e6b4b0d3255bfef95601890afd80709');
+        //Delete all test arlems
+//      $arlemsList = getAllUserArlems(true, 3, true);
+////        $arlemsList = getAllArlems( true);
+//        foreach ($arlemsList as $arlem) {
+//             deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), true, 3);
+////               deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
+//        }
 
         $mform->display();
         

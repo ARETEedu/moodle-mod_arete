@@ -4,6 +4,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__). '/../../../config.php');
 
+
+
+///create a textfile in arete filearea (used mainly for testing
 function createArlem($filename, $filetext, $context){
 
     $fs = get_file_storage();
@@ -11,10 +14,10 @@ function createArlem($filename, $filetext, $context){
     // Prepare file record object
     $fileinfo = array(
         'contextid' => $context->id, // ID of context
-        'component' => 'mod_arete',     // usually = table name
-        'filearea' => 'arete_arlems',     // usually = table name
+        'component' => 'arete',     // usually = table name
+        'filearea' => 'arlems',     // usually = table name
         'itemid' => 0,               // usually = ID of row in table
-        'filepath' => '/arete/',           // any path beginning and ending in /
+        'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename  ); // any filename
 
     // Create file containing text 'hello world'
@@ -22,23 +25,30 @@ function createArlem($filename, $filetext, $context){
 }
 
 
-//delete a file
-function deleteArlem($filename, $context)
+
+//delete a file from user draft 
+function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false, $userid = null)
 {
     $fs = get_file_storage();
  
     // Prepare file record object
     $fileinfo = array(
-        'component' => 'mod_arete',
-        'filearea' => 'arete_arlems',     // usually = table name
-        'itemid' => 0,               // usually = ID of row in table
-        'contextid' => $context->id, // ID of context
-        'filepath' => '/arete/',           // any path beginning and ending in /
-        'filename' => $filename); // any filename
+        'component' => 'user',
+        'filearea' => 'draft',    
+        'contextid' => getUserContextid($WITH_USER_CONTEXT, $userid), 
+        'filepath' => '/',           // any path beginning and ending in /
+        'filename' => $filename); 
 
+    //use itemid too if it is provided
+    if(isset($itemid)){
+        $fileItemId = $itemid;
+    }else{
+        $fileItemId = getItemID($fileinfo);
+    }
+    
     // Get file
     $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'], 
-            $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+            $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
 
     // Delete it if it exists
     if ($file) {
@@ -48,19 +58,19 @@ function deleteArlem($filename, $context)
 
 
 
-//return a single file
-function getArlem($filename, $context)
+//return a single file from plugin filearea
+function getArlem($filename)
 {
     
     $fs = get_file_storage();
  
     // Prepare file record object
     $fileinfo = array(
-        'component' => 'mod_arete',     // usually = table name
-        'filearea' => 'arete_arlems',     // usually = table name
+        'component' => 'arete',     // usually = table name
+        'filearea' => 'arlems',     // usually = table name
         'itemid' => 0,               // usually = ID of row in table
-        'contextid' => $context->id, // ID of context
-        'filepath' => '/arete/',           // any path beginning and ending in /
+        'contextid' => 1, // ID of context
+        'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename); // any filename
 
     // Get file
@@ -76,6 +86,73 @@ function getArlem($filename, $context)
 }
 
 
+///get the first itemid of the items with this name that become found in user draft
+function getItemID($fileinfo){
+    global $DB;
+    
+    $row = $DB->get_records('files', $fileinfo);
+    if(isset($row)){
+        $firstRowFound = current($row)->itemid; 
+        return $firstRowFound;
+    }
+
+    return null;
+}
+
+
+///return current user contextid
+//$WITH_USER_CONTEXT pass true the user id whome is already logged into Moodle will be used
+function getUserContextid($WITH_USER_CONTEXT = false, $userid = null){
+    global $USER;
+    
+    if(!isset($userid) && $WITH_USER_CONTEXT == false){  
+        $context = context_user::instance($USER->id);
+    }else{
+        $context = context_user::instance($userid);
+    }
+    
+    $contextid = $context->id;
+    
+    return $contextid;
+}
+
+
+
+//get the arlem from draft filearea of the current user
+function getUserArlem($filename, $itemid = null)
+{
+    $fs = get_file_storage();
+
+    // Prepare file record object
+    $fileinfo = array(
+        'component' => 'user',     // usually = table name
+        'filearea' => 'draft',     // usually = table name
+        'contextid' => getUserContextid(), // ID of context
+        'filepath' => '/',           // any path beginning and ending in /
+        'filename' => $filename); // any filename
+
+    
+    //use itemid too if it is provided
+    if(isset($itemid)){
+        $fileItemId = $itemid;
+    }else{
+        $fileItemId = getItemID($fileinfo);
+    }
+    
+    // Get file
+    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+    $fileItemId , $fileinfo['filepath'], $fileinfo['filename']);
+
+    // Read contents
+    if ($file) {
+        return $file;
+    } else {
+        return null;
+    }
+}
+
+
+//copy file to temp folder
 function copyArlemToTemp($filename, $context){
 
     // Get file
@@ -91,7 +168,7 @@ function copyArlemToTemp($filename, $context){
 }
 
 
-
+///check if this file is exist
 function isArlemExist($filename, $context )
 {
 
@@ -104,16 +181,15 @@ function isArlemExist($filename, $context )
 }
 
 
-//get an array of all files in this filearea
-function getAllArlems($context)
+//get an array of all files in plug in filearea
+function getAllArlems($emptyFiles = false)
 {
     $fs = get_file_storage();
-    
-    $files = $fs->get_area_files($context->id, 'mod_arete', 'arete_arlems', false, 'sortorder', false);
+
+    $files = $fs->get_area_files( 1 , 'arete', 'arlems', false, 'sortorder', $emptyFiles);
     
     return $files;  
 }
-
 
 
 ///get the file url
@@ -134,4 +210,48 @@ function getArlemURL($filename, $context)
      
      print_r("/$l1/$l2");
    
+}
+
+
+
+///for test remove later
+//get an array of all files in plug in filearea
+function getAllUserArlems( $WITH_USER_CONTEXT = false, $userid = null , $emptyFiles = false)
+{
+    $fs = get_file_storage();
+
+    $files = $fs->get_area_files( getUserContextid($WITH_USER_CONTEXT,$userid) , 'user', 'draft', false, 'sortorder', $emptyFiles);
+    
+    return $files;  
+}
+///
+
+//delete a file from plugin filearea
+function deletePluginArlem($filename, $itemid = null )
+{
+    $fs = get_file_storage();
+ 
+    // Prepare file record object
+    $fileinfo = array(
+        'component' => 'arete',
+        'filearea' => 'arlems',    
+        'contextid' => 1, 
+        'filepath' => '/',           // any path beginning and ending in /
+        'filename' => $filename); 
+
+    //use itemid too if it is provided
+    if(isset($itemid)){
+        $fileItemId = $itemid;
+    }else{
+        $fileItemId = getItemID($fileinfo);
+    }
+    
+    // Get file
+    $file = $fs->get_file(1, $fileinfo['component'], $fileinfo['filearea'], 
+            $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
+
+    // Delete it if it exists
+    if ($file) {
+        $file->delete();
+    }
 }

@@ -16,9 +16,9 @@ function arete_add_instance($data, $mform)
     
     $formdata = $mform->get_data();
     
-//get context using cource id
-    $courseid = $COURSE->id;
-    $context = context_course::instance($courseid);
+//get context using cource id if you need to get the files from somewhere else than user draft
+//    $courseid = $COURSE->id;
+//    $context = context_course::instance($courseid);
     
     //insert selected arlem files into arete_arlem which keeps the arlems of each module 
     if(isset($formdata))
@@ -27,7 +27,8 @@ function arete_add_instance($data, $mform)
         $arlems->areteid = $data->id;
         $arlems->timecreated = time();
         
-        $arlemFile = getArlem($formdata->arlem, $context);
+        $arlemFile = getUserArlem($formdata->arlem);
+
         $arlems->arlemid = $arlemFile->get_id();
         $DB->insert_record("arete_arlem", $arlems);
     }
@@ -48,9 +49,9 @@ function arete_add_instance($data, $mform)
 function arete_update_instance($data, $mform) {
     global $DB ,$COURSE;
 
-    //get context using cource id
-    $courseid = $COURSE->id;
-    $context = context_course::instance($courseid);
+//    //get context using cource id
+//    $courseid = $COURSE->id;
+//    $context = context_course::instance($courseid);
     
     $data->id = $data->instance;
     $data->timemodified = time();
@@ -59,9 +60,9 @@ function arete_update_instance($data, $mform) {
 
     //insert the new assigned arlems or delete those one which is unassigened
     //if arlem is exits in mdl_files
-    if(isset($formdata) && getArlem($formdata->arlem,$context) !== null)
+    if(isset($formdata) && getUserArlem($formdata->arlem) !== null)
     {
-        $arlemid_in_moodle_db = getArlem($formdata->arlem,$context)->get_id();
+        $arlemid_in_moodle_db = getUserArlem($formdata->arlem)->get_id();
     
         //not assigned before
         if(!is_arlem_assigned($data->id, $arlemid_in_moodle_db))

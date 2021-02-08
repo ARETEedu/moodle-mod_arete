@@ -19,7 +19,7 @@ class update_form extends moodleform{
         
         //get the list of arlem files from 
         $context = context_course::instance($course->id);
-        $arlemsList = getAllArlems($context);
+        $arlemsList = getAllArlems();
         
         $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
         
