@@ -1,7 +1,7 @@
 <?php
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 $arlemsList = array();
@@ -27,12 +27,12 @@ class update_form extends moodleform{
         
         $arlemsGroup = array();
         foreach($arlemsList as $arlem){
-             $arlemsGroup[] = $mform->createElement('radio', 'arlem' , '', $arlem->get_filename(), $arlem->get_filename());
+             $arlemsGroup[] = $mform->createElement('radio', 'arlemid' , '', $arlem->get_filename(), $arlem->get_id());
         }
         $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
         
         if(isset($arlemsList[1])){
-                    $mform->setDefault('arlem', $arlemsList[1]->get_filename()); //set the first element as default
+            $mform->setDefault('arlemid', $arlemsList[1]->get_id()); //set the first element as default
         }
         
         $mform->addElement('hidden', 'id', $moduleid);
@@ -55,7 +55,7 @@ class update_form extends moodleform{
         {
             if(is_arlem_assigned($moduleid, $arlem->get_id()))
             {
-                $mform->setDefault('arlem', $arlem->get_filename() );
+                $mform->setDefault('arlemid', $arlem->get_id() );
             }
         }
     }

@@ -1,10 +1,12 @@
 <?php
 
 require_once(dirname(__FILE__). '/../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/mod_form.php');
 require_once($CFG->dirroot.'/mod/arete/classes/update_form.php');
+
+global $USER;
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 
@@ -30,25 +32,40 @@ echo '<h5>'.$description.'</h5></br>';
 
 $context = context_course::instance($course->id);
 
-//Students
+
+ ///if all arlem files is deleted  
+$arlemlist = getAllArlems();
+if(count($arlemlist) == 0){
+    echo "No contents has been found.";
+    exit();
+}
+    
+
+///////Students view
 if(has_capability('mod/arete:assignedarlemfile', $context))
 {
-   $arlems_of_this_module = $DB->get_records('arete_arlem', array('areteid' => $moduleid));
+   $activity_arlem = $DB->get_record('arete_arlem', array('areteid' => $moduleid));
    
-//   foreach ($arlems_of_this_module as $arlem) 
-//   {
-//       $name = get_arlemname_from_db($arlem->arlemid);
-//        $url = get_arlemurl_from_db($arlem->arlemid);
-//
-//       echo  '<a href="' .  $url . '">' . $name . '</a><br>';
-//   }
+   $arleminfo = $DB->get_record('arete_allarlems', array('fileid' => $activity_arlem->arlemid));
+   
+   $fileinfo = $DB->get_record('files', array ('id' => $activity_arlem->arlemid, 'itemid' => $arleminfo->itemid));
+   
+   $arlemfile = getArlemByName($fileinfo->filename,  $fileinfo->itemid);
+   
+   if($arlemfile != null){
+       $url = getArlemURL($arlemfile->get_filename(), $arlemfile->get_itemid());
+       $name = $arlemfile->get_filename();
+        echo  '<a href="' .  $url . '">' . $name . '</a><br>';
+   }
+
 }
 
 
-global $USER;
-//Teachers
+
+///////////Teachers View
 if(has_capability('mod/arete:arlemfulllist', $context))
 {
+
    $mform = new update_form();
 
     if ($mform->is_cancelled()) //if form canceled
@@ -59,38 +76,21 @@ if(has_capability('mod/arete:arlemfulllist', $context))
     } else if (($data = $mform->get_data()))  //if form submitted
     {
         
-//        $update_record = new stdClass();
-//        $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
-//        $update_record-> areteid = $moduleid;
-//        
-//        $arlemFile = getUserArlem($data->arlem);
-//        $update_record-> arlemid = $arlemFile->get_id();
-//        $update_record->timecreated = time();
-//        
-////         update the record with this id. $data comes from update_form
-//        $DB->update_record('arete_arlem', $update_record);
+        $update_record = new stdClass();
+        $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $moduleid ));
+        $update_record-> areteid = $moduleid;
+        $update_record-> arlemid = $data->arlemid;
+        $update_record->timecreated = time();
         
-////
-        //creates a sample file
-//        if(!isArlemExist( $data->arlem ,$context ))
-//        {
-//            createArlem($data->arlem,'this is a text file is create on' . time(), $context);
-//        }
-//       
-//        //this will copy the file to temp folder
-//        copyArlemToTemp($data->arlem, $context);
-      
+//         update the record with this id. $data comes from update_form
+        $DB->update_record('arete_arlem', $update_record);
+        
         
 ////  Delete all test arlems for test (REMOVE)
-//    $arlemsList = getAllUserArlems(true, 3, true);
+//    $arlemsList = getAllArlems( true);
 //    foreach ($arlemsList as $arlem) {
-//         deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), true, 3);
+//           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
 //    }
-
-    $arlemsList = getAllArlems( true);
-    foreach ($arlemsList as $arlem) {
-           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
-    }
 ////        
         
         

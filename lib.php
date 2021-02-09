@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/arlem_utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 function arete_add_instance($data, $mform)
@@ -26,10 +26,8 @@ function arete_add_instance($data, $mform)
         $arlems = new stdClass();
         $arlems->areteid = $data->id;
         $arlems->timecreated = time();
-        
-        $arlemFile = getUserArlem($formdata->arlem);
 
-        $arlems->arlemid = $arlemFile->get_id();
+        $arlems->arlemid = $formdata->arlemid;
         $DB->insert_record("arete_arlem", $arlems);
     }
 
@@ -47,22 +45,19 @@ function arete_add_instance($data, $mform)
  * @return bool
  */
 function arete_update_instance($data, $mform) {
-    global $DB ,$COURSE;
+    global $DB ;
 
-//    //get context using cource id
-//    $courseid = $COURSE->id;
-//    $context = context_course::instance($courseid);
     
     $data->id = $data->instance;
     $data->timemodified = time();
 
     $formdata = $mform->get_data();
 
-    //insert the new assigned arlems or delete those one which is unassigened
+    //insert the new assigned arlems or delete the unassigened one
     //if arlem is exits in mdl_files
-    if(isset($formdata) && getUserArlem($formdata->arlem) !== null)
+    if(isset($formdata) && is_arlem_exist($formdata->arlemid))
     {
-        $arlemid_in_moodle_db = getUserArlem($formdata->arlem)->get_id();
+        $arlemid_in_moodle_db = $formdata->arlemid;
     
         //not assigned before
         if(!is_arlem_assigned($data->id, $arlemid_in_moodle_db))
@@ -179,7 +174,7 @@ function mod_arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
  
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'mod_arete', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'arete', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
         return false; // The file does not exist.
     }
