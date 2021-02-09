@@ -4,7 +4,7 @@ class MoodleWebService
 {
     var $token;
     var $domain = 'http://localhost/';
-    var $service = 'arlem';
+    var $service = 'aretews';
     
     
     //send a post request

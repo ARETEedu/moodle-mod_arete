@@ -39,8 +39,9 @@
      <TABLE NAME="arete_allarlems" COMMENT="Stores id of all ARLEMSs exists on files table">
         <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="fileid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
-        <FIELD NAME="itemid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="fileid" TYPE="int" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="itemid" TYPE="int" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="userid" TYPE="int" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         </FIELDS>
         <KEYS>
             <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

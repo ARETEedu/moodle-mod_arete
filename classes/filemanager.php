@@ -59,9 +59,8 @@ function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false,
 
 
 //return a single file from plugin filearea
-function getArlem($filename)
+function getArlem($filename, $itemid = null)
 {
-    
     $fs = get_file_storage();
  
     // Prepare file record object
@@ -73,9 +72,18 @@ function getArlem($filename)
         'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename); // any filename
 
+    
+    //use itemid too if it is provided
+    if(isset($itemid)){
+        $fileItemId = $itemid;
+    }else{
+        $fileItemId = getItemID($fileinfo);
+    }
+    
+    
     // Get file
     $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-                          $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+                         $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
 
     // Read contents
     if ($file) {

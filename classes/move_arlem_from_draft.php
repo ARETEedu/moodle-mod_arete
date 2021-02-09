@@ -1,7 +1,8 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__). '/../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 /**
  * This function is a copy of file_save_draft_area_files inside filelip.php
@@ -10,7 +11,6 @@ require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
  *
  * @category files
 
- * @param int $filename the name of the file which will be deleted from user draft after cloned to plugin filearea
  * @param int $userid the userid which will be retrieved from Unity
  * @param int $draftitemid the id of the draft area to use. Normally obtained
  *      from file_get_submitted_draft_itemid('elementname') or similar.
@@ -26,7 +26,7 @@ require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
  * @return string|null if $text was passed in, the rewritten $text is returned. Otherwise NULL.
  */
     
-    function move_file_from_draft_area_to_arete($filename, $userid, $draftitemid, $contextid, $component, $filearea, $itemid, array $options=null, $text=null, $forcehttps=false) {
+    function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $component, $filearea, $itemid, array $options=null, $text=null, $forcehttps=false) {
 
 
     $usercontext = context_user::instance($userid);
@@ -216,7 +216,6 @@ require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
     if (is_null($text)) {
         return null;
     } else {
-        deleteUserArlem($filename, $draftitemid, true, $userid);
         return file_rewrite_urls_to_pluginfile($text, $draftitemid, $forcehttps);
     }
 }

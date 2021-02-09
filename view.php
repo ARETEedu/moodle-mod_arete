@@ -35,13 +35,13 @@ if(has_capability('mod/arete:assignedarlemfile', $context))
 {
    $arlems_of_this_module = $DB->get_records('arete_arlem', array('areteid' => $moduleid));
    
-   foreach ($arlems_of_this_module as $arlem) 
-   {
+//   foreach ($arlems_of_this_module as $arlem) 
+//   {
 //       $name = get_arlemname_from_db($arlem->arlemid);
-//       $url = get_arlemurl_from_db($arlem->arlemid);
-
+//        $url = get_arlemurl_from_db($arlem->arlemid);
+//
 //       echo  '<a href="' .  $url . '">' . $name . '</a><br>';
-   }
+//   }
 }
 
 
@@ -80,14 +80,20 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 //        //this will copy the file to temp folder
 //        copyArlemToTemp($data->arlem, $context);
       
-        //Delete all test arlems
-//      $arlemsList = getAllUserArlems(true, 3, true);
-////        $arlemsList = getAllArlems( true);
-//        foreach ($arlemsList as $arlem) {
-//             deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), true, 3);
-////               deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
-//        }
+        
+////  Delete all test arlems for test (REMOVE)
+//    $arlemsList = getAllUserArlems(true, 3, true);
+//    foreach ($arlemsList as $arlem) {
+//         deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), true, 3);
+//    }
 
+    $arlemsList = getAllArlems( true);
+    foreach ($arlemsList as $arlem) {
+           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
+    }
+////        
+        
+        
         $mform->display();
         
     } else //if no action has been done yet
