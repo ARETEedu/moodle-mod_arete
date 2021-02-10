@@ -2,10 +2,7 @@
 
 require_once(dirname(__FILE__). '/../../config.php');
 require_once($CFG->dirroot.'/mod/arete/locallib.php');
-require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot.'/mod/arete/mod_form.php');
-require_once($CFG->dirroot.'/mod/arete/classes/update_form.php');
 require_once($CFG->dirroot.'/mod/arete/classes/output/arlemtable.php');
 
 
