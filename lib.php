@@ -139,17 +139,15 @@ function arete_delete_instance($id) {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function mod_arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-    if ($context->contextlevel != CONTEXT_MODULE) {
+   
+    
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false; 
     }
- 
-    // Make sure the filearea is one of those used by the plugin.
-    if ($filearea !== 'expectedfilearea' && $filearea !== 'anotherexpectedfilearea') {
-        return false;
-    }
- 
+
+
     // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
     require_login($course, true, $cm);
  
@@ -174,7 +172,7 @@ function mod_arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
  
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
-    $file = $fs->get_file($context->id, 'arete', $filearea, $itemid, $filepath, $filename);
+    $file = $fs->get_file($context->id, 'mod_arete', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
         return false; // The file does not exist.
     }

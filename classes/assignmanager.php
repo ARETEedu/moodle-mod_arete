@@ -1,5 +1,6 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die;
 
 //get the list of arlem files which is assig
 function is_arlem_assigned($areteid, $arlemid)

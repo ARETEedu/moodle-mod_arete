@@ -13,7 +13,6 @@ class mod_arete_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $arlemsList , $COURSE;
         
-        
         $courseid = $COURSE->id;
         $context = context_course::instance($courseid);
         

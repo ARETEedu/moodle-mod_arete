@@ -4,7 +4,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__). '/../../../config.php');
 
-
+$system_context = context_system::instance()->id;
 
 ///create a textfile in arete filearea (used mainly for testing
 function createArlem($filename, $filetext, $context){
@@ -14,8 +14,8 @@ function createArlem($filename, $filetext, $context){
     // Prepare file record object
     $fileinfo = array(
         'contextid' => $context->id, // ID of context
-        'component' => 'arete',     // usually = table name
-        'filearea' => 'arlems',     // usually = table name
+        'component' => get_string('component', 'arete'),     // usually = table name
+        'filearea' => get_string('filearea', 'arete'),     // usually = table name
         'itemid' => 0,               // usually = ID of row in table
         'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename  ); // any filename
@@ -61,13 +61,14 @@ function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false,
 //return a single file from plugin filearea by passing filename and item id
 function getArlemByName($filename, $itemid)
 {
+    global $system_context;
     $fs = get_file_storage();
  
     // Prepare file record object
     $fileinfo = array(
-        'component' => 'arete',  
-        'filearea' => 'arlems',          
-        'contextid' => 1, 
+        'component' => get_string('component', 'arete'),  
+        'filearea' => get_string('filearea', 'arete'),          
+        'contextid' => $system_context, 
         'filepath' => '/',  
         ); 
 
@@ -174,7 +175,7 @@ function getAllArlems($emptyFiles = false)
 {
     $fs = get_file_storage();
 
-    $files = $fs->get_area_files( 1 , 'arete', 'arlems', false, 'sortorder', $emptyFiles);
+    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'sortorder', $emptyFiles);
     
     return $files;  
 }
@@ -217,15 +218,15 @@ function getAllUserArlems( $WITH_USER_CONTEXT = false, $userid = null , $emptyFi
 //delete a file from plugin filearea
 function deletePluginArlem($filename, $itemid = null )
 {
-    global $DB;
+    global $DB,$system_context;;
     
     $fs = get_file_storage();
  
     // Prepare file record object
     $fileinfo = array(
-        'component' => 'arete',
-        'filearea' => 'arlems',    
-        'contextid' => 1, 
+        'component' => get_string('component', 'arete'),
+        'filearea' => get_string('filearea', 'arete'),    
+        'contextid' => $system_context, 
         'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename); 
 
@@ -237,7 +238,7 @@ function deletePluginArlem($filename, $itemid = null )
     }
     
     // Get file
-    $file = $fs->get_file(1, $fileinfo['component'], $fileinfo['filearea'], 
+    $file = $fs->get_file($system_context, $fileinfo['component'], $fileinfo['filearea'], 
             $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
 
 

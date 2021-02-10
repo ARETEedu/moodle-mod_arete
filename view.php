@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__). '/../../config.php');
+require_once($CFG->dirroot.'/mod/arete/locallib.php');
 require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/mod_form.php');
@@ -33,14 +34,15 @@ echo '<h5>'.$description.'</h5></br>';
 $context = context_course::instance($course->id);
 
 
- ///if all arlem files is deleted  
+// if all arlem files is deleted, delete the activity too and redirect to the course page
 $arlemlist = getAllArlems();
 if(count($arlemlist) == 0){
-    echo "No contents has been found.";
-    exit();
+    arete_delete_activity($moduleid);
+    redirect($CFG->wwwroot . '/course/view.php?id='. $PAGE->course->id, array());
+//    echo '<div style="text-align: center;">No contents has been found. <b>' . $cm->name . '</b> can be deleted.</div>';
+    return;
 }
-    
-
+   
 ///////Students view
 if(has_capability('mod/arete:assignedarlemfile', $context))
 {
@@ -87,9 +89,13 @@ if(has_capability('mod/arete:arlemfulllist', $context))
         
         
 ////  Delete all test arlems for test (REMOVE)
-//    $arlemsList = getAllArlems( true);
+    $arlemsList = getAllArlems( true);
+    foreach ($arlemsList as $arlem) {
+           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
+    }
+//    $arlemsList = getAllUserArlems( true, 2 ,true);
 //    foreach ($arlemsList as $arlem) {
-//           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
+//        deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), 2);
 //    }
 ////        
         

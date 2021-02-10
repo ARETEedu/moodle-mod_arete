@@ -7,3 +7,5 @@ $string['description'] = 'Description';
 $string['arlemsectiontitle'] = 'ARLEMs';
 $string['arlemradiobuttonlabel'] = 'The available Arlems in this activity';
 $string['pluginadministration'] = 'Augmented Reality Experience administration';
+$string['component'] = 'mod_arete';
+$string['filearea'] = 'arlems';

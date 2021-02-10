@@ -38,8 +38,8 @@ if(isset($base64file))
 
     //if file is created in user draft filearea, move it to the plugin filearea and delete it from user draft
     if($response == true){
-
-        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], 1, 'arete', 'arlems', $parameters['itemid']);
+        
+        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id , get_string('component', 'arete'), get_string('filearea', 'arete'), $parameters['itemid']);
         
         //if file is created in plugin filearea
         if(getArlemByName($filename, $parameters['itemid']) !== null)
