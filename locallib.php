@@ -4,7 +4,12 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__). '/../../config.php');
 
-
+     
+/**
+* Delete an activity.
+*
+* @param $id id of arete from arete DB
+*/
 function arete_delete_activity($id){
     
     

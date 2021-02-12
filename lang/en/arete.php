@@ -11,8 +11,14 @@ $string['component'] = 'mod_arete';
 $string['filearea'] = 'arlems';
 $string['datetitle'] = 'Date';
 $string['arlemtitle'] = 'Arlem';
+$string['deletetitle'] = 'Delete';
 $string['qrtitle'] = 'Generate QR';
 $string['authortitle'] = 'Author';
 $string['assigntitle'] = 'Assign';
 $string['assignedarlem'] = 'This AR experience is assigned to this activity';
-$string['availabledarlem'] = 'The list of available ARLEMS';
+$string['availabledarlem'] = 'The list of available AR experiences';
+$string['rolelabel'] = 'Your role in this activity: ';
+$string['roleundefined'] = 'Your role is nor defined!';
+$string['deletenotallow'] = '-';
+$string['notassignedyer'] = 'No AR experience is assigned yet! Ask your teacher to add an experience to this activity.';
+
