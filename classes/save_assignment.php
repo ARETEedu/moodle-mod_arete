@@ -6,7 +6,7 @@ require_once(dirname(__FILE__). '/../../../config.php');
 
 global $DB;
 
-$homepageid = filter_input(INPUT_POST, 'homepageid' );
+$returnurl = filter_input(INPUT_POST, 'returnurl' );
 $areteid = filter_input(INPUT_POST, 'moduleid' );
 $arlemid = filter_input(INPUT_POST, 'arlem' );
 
@@ -20,4 +20,4 @@ $update_record->timecreated = time();
 $DB->update_record('arete_arlem', $update_record);
 
 //redirect
-redirect($CFG->wwwroot . '/mod/arete/view.php?id='. $homepageid, array());
+redirect($returnurl, array());

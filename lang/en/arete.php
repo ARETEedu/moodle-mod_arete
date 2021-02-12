@@ -14,3 +14,5 @@ $string['arlemtitle'] = 'Arlem';
 $string['qrtitle'] = 'Generate QR';
 $string['authortitle'] = 'Author';
 $string['assigntitle'] = 'Assign';
+$string['assignedarlem'] = 'This AR experience is assigned to this activity';
+$string['availabledarlem'] = 'The list of available ARLEMS';

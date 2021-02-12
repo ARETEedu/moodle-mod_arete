@@ -1,5 +1,7 @@
 .pagination {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .pagination a {
@@ -11,6 +13,7 @@
   border: 1px solid #ddd;
 }
 
+/*if you need another colot for active button use this class*/
 .pagination a.active {
   background-color: #4CAF50;
   color: white;
