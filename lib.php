@@ -141,7 +141,7 @@ function arete_delete_instance($id) {
  */
 function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-   
+   global $COURSE;
     
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false; 
@@ -152,7 +152,9 @@ function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownlo
     require_login($course, true, $cm);
  
     // Check the relevant capabilities - these may vary depending on the filearea being accessed.
-    if (!has_capability('mod/arete:view', $context)) {
+    
+    $cxt = context_course::instance($COURSE->id);
+    if (!has_capability('mod/arete:view', $cxt)) {
         return false;
     }
  

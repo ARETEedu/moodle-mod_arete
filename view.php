@@ -62,12 +62,21 @@ if(has_capability('mod/arete:assignedarlemfile', $context))
 ///////////Teachers View
 if(has_capability('mod/arete:arlemfulllist', $context))
 {
+    $max_number_on_page = 3; //maximum item on each page
+    $arlems_list = getAllArlems(); //all arlems
+    $splitet_list = array_chunk($arlems_list, $max_number_on_page); //arlems splited to small list
+
+    $page_number = 0; //current page number
+    
     echo '<form action="'. $CFG->wwwroot.'/mod/arete/classes/save_assignment.php' . '" method="post">';
-    echo html_writer::table(draw_arlem_table(getAllArlems(),  true)); //teacher arlem
+    echo html_writer::table(draw_arlem_table($splitet_list[$page_number],  true)); //teacher arlem
     echo '<input type="hidden" id="homepageid" name="homepageid" value="'. $id .'">';
     echo '<input type="hidden" id="moduleid" name="moduleid" value="'. $moduleid .'">';
     echo '<input class="btn btn-primary" type="submit" value="Save">';
     echo '</form>';
+    
+    $out .= html_writer::div('kermit', 'frog');
+    
     
     update_assignment($moduleid);
     
