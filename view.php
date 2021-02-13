@@ -84,7 +84,7 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
    if($arleminfo != null){
         $fileinfo = $DB->get_record('files', array ('id' => $activity_arlem->arlemid, 'itemid' => $arleminfo->itemid));
         $arlemfile = getArlemByName($fileinfo->filename,  $fileinfo->itemid);
-        echo html_writer::table(draw_arlem_table(array($arlemfile))); //student arlem
+        echo html_writer::table(draw_arlem_table(array($arlemfile), 'assignedTable')); //student arlem
    }else{
        
        //print a notification if no ARLEM is assigned yet to this activity
@@ -117,7 +117,7 @@ if(has_capability('mod/arete:arlemfulllist', $context))
     echo '<br><span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';
    
     echo '<form action="classes/save_assignment.php" method="post">';
-    echo html_writer::table(draw_arlem_table($splitet_list[$page_number-1],  true)); //arlems table
+    echo html_writer::table(draw_arlem_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
     echo '<input type="hidden" id="returnurl" name="returnurl" value="'. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '">';
     echo '<input type="hidden" id="moduleid" name="moduleid" value="'. $moduleid .'">';
     echo '<div class="right"><input class="btn btn-primary" type="button" value="Save" onClick="confirmSubmit(this.form);"></div>'; //submit button

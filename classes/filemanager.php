@@ -175,7 +175,7 @@ function getAllArlems($emptyFiles = false)
 {
     $fs = get_file_storage();
 
-    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'sortorder', $emptyFiles);
+    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'timecreated DESC ', $emptyFiles);
     
     return $files;  
 }

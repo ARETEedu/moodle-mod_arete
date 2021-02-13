@@ -45,7 +45,7 @@
   background-color: #4CAF50; /* Green */
   border: none;
   color: white;
-  padding: 0em 1.4em;
+  padding: 0em 1.1em;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -54,16 +54,30 @@
   cursor: pointer;
 }
 
-
-.deleteBtn {
+.dlbutton {
   background-color: white;
   color: black;
-  border: 2px solid #e7e7e7;
+  border: 2px solid #555555;
 }
 
-.deleteBtn:hover {
-    background-color: #555555;
-    color: white;
+.dlbutton:hover {
+  background-color: #555555;
+  color: white;
 }
 
-#arlemTable tr { line-height: 40px; }
+
+#arlemTable tr {
+    line-height: 40px; 
+    background-color: #ffffff; /* Green */
+}
+
+#arlemTable th {
+    line-height: 40px; 
+    background-color: #ddd; /* Green */
+}
+
+#assignedTable td  
+{   
+    background-color: #cfffbf; /* Green */
+    line-height: 40px; 
+ }
