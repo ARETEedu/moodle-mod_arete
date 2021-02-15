@@ -7,8 +7,8 @@ This work was supported by the European Commission under the Horizon 2020 progra
 
 To activate the plugin in Moodle, you will need to:
 
-1- Install the plugin
-2- Enable REST protocol from the admin panel
-3- Enable web services from the admin panel: "Enable web services"
-4- Go to 'define roles' and enable the allow checkbox "Create a web service token" for authenticated user
-5- Increase post_max_size=1024M, memory_limit=-1, and upload_max_filesize=1024M in php.ini on your server. 
+1. Install the plugin
+2. Enable Web Services from the admin panel: "Enable web services"
+3. Enable REST protocol from the admin panel
+4. Go to 'define roles' and enable the allow checkbox "Create a web service token" for authenticated user
+5. Increase post_max_size=1024M, memory_limit=-1, and upload_max_filesize=1024M in php.ini on your server. 
