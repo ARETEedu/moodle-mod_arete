@@ -3,9 +3,9 @@
 class MoodleWebService
 {
     var $token;
+//    var $domain = 'http://abbasjafari.net/';
     var $domain = 'http://localhost/';
     var $service = 'aretews';
-    
     
     //send a post request
     function httpPost($url, $data){
@@ -24,6 +24,7 @@ class MoodleWebService
     function requestToken($username, $password)
     {
         $response = $this->httpPost($this->domain . 'moodle/login/token.php' , array('username' => $username, 'password'=> $password ,'service' => $this->service) );
+
         $this->token = json_decode($response)->{'token'};
         
         return $this->getToken();

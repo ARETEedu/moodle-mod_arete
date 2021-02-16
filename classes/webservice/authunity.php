@@ -1,9 +1,5 @@
 <?php
-/**
- * MoodleAuthentication from Unity
- *
- * @author     Abbas Jafari <a85jafari@gmail.com>
- */
+
 require_once 'MoodleWebService.php';
 
 $username = filter_input(INPUT_POST, 'username' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);

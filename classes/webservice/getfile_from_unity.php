@@ -5,6 +5,8 @@ require_once('../../../../config.php');
 //the variables which  are passed from Unity application
 $token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $userid = filter_input(INPUT_POST, 'userid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$sessionid = filter_input(INPUT_POST, 'sessionid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
 
 
 //if the file is received from Unity application
@@ -15,12 +17,12 @@ if (isset($_FILES['myfile'])){
      
     //convert the file to base64 string
     $file_base64 = base64_encode(file_get_contents($file)); 
-    
+
     //To get file extension
     //$fileExt = pathinfo($img, PATHINFO_EXTENSION) ;
     
 
-     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid);
+     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid);
     
      $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
      curl_setopt($ch, CURLOPT_POST, true);

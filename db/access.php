@@ -43,5 +43,14 @@ $capabilities = array(
         'archetypes' => array(
             'student' => CAP_ALLOW,
         )
+    ),
+    
+    
+        'mod/arete:manageall' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+        )
     )
 );

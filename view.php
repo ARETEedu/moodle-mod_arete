@@ -42,7 +42,7 @@ if(count($arlems_list) == 0)
     arete_delete_activity($moduleid);
     
     //return to the course page
-    redirect($CFG->wwwroot . '/course/view.php?id='. $PAGE->course->id, array());
+    redirect($CFG->wwwroot . '/course/view.php?id='. $course->id, null);
     return;
 }
 
@@ -74,22 +74,13 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
     //label that show this arlem is assinged to this activity
    echo '<span class="titles">' . get_string('assignedarlem', 'arete') . '</span>';
     
-   //Get the assigned ARLEM from DB
-   $activity_arlem = $DB->get_record('arete_arlem', array('areteid' => $moduleid));
-   
-   //Get the ARLEM id of the assigned from DB
-   $arleminfo = $DB->get_record('arete_allarlems', array('fileid' => $activity_arlem->arlemid));
-   
-   //print the assigned ARLEM in a single table row if it is exist
-   if($arleminfo != null){
-        $fileinfo = $DB->get_record('files', array ('id' => $activity_arlem->arlemid, 'itemid' => $arleminfo->itemid));
-        $arlemfile = getArlemByName($fileinfo->filename,  $fileinfo->itemid);
-        echo html_writer::table(draw_arlem_table(array($arlemfile), 'assignedTable')); //student arlem
-   }else{
-       
-       //print a notification if no ARLEM is assigned yet to this activity
-       echo $OUTPUT->notification(get_string('notassignedyer' , 'arete'));
-   }
+   //print assigned table
+    $result = draw_table_for_students($moduleid);
+
+    //show notification if no arlem is assigned
+    if($result == false){
+        echo $OUTPUT->notification(get_string('notassignedyer' , 'arete'));
+    }
 
 }
 
@@ -116,21 +107,16 @@ if(has_capability('mod/arete:arlemfulllist', $context))
     //label that show the list of all arlems which  are available
     echo '<br><span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';
    
-    echo '<form action="classes/save_assignment.php" method="post">';
-    echo html_writer::table(draw_arlem_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
-    echo '<input type="hidden" id="returnurl" name="returnurl" value="'. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '">';
-    echo '<input type="hidden" id="moduleid" name="moduleid" value="'. $moduleid .'">';
-    echo '<div class="right"><input class="btn btn-primary" type="button" value="Save" onClick="confirmSubmit(this.form);"></div>'; //submit button
-    echo '</form>';
+    //create the ARLEMs tables
+    draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
     
 
-    // pagination 
+    // create the pagination 
     $pagination = new pagination();
     echo $pagination->getPagination($splitet_list, $page_number, $id);
 
     
-    //check and set the radio button of the assigend arlem on loading the page
-    update_assignment($moduleid);
+
     
 //// for testing only (REMOVE on release)
 ////  Delete all test arlems 

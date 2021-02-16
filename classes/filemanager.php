@@ -61,7 +61,9 @@ function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false,
 //return a single file from plugin filearea by passing filename and item id
 function getArlemByName($filename, $itemid)
 {
+
     global $system_context;
+
     $fs = get_file_storage();
  
     // Prepare file record object
@@ -72,11 +74,11 @@ function getArlemByName($filename, $itemid)
         'filepath' => '/',  
         ); 
 
-    
     // Get file
     $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
                          $itemid, $fileinfo['filepath'], $filename);
 
+    
     // Read contents
     if ($file) {
         return $file;
@@ -171,12 +173,13 @@ function copyArlemToTemp($filename,  $itemid){
 
 
 //get an array of all files in plug in filearea
-function getAllArlems($emptyFiles = false)
+function getAllArlems()
 {
-    $fs = get_file_storage();
-
-    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'timecreated DESC ', $emptyFiles);
-    
+//    $fs = get_file_storage();
+//
+//    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'timecreated DESC ', $emptyFiles);
+    global $DB;
+    $files = $DB->get_records('arete_allarlems', null, 'timecreated DESC');
     return $files;  
 }
 
@@ -184,9 +187,9 @@ function getAllArlems($emptyFiles = false)
 ///get the file url
 function getArlemURL($filename, $itemid)
 {
-    $file = getArlemByName($filename, $itemid );
-    $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+    $file = getArlemByName($filename, $itemid);
 
+    $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
     return $url;
 }
 

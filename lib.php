@@ -7,29 +7,29 @@ require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 function arete_add_instance($data, $mform)
 {
-    global $DB, $COURSE;
+    global $DB;
    
     $data-> timecreated = time();
     $data-> timemodified = $data-> timecreated;
 
     $data->id = $DB->insert_record('arete', $data);
     
-    $formdata = $mform->get_data();
+//    $formdata = $mform->get_data();
     
 //get context using cource id if you need to get the files from somewhere else than user draft
 //    $courseid = $COURSE->id;
 //    $context = context_course::instance($courseid);
     
     //insert selected arlem files into arete_arlem which keeps the arlems of each module 
-    if(isset($formdata))
-    {
-        $arlems = new stdClass();
-        $arlems->areteid = $data->id;
-        $arlems->timecreated = time();
-
-        $arlems->arlemid = $formdata->arlemid;
-        $DB->insert_record("arete_arlem", $arlems);
-    }
+//    if(isset($formdata))
+//    {
+//        $arlems = new stdClass();
+//        $arlems->areteid = $data->id;
+//        $arlems->timecreated = time();
+//
+//        $arlems->arlemid = $formdata->arlemid;
+//        $DB->insert_record("arete_arlem", $arlems);
+//    }
 
     return $data->id;
 }
@@ -141,22 +141,13 @@ function arete_delete_instance($id) {
  */
 function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
-   global $COURSE;
-    
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false; 
     }
 
-
     // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
-    require_login($course, true, $cm);
+//    require_login($course, true, $cm);
  
-    // Check the relevant capabilities - these may vary depending on the filearea being accessed.
-    
-    $cxt = context_course::instance($COURSE->id);
-    if (!has_capability('mod/arete:view', $cxt)) {
-        return false;
-    }
  
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
     $itemid = array_shift($args); // The first item in the $args array.

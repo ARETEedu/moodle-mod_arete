@@ -18,8 +18,26 @@ $update_record-> areteid = $areteid;
 $update_record-> arlemid =  $arlemid;
 $update_record->timecreated = time();
 
-//         update the record with this id. $data comes from update_form
-$DB->update_record('arete_arlem', $update_record);
+
+if(isset($areteid) && isset($arlemid)){
+    $DB->update_record('arete_arlem', $update_record);
+}
+
+
+
+$moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));
+
+//if the record  of this activity was deleted on arete_arlem create it again
+if($moduleid == null)
+{
+    $item = new stdClass();
+    $item->areteid = $areteid;
+    $item->timecreated = time();
+
+    $item->arlemid = $arlemid;
+    $DB->insert_record("arete_arlem", $item);
+}
+
 
 
 //deleted the arlems which has checkbox checked

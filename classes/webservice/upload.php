@@ -7,13 +7,16 @@ require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 //the variables which  are passed by getfile_from_unity.php
 $token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $filename = filter_input(INPUT_POST, 'filename' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$sessionid = filter_input(INPUT_POST, 'sessionid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $base64file = filter_input(INPUT_POST, 'base64' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $userid = filter_input(INPUT_POST, 'userid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
 
 global $DB;
+
 
 //if base64 file is exists
 if(isset($base64file))
@@ -31,7 +34,7 @@ if(isset($base64file))
         'contextlevel' => 'user',
         'instanceid' => $userid,
     );
-
+        
 
     $serverurl = $CFG->wwwroot . '/webservice/rest/server.php' ;
     $response = httpPost($serverurl , $parameters );
@@ -40,23 +43,27 @@ if(isset($base64file))
     if($response == true){
         
         move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id , get_string('component', 'arete'), get_string('filearea', 'arete'), $parameters['itemid']);
-        
+
         //if file is created in plugin filearea
         if(getArlemByName($filename, $parameters['itemid']) !== null)
         {
-            ///insert data to arete_allarlems table
-            $arlemdata = new stdClass();
-            $arlemdata->fileid = getArlemByName($filename, $parameters['itemid'])->get_id();
-            $arlemdata->userid =  $userid;
-            $arlemdata->itemid =  $parameters['itemid'];
-            $arlemdata->timecreated = time();
-            $DB->insert_record('arete_allarlems', $arlemdata);
-            
             
             //delete file and the rmpty folder from user file area
             deleteUserArlem($filename, $parameters['itemid'], true, $userid);
             deleteUserArlem('.', $parameters['itemid'], true, $userid);
             echo $filename. ' Saved.';
+            
+            ///insert data to arete_allarlems table
+            $arlemdata = new stdClass();
+            $arlemdata->fileid = getArlemByName($filename, $parameters['itemid'])->get_id();
+            $arlemdata->contextid =  context_system::instance()->id;
+            $arlemdata->userid =  $userid;
+            $arlemdata->itemid =  $parameters['itemid'];
+            $arlemdata->sessionid = $sessionid;
+            $arlemdata->filename = $filename;
+            $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
+            $arlemdata->timecreated = time();
+            $DB->insert_record('arete_allarlems', $arlemdata);
         }
         
     }

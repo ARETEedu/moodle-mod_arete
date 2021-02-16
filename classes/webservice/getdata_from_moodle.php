@@ -34,7 +34,6 @@ $serverurl = $CFG->wwwroot . '/webservice/rest/server.php'. '?wstoken=' . $token
 
 $curl = new curl;
 $response = $curl->post($serverurl , $parametersArray);
-
 $jsonResult = json_decode($response, true);
 
 

@@ -33,7 +33,7 @@ class mod_arete_mod_form extends moodleform_mod {
         $this->standard_intro_elements(get_string('description', 'arete'));
         
 //-------------------------------------------------------------------------------
-        
+     /*   
         $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
         
         $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
@@ -51,6 +51,8 @@ class mod_arete_mod_form extends moodleform_mod {
         if(isset($arlemsList[1])){
             $mform->setDefault('arlemid', $arlemsList[1]->get_id()); //set the first element as default
         }
+      
+      */
 //-------------------------------------------------------------------------------
         
 
