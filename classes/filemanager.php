@@ -248,5 +248,3 @@ function deletePluginArlem($filename, $itemid = null )
 
     }
 }
-
-

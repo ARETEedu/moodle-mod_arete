@@ -1,29 +1,50 @@
 <?php
 
 require_once(dirname(__FILE__). '/../../../config.php');
+require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+
+
+defined('MOODLE_INTERNAL') || die;
+
+$itemid = filter_input(INPUT_POST, 'itemid');
+$pageId = filter_input(INPUT_POST, 'pageId');
+$pnum = filter_input(INPUT_POST, 'pnum');
+
+//if cancel button is pressed
+
+if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
+
+          //remove temp dir which is used on editing
+          $tempDir = $CFG->dirroot. '/mod/arete/temp/';
+          if(is_dir($tempDir)){
+              deleteDir($tempDir);
+         }
+         
+         //return to the first page
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum );
+         
+         return;
+} 
 
 
 $target_dir = $CFG->dirroot. '/mod/arete/temp';
 
-if(isset($_POST['itemid'])){
-    $itemid = $_POST['itemid'];
-}
 
 
-if(isset($_POST['submit'])){
-    
-    if(!empty(array_filter($_FILES['files']['name']))) { 
-        // Loop through each file in files[] array 
-        foreach ($_FILES['files']['tmp_name'] as $key => $value) { 
-            $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
-            $file_name = $_FILES['files']['name'][$key]; 
-            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
-            
-            $result = replace_file($target_dir, $file_name, $file_ext, $file_tmpname );
-        }
+
+
+if(!empty(array_filter($_FILES['files']['name']))) { 
+    // Loop through each file in files[] array 
+    foreach ($_FILES['files']['tmp_name'] as $key => $value) { 
+        $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
+        $file_name = $_FILES['files']['name'][$key]; 
+        $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
+
+        $result = replace_file($target_dir, $file_name, $file_ext, $file_tmpname , true);
     }
-    
 }
+
 
 
 
@@ -52,8 +73,11 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
             }
             
             //only once at the end
-            $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
-            zipFiles($file);
+            if($mainDir == true){
+               $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+                zipFiles($file); 
+            }
+
     }
 
     
@@ -93,10 +117,73 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
         // Zip archive will be created only after closing object
         $zip->close();
+        
+        upload_new_zip($rootPath .'/' . $arlem->filename, $arlem->filename);
     }
     
     
     
-    function upload_new_zip(){
+    function upload_new_zip($filepath, $filename){
+
+        global $itemid ,$DB,$pageId ,$pnum, $CFG;
         
+         $context = context_system::instance();
+         $fs = get_file_storage();
+         
+         //get the file which need to be updated
+         $existingArlem = getArlemByName($filename, $itemid);
+         $oldfileid = $existingArlem->get_id();
+         
+         //use the same date if file exist
+         if(isset($existingArlem)){
+             
+             $newDate = $existingArlem->get_timecreated();
+             $existingArlem->delete(); //delete the old file
+         }else{
+             $newDate = time();
+         }
+         
+         $fileinfo = array(
+             'contextid'=>$context->id, 
+             'component'=> get_string('component', 'arete') ,
+             'filearea'=>get_string('filearea', 'arete'),
+             'itemid'=> $itemid, 
+             'filepath'=>'/',
+             'filename'=>$filename,
+             'timecreated'=>$newDate
+           );
+         
+    
+         //add the updated file to the file system
+         $fs->create_file_from_pathname($fileinfo, $filepath);
+         
+         //the new file id
+         $newArlemID = getArlemByName($filename, $itemid)->get_id();
+                
+
+         
+         //update the record of the file in allarlems table
+         $arlem_in_allarlem = $DB->get_record('arete_allarlems', array('itemid' => $itemid, 'filename' => $filename) );
+         $arlem_in_allarlem->fileid = $newArlemID;
+         $arlem_in_allarlem->timecreated = $newDate;
+         $DB->update_record('arete_allarlems', $arlem_in_allarlem);
+         
+         
+         //update the record of the file in arete_arlem table
+         $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
+         foreach ($activities_that_use_this_arlem as $activity) {
+            $activity->arlemid = $newArlemID; //this is the id of the new file
+            $activity->timecreated = $newDate;
+            $DB->update_record('arete_arlem', $activity);
+         }
+
+         //remove temp dir which is used on editing
+          $tempDir = $CFG->dirroot. '/mod/arete/temp/';
+          if(is_dir($tempDir)){
+              deleteDir($tempDir);
+         }
+         
+         //return to the first page
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum );
+
     }

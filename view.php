@@ -63,7 +63,7 @@ if(has_capability('mod/arete:view', $context)){
 
     //edit mode
     if( $pagemode == "edit"){
-        echo '<span class="titles">' . get_string('editpagetitle', 'arete') . '</span>';
+        echo '<span class="titles">' . get_string('editpagetitle', 'arete') . '</span><br><br>';
         
     }else{
         //Print the description
@@ -111,8 +111,9 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 
     //edit mode
     if($pagemode == "edit"){
+        
+        //create edit page
         $editArlem = new EditArlem();
-
 
     }else{ //view mode 
         
@@ -164,24 +165,9 @@ if(has_capability('mod/arete:arlemfulllist', $context))
         
 }
 
+//print javascripts functions from utilities.php
+myJS();
 
-//confirm before submit
-echo '<script  type="text/javascript">
-function confirmSubmit(form)
-{
-	var checked = document.querySelectorAll(\'input#deleteCheckbox:checked\');
-
-	if (checked.length === 0) {
-
-		form.submit();
-	} else {
-
-    if (confirm("Are you sure you want to delete these files?")) {
-         form.submit();
-		}
-	}
-}
-</script>';
 echo $OUTPUT->footer();
 
 

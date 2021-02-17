@@ -21,13 +21,10 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     
     $table = html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
     $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
-    $table .= html_writer::start_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number )); //return to this url after saving the table
-    $table .= html_writer::end_tag('input');
-    $table .= html_writer::start_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
-    $table .= html_writer::end_tag('input');
+    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number )); //return to this url after saving the table
+    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
     $table .= html_writer::start_div('div');
-    $table .= html_writer::start_tag('input', array('type' => 'button', 'class' => 'btn btn-primary right' ,'onClick' => 'confirmSubmit(this.form);', 'value' => 'Save' )); //id of the current arete module
-    $table .= html_writer::end_tag('input');
+    $table .= html_writer::empty_tag('input', array('type' => 'button', 'class' => 'btn btn-primary right' ,'onClick' => 'confirmSubmit(this.form);', 'value' =>  get_string('savebutton', 'arete') )); //id of the current arete module
     $table .= html_writer::end_div();
     $table .= html_writer::end_tag('form');
     
@@ -82,7 +79,7 @@ function draw_table_for_students($moduleid){
  */
 function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 {
-    global $DB, $USER, $CFG, $COURSE;
+    global $DB, $USER, $CFG, $COURSE,$PAGE;
 
     $context = context_course::instance($COURSE->id);
 
@@ -141,7 +138,8 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         }
 
         //author (photo, firstname, lastname
-        $src = $CFG->wwwroot.'/pluginfile.php/'. context_user::instance($authoruser->id)->id .'/user/icon/';
+        $user_picture=new user_picture($authoruser);
+        $src=$user_picture->get_url($PAGE);
         $photo = '<img  style = "border-radius: 50%;" src="'. $src . '" alt="profile picture" width="40" height="40">&nbsp;'; 
         $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname;
 
@@ -219,8 +217,6 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
                 }
             }
         }
-
-
 
 
         //fill the table

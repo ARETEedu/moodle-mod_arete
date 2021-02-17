@@ -4,7 +4,7 @@
 
 require_once(dirname(__FILE__). '/../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
 global $DB;
 

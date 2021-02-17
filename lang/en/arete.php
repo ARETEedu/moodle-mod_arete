@@ -28,7 +28,13 @@ $string['roleundefined'] = 'Your role is nor defined!';
 $string['deletenotallow'] = '-';
 $string['notassignedyer'] = 'No AR experience is assigned yet! Ask your teacher to add an experience to this activity.';
 $string['editpagetitle'] = 'Edit ARLEM';
-$string['accessnotallow'] = 'You do not have access to this page';
+$string['accessnotallow'] = 'You do not have access to this page.';
 $string['editpagetitle'] = 'Edit ARLEM file';
-
-
+$string['selectfiles'] = 'Select the files that need to be updated. You can select multiply files';
+$string['selectfileshelp'] = 'The existing files will be replaced by the selected files with the same names';
+$string['arlemstructure'] = 'Selected ARLEM structure';
+$string['filenotselectedalert'] = 'Please select at lease one file to update this activity';
+$string['choosefilesbutton'] = 'Choose File(s)';
+$string['nofileselected'] = ' No file(s) selected';
+$string['cancelbutton'] = 'Cancel';
+$string['savebutton'] = 'Save';
