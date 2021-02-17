@@ -93,13 +93,14 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
     $size_title = get_string('sizetitle' , 'arete');
     $author_title = get_string('authortitle' , 'arete');
     $download_title = get_string('downloadtitle' , 'arete');
+    $edit_title = get_string('editbutton' , 'arete');
     $qr_title = get_string('qrtitle' , 'arete');
     $delete_title = get_string('deletetitle' , 'arete');
     $assign_title = get_string('assigntitle' , 'arete');
 
 
     //show the assign button only to teachers
-    $table_headers = array($date_title, $arlem_title, $size_title , $author_title,  $download_title,  $qr_title, $delete_title , $assign_title);
+    $table_headers = array($date_title, $arlem_title, $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
     //remove radio buttons and delete button for the students
 
 
@@ -147,6 +148,11 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         //download button
         $url = getArlemURL($arlem->filename, $arlem->itemid);
         $dl_button = '<input type="button" class="button dlbutton" id="dlbutton" name="dlBtn' . $arlem->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
+        
+        //edit button
+        $page_number = filter_input(INPUT_GET, 'pnum' );//page number from pagination
+        $id = required_param('id', PARAM_INT); // Course Module ID.
+        $edit_button = '<input type="button" class="button dlbutton" id="editbutton" name="editBtn' . $arlem->fileid . '" onclick="window.open(\''. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '\', \'_self\')" value="'. get_string('editbutton' , 'arete') . '">';
 
         //qr code button
         $qr_button = '<input type="button" class="button dlbutton" id="dlbutton" name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
@@ -159,38 +165,57 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
 
         //Now fill the row
-        $table_row = array($date,  $filename  , $size,  $author ,  $dl_button , $qr_button,   $delete_button  , $assign_radio_btn);
+        $table_row = array($date,  $filename  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
 
 
         //for students
         if($show_radio_button == false){  
 
-            //remove assign and delete columns if it is the student view
+            //remove assign columns if it is the student view
             if(array_search( $assign_title, $table_headers) !== null ){
                 unset($table_headers[array_search( $assign_title, $table_headers)]);
-            }
-
-            if(array_search( $delete_title, $table_headers) !== null){
-                unset($table_headers[array_search( $delete_title, $table_headers)]);
             }
 
             if(array_search( $assign_radio_btn, $table_row) !== null){
                 unset($table_row[array_search( $assign_radio_btn, $table_row)]);
             }
+            
+            
+            //remove delete columns if it is the student view
+            if(array_search( $delete_title, $table_headers) !== null){
+                unset($table_headers[array_search( $delete_title, $table_headers)]);
+            }
 
             if(array_search( $delete_button , $table_row) !== null){
                 unset($table_row[array_search( $delete_button , $table_row)]);
+            }
+            
+            
+            //remove edit columns if it is the student view
+            if(array_search( $edit_title, $table_headers) !== null){
+                unset($table_headers[array_search( $edit_title, $table_headers)]);
+            }
+
+            if(array_search( $edit_button , $table_row) !== null){
+                unset($table_row[array_search( $edit_button , $table_row)]);
             }
         }
         //for teachers
         else 
         {
-            //delete delete checkbox for the non author users in the teacher view
+            // for the non author users in the teacher view
             if($USER->username != $authoruser->username && !has_capability('mod/arete:manageall', $context))
             {
-                $index_of_delete_button = array_search( $delete_button , $table_row);
-                if(isset($index_of_delete_button)){
-                    $table_row[$index_of_delete_button] = get_string('deletenotallow', 'arete');
+                //delete delete checkbox
+                $index_of_delete_checkbox = array_search( $delete_button , $table_row);
+                if(isset($index_of_delete_checkbox)){
+                    $table_row[$index_of_delete_checkbox] = get_string('deletenotallow', 'arete');
+                }
+                
+                //delete edit button
+                $index_of_edit_button = array_search( $edit_button , $table_row);
+                if(isset($index_of_edit_button)){
+                    $table_row[$index_of_edit_button] = get_string('deletenotallow', 'arete');
                 }
             }
         }
@@ -228,4 +253,5 @@ function update_assignment($areteid, $splitet_list){
         }
     }
 }
+
 

@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/assignmanager.php');
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 function arete_add_instance($data, $mform)
@@ -50,29 +50,6 @@ function arete_update_instance($data, $mform) {
     
     $data->id = $data->instance;
     $data->timemodified = time();
-
-    $formdata = $mform->get_data();
-
-    //insert the new assigned arlems or delete the unassigened one
-    //if arlem is exits in mdl_files
-    if(isset($formdata) && is_arlem_exist($formdata->arlemid))
-    {
-        $arlemid_in_moodle_db = $formdata->arlemid;
-    
-        //not assigned before
-        if(!is_arlem_assigned($data->id, $arlemid_in_moodle_db))
-        {
-            $current_record_on_arete_arlem = $DB->get_record('arete_arlem' , array ('areteid' => $data->id));
-
-            $arete_arlem = new stdClass();
-            $arete_arlem->id = $current_record_on_arete_arlem->id;
-            $arete_arlem->areteid = $current_record_on_arete_arlem->areteid;
-            $arete_arlem->timecreated = $current_record_on_arete_arlem->timecreated;
-            $arete_arlem->arlemid = $arlemid_in_moodle_db;
-            $DB->update_record("arete_arlem" , $arete_arlem); 
-        }
-
-    }
 
     $DB->update_record("arete", $data);
         

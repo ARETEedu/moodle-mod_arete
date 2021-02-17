@@ -195,17 +195,6 @@ function getArlemURL($filename, $itemid)
 
 
 
- function urlByHash($contenthash){
-    
-     $l1 = $contenthash[0].$contenthash[1];
-     $l2 = $contenthash[2].$contenthash[3];
-     
-     print_r("/$l1/$l2");
-   
-}
-
-
-
 ///for test remove later
 //get an array of all files in plug in filearea
 function getAllUserArlems( $WITH_USER_CONTEXT = false, $userid = null , $emptyFiles = false)

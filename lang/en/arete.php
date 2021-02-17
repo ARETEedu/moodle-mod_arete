@@ -16,6 +16,10 @@ $string['deletetitle'] = 'Delete';
 $string['qrtitle'] = 'QR Code';
 $string['qrbutton'] = 'Generate';
 $string['authortitle'] = 'Author';
+$string['downloadtitle'] = 'Download';
+$string['downloadbutton'] = 'Download';
+$string['editbutton'] = 'Edit';
+$string['editbutton'] = 'Edit';
 $string['assigntitle'] = 'Assign';
 $string['assignedarlem'] = 'This AR experience is assigned to this activity';
 $string['availabledarlem'] = 'The list of available AR experiences';
@@ -23,6 +27,8 @@ $string['rolelabel'] = 'Your role in this activity: ';
 $string['roleundefined'] = 'Your role is nor defined!';
 $string['deletenotallow'] = '-';
 $string['notassignedyer'] = 'No AR experience is assigned yet! Ask your teacher to add an experience to this activity.';
-$string['downloadtitle'] = 'Download';
-$string['downloadbutton'] = 'Download';
+$string['editpagetitle'] = 'Edit ARLEM';
+$string['accessnotallow'] = 'You do not have access to this page';
+$string['editpagetitle'] = 'Edit ARLEM file';
+
 
