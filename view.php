@@ -28,8 +28,11 @@ if($pagemode == 'edit'){
 }else{
     $PAGE->set_title(get_string('modulename', 'arete'));
 }
-$PAGE->requires->css('/mod/arete/css/style.css');  //pagination css file
 
+
+$PAGE->requires->css('/mod/arete/css/style.css');  //pagination css file
+$PAGE->requires->js('/mod/arete/js/scripts.js');  //pagination css file
+    
 //need to be login for this course
 require_course_login($course, false, $cm);
 
@@ -165,8 +168,7 @@ if(has_capability('mod/arete:arlemfulllist', $context))
         
 }
 
-//print javascripts functions from utilities.php
-myJS();
+
 
 echo $OUTPUT->footer();
 

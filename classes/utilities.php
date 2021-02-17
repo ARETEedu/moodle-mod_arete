@@ -4,6 +4,7 @@ require_once(dirname(__FILE__). '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
+
 //get the list of arlem files which is assig
 function is_arlem_assigned($areteid, $arlemid)
 {
@@ -122,76 +123,3 @@ function delete_all_temp_file(){
 
 }
 
-
-function myJS(){
-    global $CFG;
-//confirm before submit
-echo '<script  type="text/javascript">
-    
-/////confirm arlem delete start
-function confirmSubmit(form)
-{
-	var checked = document.querySelectorAll(\'input#deleteCheckbox:checked\');
-
-	if (checked.length === 0) {
-
-		form.submit();
-	} else {
-
-    if (confirm("Are you sure you want to delete these files?")) {
-         form.submit();
-		}
-	}
-}
-/////confirm arlem delete end
-
-
-/////check file for editing is selected start
-function checkFiles(form){
-                    if( document.getElementById("files").files.length == 0 ){
-                        alert("' . get_string('filenotselectedalert' , 'arete') . ' ");
-                        return;
-                    }else{
-                        form.submit();
-                    }
-                }
-/////check file for editing is selected end
-
-
-
-/////Custom file selector start
-Array.prototype.forEach.call(
-  document.querySelectorAll(".file-upload__button"),
-  function(button) {
-    const hiddenInput = button.parentElement.querySelector(
-      ".file-upload__input"
-    );
-    const label = button.parentElement.querySelector(".file-upload__label");
-    const defaultLabelText = "No file(s) selected";
-
-    // Set default text for label
-    label.textContent = defaultLabelText;
-    label.title = defaultLabelText;
-
-    button.addEventListener("click", function() {
-      hiddenInput.click();
-    });
-
-    hiddenInput.addEventListener("change", function() {
-      const filenameList = Array.prototype.map.call(hiddenInput.files, function(
-        file
-      ) {
-        return file.name;
-      });
-
-      label.textContent = filenameList.join(", ") || defaultLabelText;
-      label.title = label.textContent;
-    });
-  }
-);
-/////Custom file selector end
-
-
-</script>';
-
-}

@@ -5,6 +5,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
+
 /**
  * 
  * Print the activity table for the teachers which will show all available activities
@@ -225,6 +226,10 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         $table->data[] = $table_row;
 
     }
+    
+    //a javascript function which will confirm file deletion
+    printConfirmationJS();
+    
     return $table;
 }
 
@@ -251,3 +256,23 @@ function update_assignment($areteid, $splitet_list){
 }
 
 
+
+function printConfirmationJS(){
+    
+echo '<script>
+function confirmSubmit(form)
+{
+    var checked = document.querySelectorAll(\'input#deleteCheckbox:checked\');
+
+    if (checked.length === 0) {
+
+            form.submit();
+    } else {
+
+if (confirm("Are you sure you want to delete these files?")) {
+     form.submit();
+            }
+    }
+}
+</script>';
+}

@@ -106,16 +106,18 @@ class EditArlem{
                return; 
             }
             
+            //add these once
             if($mainFolder == true){
               echo html_writer::start_tag('div' , array('id' => 'borderEditPage'));
               echo '<h3>' . get_string('arlemstructure', 'arete') . '</h3><br><br>';
-              echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">';
+              echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">'; 
             }
+
                 echo '<ol>';
                 foreach($ffs as $ff){
-
+                    
                     if(is_dir($dir.'/'.$ff)){
-                        echo html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/folder.png', 'class' => 'editicon' ))  . '<b>' . $ff . '</b><br>';
+                        echo html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/folder.png', 'class' => 'editicon' ))  . '<b>' . $ff . '/</b><br>';
                         $this->create_edit_UI($dir.'/'.$ff);
                     }else{
                         
@@ -128,6 +130,7 @@ class EditArlem{
                 }
                 echo '</ol>';
             
+            //add these once
             if($mainFolder == true){
                 $form = '<br><br>';
                 $form .=  html_writer::start_tag('div' , array('id' => 'borderUpdateFile'));   
