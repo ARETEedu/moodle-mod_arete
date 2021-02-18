@@ -52,6 +52,7 @@ $arlems_list = getAllArlems();
 // if all arlem files is deleted, delete the activity too and redirect to the course page
 if(count($arlems_list) == 0)
 {
+    echo '<script>alert("' . get_string('noarlemalert', 'arete') . '");</script>';
     //if no ARLEM files is exist in the DB delete the activity too
     arete_delete_activity($moduleid);
     

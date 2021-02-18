@@ -38,3 +38,4 @@ $string['choosefilesbutton'] = 'Choose File(s)';
 $string['nofileselected'] = ' No file(s) selected';
 $string['cancelbutton'] = 'Cancel';
 $string['savebutton'] = 'Save';
+$string['noarlemalert'] = 'No ARLEMs exist yet. You cannot create this activity!';
