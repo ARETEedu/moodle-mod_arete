@@ -31,13 +31,13 @@ if($pagemode == 'edit'){
 
 
 $PAGE->requires->css('/mod/arete/css/style.css');  //pagination css file
-$PAGE->requires->js('/mod/arete/js/scripts.js');  //pagination css file
     
 //need to be login for this course
 require_course_login($course, false, $cm);
 
 //print Moodle header
 echo $OUTPUT->header();
+
 
 //id of this activity
 $moduleid = $cm->instance;

@@ -79,7 +79,7 @@ class EditArlem{
           if (unlink($path. $filename)) //check the zip file can be deleted if so delete it
           {
               //create edit view
-              $this->create_edit_UI($CFG->dirroot. '/mod/arete/temp' , true);
+              $this->create_edit_UI($CFG->dirroot. '/mod/arete/temp' , $filename, true);
           }
           
         } else {
@@ -91,7 +91,7 @@ class EditArlem{
     }
 
     
-    function create_edit_UI($dir, $mainFolder = false){
+    function create_edit_UI($dir, $filename, $mainFolder = false){
         
         global $CFG; 
 
@@ -109,7 +109,7 @@ class EditArlem{
             //add these once
             if($mainFolder == true){
               echo html_writer::start_tag('div' , array('id' => 'borderEditPage'));
-              echo '<h3>' . get_string('arlemstructure', 'arete') . '</h3><br><br>';
+              echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . pathinfo($filename, PATHINFO_FILENAME) . '"</h3><br><br>';
               echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">'; 
             }
 
@@ -118,7 +118,7 @@ class EditArlem{
                     
                     if(is_dir($dir.'/'.$ff)){
                         echo html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/folder.png', 'class' => 'editicon' ))  . '<b>' . $ff . '/</b><br>';
-                        $this->create_edit_UI($dir.'/'.$ff);
+                        $this->create_edit_UI($dir.'/'.$ff, $filename);
                     }else{
                         
                         //create a temp file of this file and store in file system temp filearea
@@ -155,6 +155,9 @@ class EditArlem{
                 $form .= html_writer::end_tag('div');
                 
                 echo $form;
+                
+                
+                $this->MyJS();
             }
     }
     
@@ -196,4 +199,52 @@ class EditArlem{
     
     
 
+    
+    function  MyJS(){
+        echo '<script>
+    /////check file for editing is selected start
+    function checkFiles(form){
+        if( document.getElementById("files").files.length === 0 ){
+            alert("Please select at lease one file to update this activity");
+            return;
+        }else{
+            form.submit();
+        }
+    };
+    /////check file for editing is selected end
+
+
+
+    /////Custom file selector start
+    Array.prototype.forEach.call(
+      document.querySelectorAll(".file-upload__button"),
+      function(button) {
+        const hiddenInput = button.parentElement.querySelector(
+          ".file-upload__input"
+        );
+        const label = button.parentElement.querySelector(".file-upload__label");
+        const defaultLabelText = "No file(s) selected";
+
+        // Set default text for label
+        label.textContent = defaultLabelText;
+        label.title = defaultLabelText;
+
+        button.addEventListener("click", function() {
+          hiddenInput.click();
+        });
+
+        hiddenInput.addEventListener("change", function() {
+          const filenameList = Array.prototype.map.call(hiddenInput.files, function(
+            file
+          ) {
+            return file.name;
+          });
+
+          label.textContent = filenameList.join(", ") || defaultLabelText;
+          label.title = label.textContent;
+        });
+      }
+    );
+    /////Custom file selector end </script>';
+    }
 }

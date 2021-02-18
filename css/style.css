@@ -101,6 +101,7 @@
     border-radius: 1px 1px 1px 1px;
     padding: 10px;
     box-sizing: border-box;
+    background-color: #f0faff;
 }
 
 .file-upload {
@@ -121,6 +122,7 @@
   outline: none;
   padding: 0.5em 0.8em;
   margin-right: 15px;
+  margin-top: 10px;
   color: #ffffff;
   font-size: 1em;
   font-family: "Quicksand", sans-serif;
@@ -128,9 +130,11 @@
   cursor: pointer;
 }
 
-.file-upload__button:active {
-  background: #00745d;
+.file-upload__button:hover {
+  background-color: #1e61b9;
+  color: white;
 }
+
 
 .file-upload__label {
   max-width: 250px;
