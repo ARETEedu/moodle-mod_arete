@@ -30,16 +30,19 @@ class EditArlem{
         $id = filter_input(INPUT_GET, 'id' );
         $pnum = filter_input(INPUT_GET, 'pnum' );
         $itemid = filter_input(INPUT_GET, 'itemid' );
-        $arlemuser = filter_input(INPUT_GET, 'user' );
+        $arlemuserid = filter_input(INPUT_GET, 'user' );
         
         $this->itemid = $itemid;
         $this->pageId = $id;
         $this->pnum = $pnum;
                 
         $context = context_course::instance($COURSE->id);
+        $author = $DB->get_field('user', 'username', array('id' => $arlemuserid));
 
-        if(!isset($arlemuser) || ($USER->username != $arlemuser && !has_capability('mod/arete:manageall', $context))){
+        //only the owner of the file and the manager can edit files
+        if(!isset($arlemuserid) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
             echo $OUTPUT->notification(get_string('accessnotallow', 'arete'));
+
         }else{
 
             $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid));
