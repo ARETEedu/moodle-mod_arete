@@ -193,6 +193,15 @@ class EditArlem{
                 case 'jpg':
                     $type='jpg';
                     break;
+                case 'jpeg':
+                    $type='jpeg';
+                    break;
+                case 'gltf':
+                    $type='gltf';
+                    break;
+                case 'bin':
+                    $type='bin';
+                    break;
                 default:
                     $type='unknow';
             }
