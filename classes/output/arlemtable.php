@@ -20,15 +20,16 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
     global $CFG;
     
-    $table = html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
+    $table = html_writer::start_tag('div');
+    $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
     $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
     $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number )); //return to this url after saving the table
     $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
-    $table .= html_writer::start_div('div');
-    $table .= html_writer::empty_tag('input', array('type' => 'button', 'class' => 'btn btn-primary right' ,'onClick' => 'confirmSubmit(this.form);', 'value' =>  get_string('savebutton', 'arete') )); //id of the current arete module
-    $table .= html_writer::end_div();
+    $table .= html_writer::start_tag('div');
+    $table .= html_writer::empty_tag('input', array('type' => 'button', 'class' => 'btn btn-primary right' ,'onClick' => 'confirmSubmit(this.form);', 'value' =>  get_string('savebutton', 'arete') )); //bottom save button 
+    $table .= html_writer::end_tag('div');
     $table .= html_writer::end_tag('form');
-    
+    $table .= html_writer::end_tag('div');
     echo $table;
     
     //check and set the radio button of the assigend arlem on loading the page
@@ -222,6 +223,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
         //fill the table
         $table->id =  $tableid;
+        $table->attributes = array('class' => 'table-responsive');
         $table->head = $table_headers;
         $table->data[] = $table_row;
 
