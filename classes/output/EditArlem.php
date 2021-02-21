@@ -202,6 +202,9 @@ class EditArlem{
                 case 'bin':
                     $type='bin';
                     break;
+                case 'txt':
+                    $type='txt';
+                    break;
                 default:
                     $type='unknow';
             }
