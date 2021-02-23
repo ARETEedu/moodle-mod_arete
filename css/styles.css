@@ -71,6 +71,20 @@
     height: 50px;
  }
  
+ 
+ .profileImg{
+     border-radius: 50%; 
+     padding:2px;
+     float:left;
+ }
+ 
+ .author{
+     min-width: 130px;
+     display: inline-flex;
+     align-items: center;
+ }
+ 
+ 
 #borderEditPage {
     border: 3px solid rgba(60,74,55,0.39);
     border-radius: 10px 10px 10px 10px;

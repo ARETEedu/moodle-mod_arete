@@ -146,7 +146,7 @@ if(has_capability('mod/arete:arlemfulllist', $context))
 
            // create the pagination 
            $pagination = new pagination();
-           echo $pagination->getPagination($splitet_list, $page_number, $id);
+           echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
 
 
 

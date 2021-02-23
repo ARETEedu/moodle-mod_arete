@@ -20,6 +20,7 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
     global $CFG;
     
+    //the popup modal div
     echo add_popup_image_div();
     
     $table = html_writer::start_tag('div');
@@ -129,17 +130,13 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
     foreach ($arlemslist as $arlem) {
 
-        if(isset($arlem->userid) ){
-           $authoruser = $DB->get_record('user', array('id' => $arlem->userid)); 
-        }
-
-
-
         //date
         $date =  date('m.d.Y H:i ', $arlem->timecreated);
 
+        
         //arlem title
         $filename = pathinfo($arlem->filename, PATHINFO_FILENAME);
+        
         
         //thumbnail
         $fs = get_file_storage();
@@ -177,27 +174,36 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
             $size .= ' KB';
         }
 
+        
         //author (photo, firstname, lastname
+        if(isset($arlem->userid) ){
+           $authoruser = $DB->get_record('user', array('id' => $arlem->userid)); 
+        }
         $user_picture=new user_picture($authoruser);
         $src=$user_picture->get_url($PAGE);
-        $photo = '<img  style = "border-radius: 50%;" src="'. $src . '" alt="profile picture" width="40" height="40">&nbsp;'; 
-        $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname;
+        $photo = '<span class="author"><img  class="profileImg" src="'. $src . '" alt="profile picture" width="40" height="40">&nbsp;'; 
+        $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . '</span>';
 
+        
         //download button
         $url = getArlemURL($arlem->filename, $arlem->itemid);
         $dl_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
+        
         
         //edit button
         $page_number = filter_input(INPUT_GET, 'pnum' );//page number from pagination
         $id = required_param('id', PARAM_INT); // Course Module ID.
         $edit_button = '<input type="button" class="button dlbutton"  name="editBtn' . $arlem->fileid . '" onclick="window.open(\''. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '\', \'_self\')" value="'. get_string('editbutton' , 'arete') . '">';
 
+        
         //qr code button
         $qr_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
 
+        
         //send id, filename and itemid as value with (,) between
         $delete_button = '<input type="checkbox" class="deleteCheckbox" name="deletearlem[]" value="'. $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid . '"></input>'; 
 
+        
         //assign radio button
         $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid . '">';
 
