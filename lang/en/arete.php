@@ -11,6 +11,7 @@ $string['component'] = 'mod_arete';
 $string['filearea'] = 'arlems';
 $string['datetitle'] = 'Date/Time';
 $string['arlemtitle'] = 'Activity Name';
+$string['arlemthumbnail'] = 'Thumbnail';
 $string['sizetitle'] = 'Size';
 $string['deletetitle'] = 'Delete';
 $string['qrtitle'] = 'QR Code';

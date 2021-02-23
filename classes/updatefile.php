@@ -32,8 +32,6 @@ $target_dir = $CFG->dirroot. '/mod/arete/temp';
 
 
 
-
-
 if(!empty(array_filter($_FILES['files']['name']))) { 
     // Loop through each file in files[] array 
     foreach ($_FILES['files']['tmp_name'] as $key => $value) { 

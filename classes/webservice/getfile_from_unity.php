@@ -3,10 +3,9 @@
 require_once('../../../../config.php');
 
 //the variables which  are passed from Unity application
-$token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$userid = filter_input(INPUT_POST, 'userid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$sessionid = filter_input(INPUT_POST, 'sessionid' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-
+$token = filter_input(INPUT_POST, 'token');
+$userid = filter_input(INPUT_POST, 'userid');
+$sessionid = filter_input(INPUT_POST, 'sessionid');
 
 
 //if the file is received from Unity application
@@ -21,8 +20,15 @@ if (isset($_FILES['myfile'])){
     //To get file extension
     //$fileExt = pathinfo($img, PATHINFO_EXTENSION) ;
     
+    
+    //Get the thumbnail
+    if(isset($_FILES['thumbnail'])){
+        $thumbnail = $_FILES['thumbnail']['tmp_name'];
+        //convert the thumbnail  to base64 string
+        $thumb_base64 = base64_encode(file_get_contents($thumbnail)); 
+    }
 
-     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid);
+     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64);
     
      $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
      curl_setopt($ch, CURLOPT_POST, true);

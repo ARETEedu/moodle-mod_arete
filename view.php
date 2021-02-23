@@ -31,7 +31,7 @@ if($pagemode == 'edit'){
 
 
 $PAGE->requires->css('/mod/arete/css/styles.css');  //pagination css file
-    
+//
 //need to be login for this course
 require_course_login($course, false, $cm);
 

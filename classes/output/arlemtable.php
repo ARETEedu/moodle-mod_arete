@@ -20,6 +20,8 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
     global $CFG;
     
+    echo add_popup_image_div();
+    
     $table = html_writer::start_tag('div');
     $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
     $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
@@ -35,6 +37,29 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     //check and set the radio button of the assigend arlem on loading the page
     update_assignment($moduleid, $splitet_list);
     
+    //a javascript function which will confirm file deletion
+    printConfirmationJS();
+    
+    
+
+}
+
+
+/*
+ * Add the needed div for showing pop up images when click on thumbnails
+
+ */
+function add_popup_image_div(){
+            
+        $popup  = html_writer::start_tag('div', array( 'id' => 'modal' ));
+            $popup  .= html_writer::start_tag('span', array('id' => 'modalImg'));
+                $popup  .= html_writer::start_tag('div',array('id' => 'modalTitle'));
+                $popup  .= html_writer::end_tag('div');
+                $popup  .= html_writer::empty_tag('img', array( 'class' => 'modalImage'));
+            $popup  .= html_writer::end_tag('span');
+        $popup  .= html_writer::end_tag('div');
+        
+        return $popup;
 }
 
 
@@ -57,7 +82,7 @@ function draw_table_for_students($moduleid){
         if($activity_arlem != null){
              $arleminfo = $DB->get_record('arete_allarlems', array('fileid' => $activity_arlem->arlemid));
         }
-
+        
         //print the assigned ARLEM in a single table row if it is exist
         if(isset($arleminfo) && $arleminfo != null){
             echo html_writer::table(draw_table(array($arleminfo), 'assignedTable')); //student arlem
@@ -66,7 +91,6 @@ function draw_table_for_students($moduleid){
             return false;
         }
 }
-
 
 
 /**
@@ -89,6 +113,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
     $date_title = get_string('datetitle' , 'arete');
     $arlem_title = get_string('arlemtitle' , 'arete');
+    $arlem_thumbnail = get_string('arlemthumbnail' , 'arete');
     $size_title = get_string('sizetitle' , 'arete');
     $author_title = get_string('authortitle' , 'arete');
     $download_title = get_string('downloadtitle' , 'arete');
@@ -99,9 +124,8 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
 
     //show the assign button only to teachers
-    $table_headers = array($date_title, $arlem_title, $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
+    $table_headers = array($date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
     //remove radio buttons and delete button for the students
-
 
     foreach ($arlemslist as $arlem) {
 
@@ -116,7 +140,21 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
         //arlem title
         $filename = pathinfo($arlem->filename, PATHINFO_FILENAME);
+        
+        //thumbnail
+        $fs = get_file_storage();
+         $thumbnail = $fs->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $arlem->itemid, '/', 'thumbnail.jpg');
+         //if the thumbnail file exists
+        if($thumbnail){
+           $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(), $thumbnail->get_filearea(), $thumbnail->get_itemid(), $thumbnail->get_filepath(), $thumbnail->get_filename(), false);
+           $css = 'ImgThumbnail';
+        }else{
+            $thumb_url= $CFG->wwwroot.'/mod/arete/pix/no-thumbnail.jpg';
+           $css = 'no-thumbnail';
+        }
+        $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $filename));
 
+        
         //file size
         $size = $arlem->filesize;
         
@@ -147,25 +185,25 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
         //download button
         $url = getArlemURL($arlem->filename, $arlem->itemid);
-        $dl_button = '<input type="button" class="button dlbutton" id="dlbutton" name="dlBtn' . $arlem->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
+        $dl_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
         
         //edit button
         $page_number = filter_input(INPUT_GET, 'pnum' );//page number from pagination
         $id = required_param('id', PARAM_INT); // Course Module ID.
-        $edit_button = '<input type="button" class="button dlbutton" id="editbutton" name="editBtn' . $arlem->fileid . '" onclick="window.open(\''. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '\', \'_self\')" value="'. get_string('editbutton' , 'arete') . '">';
+        $edit_button = '<input type="button" class="button dlbutton"  name="editBtn' . $arlem->fileid . '" onclick="window.open(\''. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '\', \'_self\')" value="'. get_string('editbutton' , 'arete') . '">';
 
         //qr code button
-        $qr_button = '<input type="button" class="button dlbutton" id="dlbutton" name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
+        $qr_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
 
         //send id, filename and itemid as value with (,) between
-        $delete_button = '<input type="checkbox" id="deleteCheckbox" name="deletearlem[]" value="'. $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid . '"></input>'; 
+        $delete_button = '<input type="checkbox" class="deleteCheckbox" name="deletearlem[]" value="'. $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid . '"></input>'; 
 
         //assign radio button
         $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid . '">';
 
 
         //Now fill the row
-        $table_row = array($date,  $filename  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
+        $table_row = array($date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
 
 
         //for students
@@ -228,10 +266,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         $table->data[] = $table_row;
 
     }
-    
-    //a javascript function which will confirm file deletion
-    printConfirmationJS();
-    
+
     return $table;
 }
 
@@ -262,9 +297,42 @@ function update_assignment($areteid, $splitet_list){
 function printConfirmationJS(){
     
 echo '<script>
+    
+    var modalEle = document.querySelector("#modal");
+    var modalImage = document.querySelector(".modalImage");
+    var modalTitle = document.querySelector("#modalTitle");
+    Array.from(document.querySelectorAll(".ImgThumbnail")).forEach(item => {
+       item.addEventListener("click", event => {
+       
+        const pathArray = event.target.src.split("/");
+        const lastIndex = pathArray.length - 1;
+
+        //dont show no-thumbnail
+        if(pathArray[lastIndex] != "no-thumbnail.jpg"){
+             modalEle.style.display = "block";
+             modalImage.src = event.target.src;
+             modalTitle.innerHTML = event.target.alt;
+        }
+
+       });
+    });
+    document.querySelector("#modalImg").addEventListener("click", () => {
+       modalEle.style.display = "none";
+    });
+    
+    document.querySelector("#modal").addEventListener("click", () => {
+       modalEle.style.display = "none";
+    });
+    
+    </script>';
+
+    
+//ARLEM delete confirmation
+echo '<script>
+
 function confirmSubmit(form)
 {
-    var checked = document.querySelectorAll(\'input#deleteCheckbox:checked\');
+    var checked = document.querySelectorAll(\'input.deleteCheckbox:checked\');
 
     if (checked.length === 0) {
 
@@ -276,5 +344,7 @@ if (confirm("Are you sure you want to delete these files?")) {
             }
     }
 }
+
+
 </script>';
 }
