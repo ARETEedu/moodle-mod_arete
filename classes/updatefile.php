@@ -4,7 +4,6 @@ require_once(dirname(__FILE__). '/../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
-
 defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
@@ -81,7 +80,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
     
     function zipFiles($arlem)
     {
-        global $CFG;
+        global $CFG,$itemid;
         // Get real path for our folder
         $rootPath = $CFG->dirroot. '/mod/arete/temp';
 
@@ -110,6 +109,12 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
                 // Add current file to archive
                 $zip->addFile($filePath, $relativePath);
+                
+
+                //update thumbnail
+                if($filename == 'thumbnail.jpg' ){
+                    updateThumbnail($filePath);  
+                }
             }
         }
 
@@ -166,6 +171,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          $arlem_in_allarlem->timecreated = $newDate;
          $DB->update_record('arete_allarlems', $arlem_in_allarlem);
          
+
          
          //update the record of the file in arete_arlem table
          $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
@@ -181,7 +187,35 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
               deleteDir($tempDir);
          }
          
+
          //return to the first page
          redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum );
 
+    }
+    
+    
+    /*
+     * Delete the old thumbnail and create a new one
+     * 
+     * @param $filePath path to the new thumbnail
+     */
+    function updateThumbnail($filePath){
+        global $itemid;
+        
+       $context = context_system::instance()->id;
+       $fs = get_file_storage();
+       
+        $file_record = array('contextid'=>$context, 'component'=> get_string('component', 'arete'), 'filearea'=>'thumbnail',
+                'itemid'=> $itemid, 'filepath'=>'/', 'filename'=>'thumbnail.jpg',
+                'timecreated'=>time(), 'timemodified'=>time());
+        
+       $old_thumbnail = $fs->get_file( $context, $file_record['component'], 'thumbnail', $itemid, '/', 'thumbnail.jpg');
+
+        if($old_thumbnail){
+            $old_thumbnail->delete();
+        }
+        
+
+        $fs->create_file_from_pathname($file_record, $filePath);
+        
     }

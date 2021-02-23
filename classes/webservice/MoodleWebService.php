@@ -1,5 +1,8 @@
 <?php
 
+require_once('../../../../config.php');
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+
 class MoodleWebService
 {
     var $token;
@@ -12,24 +15,11 @@ class MoodleWebService
     }
 
 
-    //send a post request
-    function httpPost($url, $data){
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded')); 
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($curl);
-        curl_close($curl);
-        return $response;
-    }
-
-    
     //request token for the user and return token if is availble
     function requestToken($username, $password)
     {
 
-        $response = $this->httpPost($this->domain . '/login/token.php' , array('username' => $username, 'password'=> $password ,'service' => $this->service) );
+        $response = httpPost($this->domain . '/login/token.php' , array('username' => $username, 'password'=> $password ,'service' => $this->service) );
 
         $this->token = json_decode($response)->{'token'};
         

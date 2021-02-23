@@ -129,7 +129,6 @@
 
 
 
-
 .table-responsive { 
   width: 100%; 
   border-collapse: collapse; 
@@ -146,7 +145,7 @@
 .table-responsive  td, th { 
   padding: 6px; 
   border: 1px solid #ccc; 
-  text-align: left; 
+  text-align: center; 
 }
 
 #assignedTable td  
@@ -156,13 +155,18 @@
  }
 
 
+ /*Thumbnail and modal*/
+ 
  .ImgThumbnail, .no-thumbnail{
-
     display: block;
-    border: none;
-    padding: 0;
-    max-width: 140px;
-    text-align: left;
+    border: 1px solid #ccc; 
+    min-width:140px;
+    max-width:140px;
+    max-height:80px;
+    min-height:80px;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: cover;
 }
 
 .ImgThumbnail:hover {
@@ -240,6 +244,16 @@ and also iPads specifically.
 */
 @media 
 only screen and (max-width: 1300px) {
+
+        .table-responsive  td, th { 
+          text-align: left; 
+        }
+        
+        .ImgThumbnail, .no-thumbnail{
+
+           margin-left: 0;
+           margin-right: 0;
+       }     
 
         #modalImg {
             top: 0;
