@@ -9,13 +9,16 @@ defined('MOODLE_INTERNAL') || die;
 $itemid = filter_input(INPUT_POST, 'itemid');
 $pageId = filter_input(INPUT_POST, 'pageId');
 $pnum = filter_input(INPUT_POST, 'pnum');
+$userDirPath = filter_input(INPUT_POST, 'userDirPath');
 
 //if cancel button is pressed
+
+global $USER;
 
 if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 
           //remove temp dir which is used on editing
-          $tempDir = $CFG->dirroot. '/mod/arete/temp/';
+          $tempDir = $userDirPath. '/';
           if(is_dir($tempDir)){
               deleteDir($tempDir);
          }
@@ -27,9 +30,6 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 } 
 
 
-$target_dir = $CFG->dirroot. '/mod/arete/temp';
-
-
 
 if(!empty(array_filter($_FILES['files']['name']))) { 
     // Loop through each file in files[] array 
@@ -38,7 +38,7 @@ if(!empty(array_filter($_FILES['files']['name']))) {
         $file_name = $_FILES['files']['name'][$key]; 
         $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
 
-        $result = replace_file($target_dir, $file_name, $file_ext, $file_tmpname , true);
+        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , true);
     }
 }
 
@@ -80,9 +80,9 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
     
     function zipFiles($arlem)
     {
-        global $CFG,$itemid;
+        global $userDirPath ;
         // Get real path for our folder
-        $rootPath = $CFG->dirroot. '/mod/arete/temp';
+        $rootPath = $userDirPath . '/';
 
         // Initialize archive object
         $zip = new ZipArchive();
@@ -128,7 +128,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
     
     function upload_new_zip($filepath, $filename){
 
-        global $itemid ,$DB,$pageId ,$pnum, $CFG;
+        global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath;
         
          $context = context_system::instance();
          $fs = get_file_storage();
@@ -182,7 +182,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          }
 
          //remove temp dir which is used on editing
-          $tempDir = $CFG->dirroot. '/mod/arete/temp/';
+          $tempDir = $userDirPath. '/';
           if(is_dir($tempDir)){
               deleteDir($tempDir);
          }

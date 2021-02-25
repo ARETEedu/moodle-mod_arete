@@ -158,12 +158,13 @@ function getUserArlem($filename, $itemid = null)
 //copy file to temp folder
 function copyArlemToTemp($filename,  $itemid){
 
+    global $USER;
     // Get file
     $file = getArlemByName($filename, $itemid );
 
     // Read contents
     if ($file) {
-        $file->copy_content_to('temp/' . $file->get_filename());
+        $file->copy_content_to('temp/'. $USER->id . '/' . $file->get_filename());
     } else {
         // file doesn't exist - do something
     }

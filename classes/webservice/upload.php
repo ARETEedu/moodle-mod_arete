@@ -3,6 +3,7 @@
 require_once('../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/move_arlem_from_draft.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
 //the variables which  are passed by getfile_from_unity.php
 $token = filter_input(INPUT_POST, 'token');
@@ -75,7 +76,6 @@ if(isset($base64file))
 
 }
 
-    
 
 /*
  * 

@@ -10,7 +10,7 @@ class EditArlem{
     var $itemid = '';
     var $pageId = '';
     var $pnum = '';
-    
+    var $userDirPath = '';
     
     /*
      * constructor will call other functions in this class
@@ -20,13 +20,7 @@ class EditArlem{
         
         global $USER,$COURSE, $OUTPUT ,$DB ,$CFG;
 
-         //remove temp dir which is used on editing
-          $tempDir = $CFG->dirroot. '/mod/arete/temp/';
-          if(is_dir($tempDir)){
-              deleteDir($tempDir);
-         }
-          
-          
+
         $id = filter_input(INPUT_GET, 'id' );
         $pnum = filter_input(INPUT_GET, 'pnum' );
         $itemid = filter_input(INPUT_GET, 'itemid' );
@@ -39,6 +33,16 @@ class EditArlem{
         $context = context_course::instance($COURSE->id);
         $author = $DB->get_field('user', 'username', array('id' => $arlemuserid));
 
+        
+        //The user editing folder
+        $this->userDirPath = $CFG->dirroot. '/mod/arete/temp/' . strval($USER->id);
+        
+        //remove temp dir which is used on editing
+          $tempDir = $this->userDirPath. '/';
+          if(is_dir($tempDir)){
+              deleteDir($tempDir);
+        }
+        
         //only the owner of the file and the manager can edit files
         if(!isset($arlemuserid) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
             echo $OUTPUT->notification(get_string('accessnotallow', 'arete'));
@@ -56,9 +60,8 @@ class EditArlem{
     
 
     function copy_arlem_to_temp($filename, $itemid){
-        global $CFG;
-        
-         $path_to_temp = $CFG->dirroot. '/mod/arete/temp';
+
+         $path_to_temp = $this->userDirPath;
                 if (!file_exists($path_to_temp)) {
                     mkdir($path_to_temp, 0777, true);
                 }
@@ -71,7 +74,7 @@ class EditArlem{
     
     function unzip_arlem($filename){
         global $CFG;
-        $path = $CFG->dirroot. '/mod/arete/temp/';
+        $path = $this->userDirPath. '/';
         $zip = new ZipArchive;
         $res = $zip->open($path. $filename);
         if ($res === TRUE) {
@@ -82,7 +85,7 @@ class EditArlem{
           if (unlink($path. $filename)) //check the zip file can be deleted if so delete it
           {
               //create edit view
-              $this->create_edit_UI($CFG->dirroot. '/mod/arete/temp' , $filename, true);
+              $this->create_edit_UI($this->userDirPath , $filename, true);
           }
           
         } else {
@@ -150,6 +153,7 @@ class EditArlem{
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'itemid', 'value' => $this->itemid )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pageId', 'value' => $this->pageId )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pnum', 'value' => $this->pnum )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $this->userDirPath )); 
                 $form .= '<br>';
                 $form .= html_writer::empty_tag('input', array('type' => 'button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 
                 $form .= '&nbsp;&nbsp;';
