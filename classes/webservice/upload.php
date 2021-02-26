@@ -69,6 +69,7 @@ if(isset($base64file))
             $arlemdata->filename = $filename;
             $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
             $arlemdata->timecreated = time();
+            $arlemdata->timemodified = 0;
             $DB->insert_record('arete_allarlems', $arlemdata);
         }
         

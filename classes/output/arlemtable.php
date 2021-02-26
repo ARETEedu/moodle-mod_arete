@@ -113,6 +113,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
     $table = new html_table();
 
     $date_title = get_string('datetitle' , 'arete');
+    $modified_date_title = get_string('modifieddatetitle' , 'arete');
     $arlem_title = get_string('arlemtitle' , 'arete');
     $arlem_thumbnail = get_string('arlemthumbnail' , 'arete');
     $size_title = get_string('sizetitle' , 'arete');
@@ -125,7 +126,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
 
     //show the assign button only to teachers
-    $table_headers = array($date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
+    $table_headers = array($date_title,$modified_date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
     //remove radio buttons and delete button for the students
 
     foreach ($arlemslist as $arlem) {
@@ -133,6 +134,10 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         //date
         $date =  date('m.d.Y H:i ', $arlem->timecreated);
 
+        //modified date
+        $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') :  date('m.d.Y H:i ',  $arlem->timemodified);
+        
+        
         
         //arlem title
         $filename = pathinfo($arlem->filename, PATHINFO_FILENAME);
@@ -209,7 +214,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
 
         //Now fill the row
-        $table_row = array($date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
+        $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
 
 
         //for students

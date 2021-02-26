@@ -82,11 +82,11 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
     {
         global $userDirPath ;
         // Get real path for our folder
-        $rootPath = $userDirPath . '/';
+        $rootPath = $userDirPath ;
 
         // Initialize archive object
         $zip = new ZipArchive();
-        $zip->open($rootPath .'/' . $arlem->filename, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->open($rootPath . '/' . $arlem->filename , ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         // Create recursive directory iterator
         /** @var SplFileInfo[] $files */
@@ -94,6 +94,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
             new RecursiveDirectoryIterator($rootPath),
             RecursiveIteratorIterator::LEAVES_ONLY
         );
+
 
         foreach ($files as $name => $file)
         {
@@ -120,7 +121,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
         // Zip archive will be created only after closing object
         $zip->close();
-        
+
         upload_new_zip($rootPath .'/' . $arlem->filename, $arlem->filename);
     }
     
@@ -140,10 +141,10 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          //use the same date if file exist
          if(isset($existingArlem)){
              
-             $newDate = $existingArlem->get_timecreated();
+             $Date = $existingArlem->get_timecreated();
              $existingArlem->delete(); //delete the old file
          }else{
-             $newDate = time();
+             $Date = time();
          }
          
          $fileinfo = array(
@@ -153,7 +154,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
              'itemid'=> $itemid, 
              'filepath'=>'/',
              'filename'=>$filename,
-             'timecreated'=>$newDate
+             'timecreated'=>$Date
            );
          
     
@@ -167,7 +168,8 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          //update the record of the file in allarlems table
          $arlem_in_allarlem = $DB->get_record('arete_allarlems', array('itemid' => $itemid, 'filename' => $filename) );
          $arlem_in_allarlem->fileid = $newArlemID;
-         $arlem_in_allarlem->timecreated = $newDate;
+         $arlem_in_allarlem->timecreated = $Date;
+         $arlem_in_allarlem->timemodified = time();
          $arlem_in_allarlem->filesize = $newArlem->get_filesize();
          $DB->update_record('arete_allarlems', $arlem_in_allarlem);
          
@@ -177,7 +179,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
          foreach ($activities_that_use_this_arlem as $activity) {
             $activity->arlemid = $newArlemID; //this is the id of the new file
-            $activity->timecreated = $newDate;
+            $activity->timecreated = $Date;
             $DB->update_record('arete_arlem', $activity);
          }
 
