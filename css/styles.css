@@ -317,8 +317,9 @@ only screen and (max-width: 1300px) {
 	.table-responsive td:nth-of-type(7):before { content: "Download"; }
 	.table-responsive td:nth-of-type(8):before { content: "Edit"; }
 	.table-responsive td:nth-of-type(9):before { content: "QR Code"; }
-	.table-responsive td:nth-of-type(10):before { content: "Delete"; }
-	.table-responsive td:nth-of-type(11):before { content: "Assign"; }
+	.table-responsive td:nth-of-type(10):before { content: "Public"; }
+	.table-responsive td:nth-of-type(11):before { content: "Delete"; }
+	.table-responsive td:nth-of-type(12):before { content: "Assign"; }
 
 }
 

@@ -86,10 +86,14 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
     if($pagemode != "edit")
     {
         //add the role to the top of the advtivity
-        $roleassignments = $DB->get_record('role_assignments', array('userid' => $USER->id)); 
-        if(isset($roleassignments->roleid)){
-               $role = $DB->get_record('role', array('id' => $roleassignments->roleid)); 
-               echo '<div class="right">'. get_string('rolelabel', 'arete') . '<span id="role">' .$role->shortname . '</span></div>';
+        $roles = get_user_roles($context, $USER->id);
+        foreach ($roles as $role) {
+            $rolestr[] = role_get_name($role, $context);
+        }
+        $rolestr = implode(', ', $rolestr);
+
+        if(isset($rolestr)){
+               echo '<div class="right">'. get_string('rolelabel', 'arete') . '<span id="role">' . $rolestr . '</span></div>';
         }else{
                 echo '<div class="right">'. get_string('roleundefined', 'arete') . '</div>';
         }

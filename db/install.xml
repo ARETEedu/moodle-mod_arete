@@ -46,6 +46,7 @@
         <FIELD NAME="sessionid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" />
         <FIELD NAME="filesize" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
+        <FIELD NAME="upublic" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" DEFAULT="0"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" />
         </FIELDS>
