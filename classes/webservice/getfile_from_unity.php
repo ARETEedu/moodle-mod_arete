@@ -6,7 +6,7 @@ require_once('../../../../config.php');
 $token = filter_input(INPUT_POST, 'token');
 $userid = filter_input(INPUT_POST, 'userid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
-
+$public = filter_input(INPUT_POST, 'public');
 
 //if the file is received from Unity application
 if (isset($_FILES['myfile'])){
@@ -28,7 +28,16 @@ if (isset($_FILES['myfile'])){
         $thumb_base64 = base64_encode(file_get_contents($thumbnail)); 
     }
 
-     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64);
+    //check public key if exist and is true
+    if(isset($public) && $public == 1){
+        $public_upload_privacy = 1;  
+    }
+    else
+    {
+        $public_upload_privacy = 0;
+    }
+    
+     $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64, 'public' => $public_upload_privacy);
     
      $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
      curl_setopt($ch, CURLOPT_POST, true);

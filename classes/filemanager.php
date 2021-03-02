@@ -179,8 +179,19 @@ function getAllArlems()
 //    $fs = get_file_storage();
 //
 //    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'timecreated DESC ', $emptyFiles);
-    global $DB;
-    $files = $DB->get_records('arete_allarlems', null, 'timecreated DESC');
+    global $DB,$USER, $COURSE;
+    
+    //course context
+    $context = context_course::instance($COURSE->id);
+       
+    //manager
+    if(has_capability('mod/arete:manageall', $context)){
+            $files = $DB->get_records('arete_allarlems' , null, 'timecreated DESC'); //all arlems
+    }else //others
+    {
+           $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $USER->id  , null, 'timecreated DESC');  //only public and for the user
+    }
+
     return $files;  
 }
 
@@ -248,6 +259,28 @@ function deletePluginArlem($filename, $itemid = null )
         }
 
     }
+}
+
+/***
+ * 
+ * update arete_allarlems table
+ * 
+ * @param $filename filename of the ARLEM
+ * @param $itemid itemid of the ARLEM
+ * @param $params an array with the key,value of the columns need to be updated
+ */
+function updateArlemObject($filename, $itemid, $params){
+    
+    global $DB;
+    $alrem = $DB->get_record('arete_allarlems', array( 'itemid' => $itemid , 'filename' => $filename));
+
+
+    foreach ($params as $key => $value) {
+        $alrem->$key = $value;
+    }
+    
+    $DB->update_record('arete_allarlems' ,$alrem);
+    
 }
 
 

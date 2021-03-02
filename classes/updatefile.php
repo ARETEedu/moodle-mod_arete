@@ -166,12 +166,13 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
                 
 
          //update the record of the file in allarlems table
-         $arlem_in_allarlem = $DB->get_record('arete_allarlems', array('itemid' => $itemid, 'filename' => $filename) );
-         $arlem_in_allarlem->fileid = $newArlemID;
-         $arlem_in_allarlem->timecreated = $Date;
-         $arlem_in_allarlem->timemodified = time();
-         $arlem_in_allarlem->filesize = $newArlem->get_filesize();
-         $DB->update_record('arete_allarlems', $arlem_in_allarlem);
+         $parameters = array(
+            'fileid' => $newArlemID,
+            'timecreated' => $Date,
+            'timemodified' => time(),
+            'filesize' => $newArlem->get_filesize()
+         );
+         updateArlemObject($filename, $itemid, $parameters);
          
 
          

@@ -7,12 +7,12 @@ require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
 //the variables which  are passed by getfile_from_unity.php
 $token = filter_input(INPUT_POST, 'token');
-$filename = filter_input(INPUT_POST, 'filename' );
-$sessionid = filter_input(INPUT_POST, 'sessionid');
+$filename = filter_input(INPUT_POST, 'filename' ,FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$sessionid = filter_input(INPUT_POST, 'sessionid',FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $base64file = filter_input(INPUT_POST, 'base64');
 $userid = filter_input(INPUT_POST, 'userid');
 $thumbnail = filter_input(INPUT_POST, 'thumbnail');
-
+$public = filter_input(INPUT_POST, 'public');
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
@@ -36,7 +36,6 @@ if(isset($base64file))
         'contextlevel' => 'user',
         'instanceid' => $userid,
     );
-        
 
     $serverurl = $CFG->wwwroot . '/webservice/rest/server.php' ;
     $response = httpPost($serverurl , $parameters );
@@ -68,9 +67,11 @@ if(isset($base64file))
             $arlemdata->sessionid = $sessionid;
             $arlemdata->filename = $filename;
             $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
+            $arlemdata->upublic =  (int) $public;
             $arlemdata->timecreated = time();
             $arlemdata->timemodified = 0;
             $DB->insert_record('arete_allarlems', $arlemdata);
+
         }
         
     }

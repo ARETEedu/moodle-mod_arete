@@ -1,3 +1,4 @@
+/*Pagination*/
 .pagination {
   display: flex;
   justify-content: center;
@@ -22,7 +23,7 @@
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
 
-
+/*user role*/
 #role {
     text-transform: capitalize;
     font-weight: bold; 
@@ -34,13 +35,13 @@
     float:right;
 }
 
-
+/*plugin titles*/
 .titles {
     font-weight: bold; 
     font-size: 1.2em;
 }
 
-
+/*buttons*/
 .button {
   background-color: #4CAF50; /* Green */
   border: none;
@@ -72,6 +73,7 @@
  }
  
  
+ /*profile image on the table*/
  .profileImg{
      border-radius: 50%; 
      padding:2px;
@@ -85,6 +87,7 @@
  }
  
  
+ /*edit page*/
 #borderEditPage {
     border: 3px solid rgba(60,74,55,0.39);
     border-radius: 10px 10px 10px 10px;
@@ -142,7 +145,7 @@
 }
 
 
-
+/*ARLEMs table*/
 .table-responsive { 
   width: 100%; 
   border-collapse: collapse; 
@@ -234,22 +237,6 @@
 }
 
 
-/*.modalImg, #modalTitle {  
-  -webkit-animation-name: zoom;
-  -webkit-animation-duration: 0.6s;
-  animation-name: zoom;
-  animation-duration: 0.6s;
-}
-
-@-webkit-keyframes zoom {
-  from {-webkit-transform:scale(0)} 
-  to {-webkit-transform:scale(1)}
-}
-
-@keyframes zoom {
-  from {transform:scale(0)} 
-  to {transform:scale(1)}
-}*/
 
 /* 
 Max width before this PARTICULAR table gets nasty
@@ -321,16 +308,17 @@ only screen and (max-width: 1300px) {
 	/*
 	Label the data
 	*/
-	.table-responsive td:nth-of-type(1):before { content: "Date/Time"; }
-	.table-responsive td:nth-of-type(2):before { content: "Activity Name"; }
-        .table-responsive td:nth-of-type(3):before { content: "Thumbnail"; }
-	.table-responsive td:nth-of-type(4):before { content: "Size"; }
-	.table-responsive td:nth-of-type(5):before { content: "Author"; }
-	.table-responsive td:nth-of-type(6):before { content: "Download"; }
-	.table-responsive td:nth-of-type(7):before { content: "Edit"; }
-	.table-responsive td:nth-of-type(8):before { content: "QR Code"; }
-	.table-responsive td:nth-of-type(9):before { content: "Delete"; }
-	.table-responsive td:nth-of-type(10):before { content: "Assign"; }
+	.table-responsive td:nth-of-type(1):before { content: "Time Created"; }
+	.table-responsive td:nth-of-type(2):before { content: "Time Modified"; }
+	.table-responsive td:nth-of-type(3):before { content: "Activity Name"; }
+        .table-responsive td:nth-of-type(4):before { content: "Thumbnail"; }
+	.table-responsive td:nth-of-type(5):before { content: "Size"; }
+	.table-responsive td:nth-of-type(6):before { content: "Author"; }
+	.table-responsive td:nth-of-type(7):before { content: "Download"; }
+	.table-responsive td:nth-of-type(8):before { content: "Edit"; }
+	.table-responsive td:nth-of-type(9):before { content: "QR Code"; }
+	.table-responsive td:nth-of-type(10):before { content: "Delete"; }
+	.table-responsive td:nth-of-type(11):before { content: "Assign"; }
 
 }
 

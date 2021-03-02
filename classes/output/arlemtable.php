@@ -36,7 +36,7 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     echo $table;
     
     //check and set the radio button of the assigend arlem on loading the page
-    update_assignment($moduleid, $splitet_list);
+    update_assignment($moduleid, $splitet_list, $page_number);
     
     //a javascript function which will confirm file deletion
     printConfirmationJS();
@@ -121,12 +121,14 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
     $download_title = get_string('downloadtitle' , 'arete');
     $edit_title = get_string('editbutton' , 'arete');
     $qr_title = get_string('qrtitle' , 'arete');
+    $public_title = get_string('publictitle' , 'arete');
     $delete_title = get_string('deletetitle' , 'arete');
     $assign_title = get_string('assigntitle' , 'arete');
+    
 
 
     //show the assign button only to teachers
-    $table_headers = array($date_title,$modified_date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $delete_title , $assign_title);
+    $table_headers = array($date_title,$modified_date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title);
     //remove radio buttons and delete button for the students
 
     foreach ($arlemslist as $arlem) {
@@ -204,6 +206,9 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         //qr code button
         $qr_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
 
+        //send filename and itemid as value with (,) between
+        $public_button = '<input type="checkbox" id="'. $arlem->fileid . '" class="publicCheckbox" name="publicarlemchecked['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']"   value="1"></input>'; 
+        $public_hidden = '<input   type="hidden"  name="publicarlem['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']"  value="1"></input>'; 
         
         //send id, filename and itemid as value with (,) between
         $delete_button = '<input type="checkbox" class="deleteCheckbox" name="deletearlem[]" value="'. $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid . '"></input>'; 
@@ -214,7 +219,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
 
         //Now fill the row
-        $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button,   $delete_button  , $assign_radio_btn);
+        $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn);
 
 
         //for students
@@ -224,7 +229,6 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
             if(array_search( $assign_title, $table_headers) !== null ){
                 unset($table_headers[array_search( $assign_title, $table_headers)]);
             }
-
             if(array_search( $assign_radio_btn, $table_row) !== null){
                 unset($table_row[array_search( $assign_radio_btn, $table_row)]);
             }
@@ -234,7 +238,6 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
             if(array_search( $delete_title, $table_headers) !== null){
                 unset($table_headers[array_search( $delete_title, $table_headers)]);
             }
-
             if(array_search( $delete_button , $table_row) !== null){
                 unset($table_row[array_search( $delete_button , $table_row)]);
             }
@@ -244,10 +247,19 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
             if(array_search( $edit_title, $table_headers) !== null){
                 unset($table_headers[array_search( $edit_title, $table_headers)]);
             }
-
             if(array_search( $edit_button , $table_row) !== null){
                 unset($table_row[array_search( $edit_button , $table_row)]);
             }
+            
+            
+            //remove public columns if it is the student view
+            if(array_search( $public_title, $table_headers) !== null){
+                unset($table_headers[array_search( $public_title, $table_headers)]);
+            }
+            if(array_search( $public_button.$public_hidden , $table_row) !== null){
+                unset($table_row[array_search( $public_button.$public_hidden , $table_row)]);
+            }
+            
         }
         //for teachers
         else 
@@ -265,6 +277,12 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
                 $index_of_edit_button = array_search( $edit_button , $table_row);
                 if(isset($index_of_edit_button)){
                     $table_row[$index_of_edit_button] = get_string('deletenotallow', 'arete');
+                }
+                
+                //delete public button
+                $index_of_public_button = array_search( $public_button.$public_hidden , $table_row);
+                if(isset($index_of_public_button)){
+                    $table_row[$index_of_public_button] = get_string('deletenotallow', 'arete');
                 }
             }
         }
@@ -285,77 +303,106 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 /**
  * 
  * On table load check the radio button of the assigned activity
+ * and the checkboxes for the public ARLEMs
  * 
  * @param $areteid current arete module id
- * 
+ * @param $splitet_list list of the ARLEMS in the current page
+ * @param $page_number page number from pagination system to check/uncheck public and assign checkbox/radiobutton in each page
  */
 
-function update_assignment($areteid, $splitet_list){
+function update_assignment($areteid, $splitet_list, $page_number){
 
-     foreach ($splitet_list[0] as $arlem) 
+    $counter = 0;
+    
+     foreach ($splitet_list[$page_number-1] as $arlem) 
     {
 
+         //print script tag once
+         if($counter == 0){
+             echo '<script language= "javascript">';
+         }
+         
+         
+         ////add javascript codes
+         
+        //check and select the assigned ARLEM
         if(is_arlem_assigned($areteid, $arlem->fileid))
         {
-            echo '<script language= "javascript">radiobtn = document.getElementById("'. $arlem->itemid .'");
-                   radiobtn.checked = true;</script>';
+            echo 'radiobtn = document.getElementById("'. $arlem->itemid .'");
+                   radiobtn.checked = true;';
         }
+        
+        
+        //Check and select the public ARLEMS
+        if($arlem->upublic == 1){
+            echo 'chkbox = document.getElementById("'. $arlem->fileid .'");  chkbox.checked = true;';
+        }
+
+        ////
+        
+        
+       $counter++;
+        //print script close tag once
+        if($counter == count($splitet_list[$page_number-1])){
+            echo '</script>';
+        }
+
     }
 }
 
 
 
 function printConfirmationJS(){
-    
-echo '<script>
-    
-    var modalEle = document.querySelector("#modal");
-    var modalImage = document.querySelector(".modalImage");
-    var modalTitle = document.querySelector("#modalTitle");
-    Array.from(document.querySelectorAll(".ImgThumbnail")).forEach(item => {
-       item.addEventListener("click", event => {
-       
-        const pathArray = event.target.src.split("/");
-        const lastIndex = pathArray.length - 1;
 
-        //dont show no-thumbnail
-        if(pathArray[lastIndex] != "no-thumbnail.jpg"){
-             modalEle.style.display = "block";
-             modalImage.src = event.target.src;
-             modalTitle.innerHTML = event.target.alt;
+    echo '<script>
+
+        var modalEle = document.querySelector("#modal");
+        var modalImage = document.querySelector(".modalImage");
+        var modalTitle = document.querySelector("#modalTitle");
+        Array.from(document.querySelectorAll(".ImgThumbnail")).forEach(item => {
+           item.addEventListener("click", event => {
+
+            const pathArray = event.target.src.split("/");
+            const lastIndex = pathArray.length - 1;
+
+            //dont show no-thumbnail
+            if(pathArray[lastIndex] != "no-thumbnail.jpg"){
+                 modalEle.style.display = "block";
+                 modalImage.src = event.target.src;
+                 modalTitle.innerHTML = event.target.alt;
+            }
+
+           });
+        });
+        document.querySelector("#modalImg").addEventListener("click", () => {
+           modalEle.style.display = "none";
+        });
+
+        document.querySelector("#modal").addEventListener("click", () => {
+           modalEle.style.display = "none";
+        });
+
+        </script>';
+
+
+    //ARLEM delete confirmation
+    echo '<script>
+
+    function confirmSubmit(form)
+    {
+        var checked = document.querySelectorAll(\'input.deleteCheckbox:checked\');
+
+        if (checked.length === 0) {
+
+                form.submit();
+        } else {
+
+    if (confirm("Are you sure you want to delete these files?")) {
+         form.submit();
+                }
         }
+    }
 
-       });
-    });
-    document.querySelector("#modalImg").addEventListener("click", () => {
-       modalEle.style.display = "none";
-    });
-    
-    document.querySelector("#modal").addEventListener("click", () => {
-       modalEle.style.display = "none";
-    });
-    
     </script>';
 
-    
-//ARLEM delete confirmation
-echo '<script>
-
-function confirmSubmit(form)
-{
-    var checked = document.querySelectorAll(\'input.deleteCheckbox:checked\');
-
-    if (checked.length === 0) {
-
-            form.submit();
-    } else {
-
-if (confirm("Are you sure you want to delete these files?")) {
-     form.submit();
-            }
-    }
-}
-
-
-</script>';
 }
