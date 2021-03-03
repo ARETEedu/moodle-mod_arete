@@ -25,7 +25,7 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     
     $table = html_writer::start_tag('div');
     $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
-    $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true)); //arlems table
+    $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true, $moduleid)); //arlems table
     $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number )); //return to this url after saving the table
     $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
     $table .= html_writer::start_tag('div');
@@ -34,9 +34,6 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     $table .= html_writer::end_tag('form');
     $table .= html_writer::end_tag('div');
     echo $table;
-    
-    //check and set the radio button of the assigend arlem on loading the page
-    update_assignment($moduleid, $splitet_list, $page_number);
     
     //a javascript function which will confirm file deletion
     printConfirmationJS();
@@ -104,7 +101,7 @@ function draw_table_for_students($moduleid){
  * @return return a html table
  * 
  */
-function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
+function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $moduleid = null)
 {
     global $DB, $USER, $CFG, $COURSE,$PAGE;
 
@@ -207,7 +204,8 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
         $qr_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
 
         //send filename and itemid as value with (,) between
-        $public_button = '<input type="checkbox" id="'. $arlem->fileid . '" class="publicCheckbox" name="publicarlemchecked['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']"   value="1"></input>'; 
+        if($arlem->upublic == 1){ $checked = 'checked';} else {$checked = '';}
+        $public_button = '<input type="checkbox" id="'. $arlem->fileid . '" class="publicCheckbox" name="publicarlemchecked['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']" '. $checked . '></input>'; 
         $public_hidden = '<input   type="hidden"  name="publicarlem['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']"  value="1"></input>'; 
         
         //send id, filename and itemid as value with (,) between
@@ -215,7 +213,11 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 
         
         //assign radio button
-        $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid . '">';
+        $checked = '';
+        if(isset($moduleid)){
+            if(is_arlem_assigned($moduleid, $arlem->fileid)){ $checked = ' checked';}
+        }
+        $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid .' " '. $checked . ' >';
 
 
         //Now fill the row
@@ -300,55 +302,6 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false)
 }
 
 
-/**
- * 
- * On table load check the radio button of the assigned activity
- * and the checkboxes for the public ARLEMs
- * 
- * @param $areteid current arete module id
- * @param $splitet_list list of the ARLEMS in the current page
- * @param $page_number page number from pagination system to check/uncheck public and assign checkbox/radiobutton in each page
- */
-
-function update_assignment($areteid, $splitet_list, $page_number){
-
-    $counter = 0;
-    
-     foreach ($splitet_list[$page_number-1] as $arlem) 
-    {
-
-         //print script tag once
-         if($counter == 0){
-             echo '<script language= "javascript">';
-         }
-         
-         
-         ////add javascript codes
-         
-        //check and select the assigned ARLEM
-        if(is_arlem_assigned($areteid, $arlem->fileid))
-        {
-            echo 'radiobtn = document.getElementById("'. $arlem->itemid .'");
-                   radiobtn.checked = true;';
-        }
-        
-        
-        //Check and select the public ARLEMS
-        if($arlem->upublic == 1){
-            echo 'chkbox = document.getElementById("'. $arlem->fileid .'");  chkbox.checked = true;';
-        }
-
-        ////
-        
-        
-       $counter++;
-        //print script close tag once
-        if($counter == count($splitet_list[$page_number-1])){
-            echo '</script>';
-        }
-
-    }
-}
 
 
 

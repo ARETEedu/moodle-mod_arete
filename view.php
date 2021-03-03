@@ -10,7 +10,7 @@ global $USER;
 
 //Get module id, course and moudle infos
 $id = required_param('id', PARAM_INT); // Course Module ID.
-$urlparams = array('id' => $id, 'name' => $name);
+$urlparams = array('id' => $id);
 $url = new moodle_url('/mod/arete/view.php', $urlparams);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'arete');
 
