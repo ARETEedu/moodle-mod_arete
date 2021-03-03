@@ -56,7 +56,10 @@ if(isset($base64file))
             echo $filename. ' Saved.';
             
             //add thumbnail to DB
-            upload_thumbnail($contextid,$parameters['itemid'] );
+            if(isset($thumbnail) && $thumbnail != ''){
+                upload_thumbnail($contextid,$parameters['itemid'] );
+            }
+
             
             ///insert data to arete_allarlems table
             $arlemdata = new stdClass();

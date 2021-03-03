@@ -22,6 +22,7 @@ if (isset($_FILES['myfile'])){
     
     
     //Get the thumbnail
+    $thumb_base64 = '';
     if(isset($_FILES['thumbnail'])){
         $thumbnail = $_FILES['thumbnail']['tmp_name'];
         //convert the thumbnail  to base64 string
