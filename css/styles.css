@@ -237,6 +237,38 @@
 }
 
 
+/*the detailview for the block*/
+#detailview{
+
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #ccc; 
+    text-align: center; 
+    width: 33%; /* Full width */
+    height: auto;
+}
+
+
+#detailview-imgcontainer{
+    border-bottom: 2px solid #ccc; 
+    border-top: 2px solid #ccc; 
+  width: 100%;
+  height: auto;
+}
+
+#detailview-img{
+
+  width: 100%;
+  height: auto;
+}
+
+#detailview-detail{
+    height: auto; 
+    text-align: left; 
+    padding: 20px;
+
+}
+
 
 /* 
 Max width before this PARTICULAR table gets nasty
@@ -320,6 +352,19 @@ only screen and (max-width: 1300px) {
 	.table-responsive td:nth-of-type(10):before { content: "Public"; }
 	.table-responsive td:nth-of-type(11):before { content: "Delete"; }
 	.table-responsive td:nth-of-type(12):before { content: "Assign"; }
+        
 
+        /*the detailview for the block*/
+        #detailview{
+            width: 60%; /* Full width */
+        }
 }
 
+@media 
+only screen and (max-width: 640px) {
+        /*the detailview for the block*/
+        #detailview{
+
+            width: 100%; /* Full width */
+        }
+}

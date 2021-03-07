@@ -284,3 +284,56 @@ function updateArlemObject($filename, $itemid, $params){
 }
 
 
+
+
+
+/*
+ * 
+ * Get the thumbnail of Arlemfile by itemid
+ * 
+ * @param $itemid the itemid from allarlem table
+ * return thumbnail url and the css class that should use for that thumbnail img
+ */
+function get_thumbnail($itemid){
+    
+    global $CFG;
+    
+        $fs = get_file_storage();
+        $thumbnail = $fs->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $itemid, '/', 'thumbnail.jpg');
+        //if the thumbnail file exists
+       if($thumbnail){
+          $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(), $thumbnail->get_filearea(), $thumbnail->get_itemid(), $thumbnail->get_filepath(), $thumbnail->get_filename(), false);
+          $css = 'ImgThumbnail';
+       }else{
+           $thumb_url= $CFG->wwwroot.'/mod/arete/pix/no-thumbnail.jpg';
+          $css = 'no-thumbnail';
+       }
+
+       
+       return array($thumb_url, $css);
+}
+
+
+/*
+ * Get the owner of this Arlem
+ * 
+ * @param $arlem the arlem record from allarlem table
+ * @param @PAGE the page you are going to use this user info on
+ * return the user object and his/her profile photo
+ */
+function getARLEMOwner($arlem, $PAGE){
+    
+    global $DB;
+    
+    if(isset($arlem->userid) ){
+       $authoruser = $DB->get_record('user', array('id' => $arlem->userid)); 
+    }
+    $user_picture=new user_picture($authoruser);
+    $src=$user_picture->get_url($PAGE);
+    
+    return array($authoruser, $src);
+    
+}
+
+
+

@@ -4,7 +4,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-
+require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
 /**
  * 
@@ -143,48 +143,16 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $module
         
         
         //thumbnail
-        $fs = get_file_storage();
-         $thumbnail = $fs->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $arlem->itemid, '/', 'thumbnail.jpg');
-         //if the thumbnail file exists
-        if($thumbnail){
-           $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(), $thumbnail->get_filearea(), $thumbnail->get_itemid(), $thumbnail->get_filepath(), $thumbnail->get_filename(), false);
-           $css = 'ImgThumbnail';
-        }else{
-            $thumb_url= $CFG->wwwroot.'/mod/arete/pix/no-thumbnail.jpg';
-           $css = 'no-thumbnail';
-        }
+        list($thumb_url, $css) = get_thumbnail($arlem->itemid);
         $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $filename));
 
         
         //file size
-        $size = $arlem->filesize;
+        $size = get_readable_filesize($arlem->filesize);
         
-        if($size > 1000000000){
-            $size /= pow(1024 ,3);
-            $size = round($size,2);
-            $size .= ' GB';
-        }
-        else if($size > 1000000){
-            $size /= pow(1024 ,2);
-            $size = round($size,2);
-            $size .= ' MB';
-        }else if($size > 1024){
-            $size /= 1024;
-            $size = round($size,2);
-            $size .= ' KB';
-        }else{
-            $size = $size/1024;
-            $size = round($size,2);
-            $size .= ' KB';
-        }
-
         
         //author (photo, firstname, lastname
-        if(isset($arlem->userid) ){
-           $authoruser = $DB->get_record('user', array('id' => $arlem->userid)); 
-        }
-        $user_picture=new user_picture($authoruser);
-        $src=$user_picture->get_url($PAGE);
+        list($authoruser, $src) = getARLEMOwner($arlem, $PAGE);
         $photo = '<span class="author"><img  class="profileImg" src="'. $src . '" alt="profile picture" width="40" height="40">&nbsp;'; 
         $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . '</span>';
 

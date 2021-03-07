@@ -125,6 +125,31 @@ function delete_all_temp_file(){
 
 
 
+function get_readable_filesize($size){
+    
+    if($size > 1000000000){
+            $size /= pow(1024 ,3);
+            $size = round($size,2);
+            $size .= ' GB';
+        }
+        else if($size > 1000000){
+            $size /= pow(1024 ,2);
+            $size = round($size,2);
+            $size .= ' MB';
+        }else if($size > 1024){
+            $size /= 1024;
+            $size = round($size,2);
+            $size .= ' KB';
+        }else{
+            $size = $size/1024;
+            $size = round($size,2);
+            $size .= ' KB';
+        }
+        
+        return $size;
+}
+
+
 /// REST CALL
 //send a post request
 function httpPost($url, $data){
@@ -141,4 +166,4 @@ function httpPost($url, $data){
 
 
 
-    
+ 
