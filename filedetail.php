@@ -22,7 +22,6 @@ $PAGE->set_url($CFG->wwwroot.'/mod/arete/detailview.php');
 $PAGE->requires->css('/mod/arete/css/styles.css');  //pagination css file
 
 
-
 echo $OUTPUT->header();
 
 list($thumb_url, $css) = get_thumbnail($itemid);
@@ -53,7 +52,7 @@ $html .= html_writer::start_tag('div', array('id' => 'detailview-detail'));
     $html .= '<br><br><input type="button" class="button dlbutton"  name="dlBtn' . $activity->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
     
     //qr code button
-    $html .= '&nbsp;&nbsp;<input type="button" class="button dlbutton"  name="dlBtn' . $activity->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '"><br>';
+    $html .= '&nbsp;&nbsp;<input type="button" class="button dlbutton"  name="dlBtn' . $activity->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrtitle' , 'arete') . '"><br>';
 $html .= html_writer::end_tag('div');
 $html .= html_writer::end_tag('div');
 
