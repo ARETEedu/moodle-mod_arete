@@ -354,6 +354,21 @@ only screen and (max-width: 1300px) {
 	.table-responsive td:nth-of-type(12):before { content: "Assign"; }
         
 
+        
+        
+        /*student table on mobile and tablet*/
+        #assignedTable td:nth-of-type(1):before { content: "Time Created"; }
+	#assignedTable td:nth-of-type(2):before { content: "Time Modified"; }
+	#assignedTable td:nth-of-type(3):before { content: "Activity Name"; }
+        #assignedTable td:nth-of-type(4):before { content: "Thumbnail"; }
+	#assignedTable td:nth-of-type(5):before { content: "Size"; }
+	#assignedTable td:nth-of-type(6):before { content: "Author"; }
+        #assignedTable td:nth-of-type(7):before { content: "Assigned By"; }
+	#assignedTable td:nth-of-type(8):before { content: "Download"; }
+	#assignedTable td:nth-of-type(9):before { content: "QR Code"; }
+
+        
+
         /*the detailview for the block*/
         #detailview{
             width: 60%; /* Full width */

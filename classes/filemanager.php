@@ -336,4 +336,27 @@ function getARLEMOwner($arlem, $PAGE){
 }
 
 
+/*
+ * Return who assigned this arlem to this course module
+ * @param $arlem arlem file from allarlem table
+ * @param $moduleid the course module id
+ * 
+ * return the first and last name of the teacher/manager who assigned this ARLEM to this course module
+ */
 
+function get_who_assigned_ARLEM($arlem, $moduleid){
+    
+    global $DB;
+    $teacherId = $DB->get_record('arete_arlem', array('areteid' => $moduleid, 'arlemid' => $arlem->fileid));
+    $assignedbyUser = $DB->get_record('user', array('id' => $teacherId->teacherid)); 
+    
+
+    
+    if(!empty($assignedbyUser)){
+        $assignedby = $assignedbyUser->firstname . ' ' . $assignedbyUser->lastname;
+    }else{
+        $assignedby = get_string('notsetyet', 'arete');
+    }
+
+    return $assignedby;
+}

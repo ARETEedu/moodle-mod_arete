@@ -20,6 +20,7 @@ $update_record = new stdClass();
 $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));
 $update_record-> areteid = $areteid;
 $update_record-> arlemid =  $arlemid;
+$update_record-> teacherid =  $USER->id;
 $update_record->timecreated = time();
 
 if(isset($areteid) && isset($arlemid)){

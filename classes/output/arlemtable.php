@@ -83,7 +83,7 @@ function draw_table_for_students($moduleid){
         
         //print the assigned ARLEM in a single table row if it is exist
         if(isset($arleminfo) && $arleminfo != null){
-            echo html_writer::table(draw_table(array($arleminfo), 'assignedTable')); //student arlem
+            echo html_writer::table(draw_table(array($arleminfo), 'assignedTable', false, $moduleid)); //student arlem
             return true;
         }else{
             return false;
@@ -101,7 +101,7 @@ function draw_table_for_students($moduleid){
  * @return return a html table
  * 
  */
-function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $moduleid = null)
+function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = null)
 {
     global $DB, $USER, $CFG, $COURSE,$PAGE;
 
@@ -121,11 +121,16 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $module
     $public_title = get_string('publictitle' , 'arete');
     $delete_title = get_string('deletetitle' , 'arete');
     $assign_title = get_string('assigntitle' , 'arete');
-    
+    $assignedby_title= get_string('assignedbytitle' , 'arete');
 
 
     //show the assign button only to teachers
-    $table_headers = array($date_title,$modified_date_title, $arlem_title,$arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title);
+
+    if($teacherView){
+        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title);
+    }else{
+        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title, $assignedby_title,  $download_title,  $qr_title);
+    }
     //remove radio buttons and delete button for the students
 
     foreach ($arlemslist as $arlem) {
@@ -136,8 +141,7 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $module
         //modified date
         $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') :  date('m.d.Y H:i ',  $arlem->timemodified);
         
-        
-        
+
         //arlem title
         $filename = pathinfo($arlem->filename, PATHINFO_FILENAME);
         
@@ -182,57 +186,31 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $module
         
         //assign radio button
         $checked = '';
-        if(isset($moduleid)){
+        if($teacherView == true){
             if(is_arlem_assigned($moduleid, $arlem->fileid)){ $checked = ' checked';}
         }
         $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid .' " '. $checked . ' >';
 
-
-        //Now fill the row
-        $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn);
-
-
-        //for students
-        if($show_radio_button == false){  
-
-            //remove assign columns if it is the student view
-            if(array_search( $assign_title, $table_headers) !== null ){
-                unset($table_headers[array_search( $assign_title, $table_headers)]);
-            }
-            if(array_search( $assign_radio_btn, $table_row) !== null){
-                unset($table_row[array_search( $assign_radio_btn, $table_row)]);
-            }
-            
-            
-            //remove delete columns if it is the student view
-            if(array_search( $delete_title, $table_headers) !== null){
-                unset($table_headers[array_search( $delete_title, $table_headers)]);
-            }
-            if(array_search( $delete_button , $table_row) !== null){
-                unset($table_row[array_search( $delete_button , $table_row)]);
-            }
-            
-            
-            //remove edit columns if it is the student view
-            if(array_search( $edit_title, $table_headers) !== null){
-                unset($table_headers[array_search( $edit_title, $table_headers)]);
-            }
-            if(array_search( $edit_button , $table_row) !== null){
-                unset($table_row[array_search( $edit_button , $table_row)]);
-            }
-            
-            
-            //remove public columns if it is the student view
-            if(array_search( $public_title, $table_headers) !== null){
-                unset($table_headers[array_search( $public_title, $table_headers)]);
-            }
-            if(array_search( $public_button.$public_hidden , $table_row) !== null){
-                unset($table_row[array_search( $public_button.$public_hidden , $table_row)]);
-            }
-            
+        
+        //assigned by in student table
+        $assignedby = get_string('notsetyet', 'arete');
+        if($teacherView == false){ 
+            $assignedby = get_who_assigned_ARLEM($arlem, $moduleid);
         }
-        //for teachers
-        else 
+
+        
+        //Now fill the row
+        if($teacherView){
+            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn);
+        }else{
+            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author , $assignedby,  $dl_button ,  $qr_button);
+        }
+
+
+
+        //apply privacy system for teachers
+        //only the owner and the manager can delete, chage privacy and edit files
+        if($teacherView)
         {
             // for the non author users in the teacher view
             if($USER->username != $authoruser->username && !has_capability('mod/arete:manageall', $context))
@@ -255,16 +233,18 @@ function draw_table($arlemslist, $tableid ,  $show_radio_button = false, $module
                     $table_row[$index_of_public_button] = get_string('deletenotallow', 'arete');
                 }
             }
+            
         }
 
-
         //fill the table
-        $table->id =  $tableid;
-        $table->attributes = array('class' => 'table-responsive');
-        $table->head = $table_headers;
         $table->data[] = $table_row;
-
     }
+
+    
+     //prepare the table and return
+    $table->id =  $tableid;
+    $table->attributes = array('class' => 'table-responsive');
+    $table->head = $table_headers;
 
     return $table;
 }
