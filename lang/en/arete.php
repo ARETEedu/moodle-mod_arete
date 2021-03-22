@@ -45,3 +45,4 @@ $string['cancelbutton'] = 'Cancel';
 $string['savebutton'] = 'Save';
 $string['noarlemalert'] = 'No ARLEMs exist yet. You cannot create this activity!';
 $string['detailviewtitle'] = 'Details of';
+$string['modulenameplural'] = 'Arete';

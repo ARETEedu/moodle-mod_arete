@@ -1,5 +1,7 @@
 <?php
 
+//this classes will be used for the block view page
+
 require_once(dirname(__FILE__). '/../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
