@@ -22,10 +22,10 @@ function is_arlem_assigned($areteid, $arlemid)
 
 
 //Returns true if arlem exist
-function is_arlem_exist($fileid){
+function is_arlem_exist($itemid){
     global $DB;
     
-    if($DB->get_record('arete_allarlems' , array ('fileid' => $fileid)) !== null)
+    if($DB->get_record('arete_allarlems' , array ('itemid' => $itemid)) !== null)
     {
         return true;
     }

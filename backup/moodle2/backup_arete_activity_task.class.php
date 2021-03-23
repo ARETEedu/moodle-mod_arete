@@ -3,7 +3,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/arete/backup/moodle2/backup_arete_stepslib.php'); // Because it exists (must)
-
+require_once($CFG->dirroot . '/mod/arete/backup/moodle2/backup_arete_settingslib.php');
 /**
  * choice backup task that provides all the settings and steps to perform one
  * complete backup of the activity
@@ -30,6 +30,12 @@ class backup_arete_activity_task extends backup_activity_task {
      */
     static public function encode_content_links($content) {
         
+        global $CFG;
+        $base = preg_quote($CFG->wwwroot, "/");
+        
+        // Link to wiki view by moduleid
+        $search = "/(" . $base . "\/mod\/arete\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@ARETEVIEWBYID*$2@$', $content);
         return $content;
     }
 }

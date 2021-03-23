@@ -200,8 +200,12 @@ function getAllArlems()
 function getArlemURL($filename, $itemid)
 {
     $file = getArlemByName($filename, $itemid);
+    
+    $url = '#';
+    if($file){
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+    }
 
-    $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
     return $url;
 }
 
@@ -245,19 +249,26 @@ function deletePluginArlem($filename, $itemid = null )
     $file = $fs->get_file($system_context, $fileinfo['component'], $fileinfo['filearea'], 
             $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
 
-
+    
+    $thumbnail = $fs->get_file($system_context, $fileinfo['component'], 'thumbnail', 
+            $fileItemId, $fileinfo['filepath'], 'thumbnail.jpg');
+    
     // Delete it if it exists
     if ($file) {
-        $id = $file->get_id();
-        
-        $file->delete();
+
+        //delete thumbnail
+        if($thumbnail){
+            $thumbnail->delete();
+        }
         
         //delete it from arete_allarlems table
-        if($DB->get_records('arete_allarlems', array('fileid' => $id)) !== null)
+        if(!empty($DB->get_records('arete_allarlems', array('itemid' => $fileItemId))))
         {
-            $DB->delete_records('arete_allarlems', array('fileid' => $file->get_id()));
+            $DB->delete_records('arete_allarlems', array('itemid' => $fileItemId));
         }
 
+        //delete zip file
+        $file->delete();
     }
 }
 

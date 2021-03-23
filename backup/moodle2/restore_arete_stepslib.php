@@ -8,8 +8,10 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
 
         $paths[] = new restore_path_element('arete', '/activity/arete');
 
-//        $paths[] = new restore_path_element('arete_allarlems', '/activity/arete/allarlems/arlemfile');
+
         $paths[] = new restore_path_element('arete_arlem', '/activity/arete/arlem/areteinstance');
+        
+        $paths[] = new restore_path_element('arete_allarlems', '/activity/arete/arlem/areteinstance/allarlems/arlemfile');
         
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);
@@ -20,7 +22,6 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         
          global $DB;
         $data = (object)$data;
-        $oldid = $data->id;
         
         $data->course = $this->get_courseid();
         $data->timecreated = $this->apply_date_offset($data->timecreated);
@@ -31,18 +32,7 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         $this->apply_activity_instance($newitemid);
     }
 
-//    protected function process_arete_allarlems($data) {
-//        global $DB;
-//        $data = (object)$data;
-//        $oldid = $data->id;
-//        $data->userid = $this->get_mappingid('user', $data->userid);
-//        $data->fileid = $this->get_mappingid('files', $data->id);
-//        $data->timecreated = $this->apply_date_offset($data->timecreated);
-//        $data->timegraded = $this->apply_date_offset($data->timegraded);
-//        $newitemid = $DB->insert_record('arete_allarlems', $data);
-//
-//    }
-    
+
     
     protected function process_arete_arlem($data) {
         global $DB;
@@ -61,7 +51,25 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
     }
     
     
+    
+     protected function process_arete_allarlems($data) {
+        global $DB;
+        $data = (object)$data;
+        
+        $oldfileid = $data->fileid;
+        
+        //if the file is not exist
+        if(empty($DB->get_record('arete_allarlems',array('fileid' => $oldfileid)))){
+           $data->timecreated = $this->apply_date_offset($data->timecreated);
+            $data->timemodified = $this->apply_date_offset($data->timemodified);
+            $newitemid = $DB->insert_record('arete_allarlems', $data);
+        }
+
+    }
+    
     protected function after_execute() {
-//        $this->add_related_files('mod_arete', 'areteinstance', null);
+        $this->add_related_files('mod_arete', 'intro', null);
+        $this->add_related_files('mod_arete', 'arlems', null , 1);
+        $this->add_related_files('mod_arete', 'thumbnail', null , 1);
     }
 }

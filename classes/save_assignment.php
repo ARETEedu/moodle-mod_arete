@@ -34,12 +34,12 @@ if(isset($areteid) && isset($arlemid)){
 $moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));
 
 //if the record  of this activity was deleted on arete_arlem create it again
-if($moduleid == null)
+if($moduleid == null && isset($areteid) && isset($arlemid))
 {
     $item = new stdClass();
     $item->areteid = $areteid;
     $item->timecreated = time();
-
+    $item-> teacherid =  $USER->id;
     $item->arlemid = $arlemid;
     $DB->insert_record("arete_arlem", $item);
 }
@@ -62,7 +62,7 @@ if(isset($_POST['publicarlem'])){
 
 
         //check if it is not deleted at the same edit session
-        if(is_arlem_exist($id)){
+        if(is_arlem_exist($itemid)){
             
             if(isset($_POST['publicarlemchecked'][$value]))
             {
@@ -92,7 +92,7 @@ if(isset($_POST['deletearlem'])){
        
         list($id ,$filename, $itemid) = explode('(,)', $arlem);
 
-        if(is_arlem_exist($id)){
+        if(is_arlem_exist($itemid)){
                 deletePluginArlem($filename, $itemid);
         }
 
