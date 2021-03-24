@@ -59,11 +59,13 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
                return; 
             }
             
+            //replace files with same name and extension
             foreach($ffs as $ff){
                 if($file_name == $ff && pathinfo($ff, PATHINFO_EXTENSION) ==  $file_ext){
                     move_uploaded_file($file_tmpname, $dir. '/' . $ff);
                 }
-
+                
+                //include all files in subfolders
                 if(is_dir($dir.'/'.$ff)){
                     replace_file($dir.'/'.$ff, $file_name, $file_ext, $file_tmpname);
                 }
@@ -131,9 +133,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
         global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath;
         
-         $context = context_system::instance();
-         $fs = get_file_storage();
-         
+
          //get the file which need to be updated
          $existingArlem = getArlemByName($filename, $itemid);
          $oldfileid = $existingArlem->get_id();
@@ -146,20 +146,9 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          }else{
              $Date = time();
          }
-         
-         $fileinfo = array(
-             'contextid'=>$context->id, 
-             'component'=> get_string('component', 'arete') ,
-             'filearea'=>get_string('filearea', 'arete'),
-             'itemid'=> $itemid, 
-             'filepath'=>'/',
-             'filename'=>$filename,
-             'timecreated'=>$Date
-           );
-         
-    
+
          //add the updated file to the file system
-         $newArlem = $fs->create_file_from_pathname($fileinfo, $filepath);
+         $newArlem =  upload_custom_file($filepath, $filename, $itemid, $Date); 
          
          //the new file id
          $newArlemID = $newArlem->get_id();

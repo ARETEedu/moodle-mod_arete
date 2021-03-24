@@ -93,7 +93,7 @@ function getItemID($fileinfo){
     global $DB;
     
     $row = $DB->get_records('files', $fileinfo);
-    if(isset($row)){
+    if(!empty($row)){
         $firstRowFound = current($row)->itemid; 
         return $firstRowFound;
     }
@@ -201,6 +201,20 @@ function getArlemURL($filename, $itemid)
 {
     $file = getArlemByName($filename, $itemid);
     
+    $url = '#';
+    if($file){
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+    }
+
+    return $url;
+}
+
+
+/*
+ * Get the URL of any file in mod_arete file system
+ * @param $file the file from file API system
+ */
+function GetURL($file){
     $url = '#';
     if($file){
         $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
@@ -370,4 +384,46 @@ function get_who_assigned_ARLEM($arlem, $moduleid){
     }
 
     return $assignedby;
+}
+
+
+
+/*
+ * Upload a custom file to the mod_arete filearea
+ * 
+ * @param $filepath the local path of the file
+ * @param $filename the name of the new file
+ * @param $itemid in files table
+ * @param $date if you wand update the file you can use the original timecreated
+ * 
+ */
+function upload_custom_file($filepath, $filename, $itemid = null, $date = null){
+    
+         $fs = get_file_storage();
+            
+        $context = context_system::instance();
+        
+        //create a new itemid if it is not proveded
+        if($itemid == null){
+            $itemid = random_int(100000000, 999999999);
+        }
+        
+        if($date == null){
+            $date = time();
+        }
+        
+        $fileinfo = array(
+        'contextid'=>$context->id, 
+        'component'=> get_string('component', 'arete') ,
+        'filearea'=>get_string('filearea', 'arete'),
+        'itemid'=> $itemid, 
+        'filepath'=>'/',
+        'filename'=>$filename,
+        'timecreated'=>$date
+      );
+        
+
+       $newFile = $fs->create_file_from_pathname($fileinfo, $filepath);
+       
+       return $newFile;
 }

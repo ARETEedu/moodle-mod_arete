@@ -46,3 +46,5 @@ $string['savebutton'] = 'Save';
 $string['noarlemalert'] = 'No ARLEMs exist yet. You cannot create this activity!';
 $string['detailviewtitle'] = 'Details of';
 $string['modulenameplural'] = 'Arete';
+$string['validator'] = 'ARLEM\'s JSON Validator';
+$string['jsonnotfound'] = 'Activity or workplace files cannot be found!';

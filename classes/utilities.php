@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(__FILE__). '/../../../config.php');
+require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -103,6 +104,29 @@ function create_temp_files($filepath, $filename){
 }
 
 
+function get_temp_file($filename){
+    
+    $context = context_system::instance();
+    $fs = get_file_storage();
+         
+    $fileinfo = array(
+             'contextid'=>$context->id, 
+             'component'=> get_string('component', 'arete') ,
+             'filearea'=> 'temp',
+             'filepath'=>'/',
+             'filename'=>$filename,
+             'timecreated'=>time()
+           );
+         
+    
+    //add the updated file to the file system
+    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'], getItemID($fileinfo), $fileinfo['filepath'], $filename);
+    
+    return $file;
+         
+}
+
+
 
 function delete_all_temp_file(){
     
@@ -150,6 +174,7 @@ function get_readable_filesize($size){
 }
 
 
+
 /// REST CALL
 //send a post request
 function httpPost($url, $data){
@@ -166,4 +191,3 @@ function httpPost($url, $data){
 
 
 
- 

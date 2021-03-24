@@ -34,11 +34,6 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     $table .= html_writer::end_tag('form');
     $table .= html_writer::end_tag('div');
     echo $table;
-    
-    //a javascript function which will confirm file deletion
-    printConfirmationJS();
-    
-    
 
 }
 
@@ -247,63 +242,4 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     $table->head = $table_headers;
 
     return $table;
-}
-
-
-
-
-
-function printConfirmationJS(){
-
-    echo '<script>
-
-        var modalEle = document.querySelector("#modal");
-        var modalImage = document.querySelector(".modalImage");
-        var modalTitle = document.querySelector("#modalTitle");
-        Array.from(document.querySelectorAll(".ImgThumbnail")).forEach(item => {
-           item.addEventListener("click", event => {
-
-            const pathArray = event.target.src.split("/");
-            const lastIndex = pathArray.length - 1;
-
-            //dont show no-thumbnail
-            if(pathArray[lastIndex] != "no-thumbnail.jpg"){
-                 modalEle.style.display = "block";
-                 modalImage.src = event.target.src;
-                 modalTitle.innerHTML = event.target.alt;
-            }
-
-           });
-        });
-        document.querySelector("#modalImg").addEventListener("click", () => {
-           modalEle.style.display = "none";
-        });
-
-        document.querySelector("#modal").addEventListener("click", () => {
-           modalEle.style.display = "none";
-        });
-
-        </script>';
-
-
-    //ARLEM delete confirmation
-    echo '<script>
-
-    function confirmSubmit(form)
-    {
-        var checked = document.querySelectorAll(\'input.deleteCheckbox:checked\');
-
-        if (checked.length === 0) {
-
-                form.submit();
-        } else {
-
-    if (confirm("Are you sure you want to delete these files?")) {
-         form.submit();
-                }
-        }
-    }
-
-    </script>';
-
 }

@@ -126,16 +126,32 @@ class EditArlem{
                 echo '<ol>';
                 foreach($ffs as $ff){
                     
+                    //for folders
                     if(is_dir($dir.'/'.$ff)){
                         echo html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/folder.png', 'class' => 'editicon' ))  . '<b>' . $ff . '/</b><br>';
                         $this->create_edit_UI($dir.'/'.$ff, $filename);
+                        
+                    //for files    
                     }else{
                         
                         //create a temp file of this file and store in file system temp filearea
                         $tempfile = create_temp_files($dir.'/'.$ff, $ff);
+                        
                         $url = moodle_url::make_pluginfile_url($tempfile->get_contextid(), $tempfile->get_component(), $tempfile->get_filearea(), $tempfile->get_itemid(), $tempfile->get_filepath(), $tempfile->get_filename(), false);
+                        
+                        ///json file should be navigated to json validator
+                        //if file is json
+                        if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0 ))
+                        {
+                            list($activityJSON, $workplaceJSON) = $this->JSONsURL($ff);
+                            $url =  $CFG->wwwroot. "/mod/arete/tools/validator.php?activity=" . $activityJSON . '&workplace=' .  $workplaceJSON;
+                            
+                        }
+                        ///
+                        
+                        
                         echo $this->getIcon($ff) .'<a href="'. $url . '"  target="_blank">'  .$ff . '</a><br>';
-
+                        
                     }
                 }
                 echo '</ol>';
@@ -166,10 +182,53 @@ class EditArlem{
                 $form .= html_writer::end_tag('div');
                 
                 echo $form;
-                
-                
-                $this->MyJS();
+
             }
+    }
+    
+    
+    
+    /*
+     * return the path of activity and workplace jsons from file API
+     * 
+     */
+    function JSONsURL($jsonFilename){
+
+        $activityJSON_URL = null;
+        $workplaceJSON_URL = null;
+        
+        if (strpos($jsonFilename, 'activity') !== false) {
+            
+            $workplaceFilename = str_replace("activity","workplace",$jsonFilename);
+            
+            $activityFile = get_temp_file($jsonFilename);
+            $workplaceFile = get_temp_file($workplaceFilename);
+            
+            
+            $activityJSON_URL = GetURL($activityFile);
+                    
+            if($workplaceFile){
+               $workplaceJSON_URL = GetURL($workplaceFile);
+            }
+            
+
+        }else if (strpos($jsonFilename, 'workplace') !== false){
+            
+            $activityFilename = str_replace("workplace","activity",$jsonFilename);
+            
+            $activityFile = get_temp_file($activityFilename);
+            $workplaceFile = get_temp_file($jsonFilename);
+            
+            if($activityFile){
+                $activityJSON_URL = GetURL($activityFile);
+            }
+           
+            $workplaceJSON_URL = GetURL($workplaceFile);
+
+        }
+        
+        return array($activityJSON_URL, $workplaceJSON_URL);
+        
     }
     
     
@@ -219,55 +278,5 @@ class EditArlem{
 
             return html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/'. $type . '.png',  'class' => 'editicon')) ;
     }
-    
-    
 
-    
-    function  MyJS(){
-        echo '<script>
-    /////check file for editing is selected start
-    function checkFiles(form){
-        if( document.getElementById("files").files.length === 0 ){
-            alert("Please select at lease one file to update this activity");
-            return;
-        }else{
-            form.submit();
-        }
-    };
-    /////check file for editing is selected end
-
-
-
-    /////Custom file selector start
-    Array.prototype.forEach.call(
-      document.querySelectorAll(".file-upload__button"),
-      function(button) {
-        const hiddenInput = button.parentElement.querySelector(
-          ".file-upload__input"
-        );
-        const label = button.parentElement.querySelector(".file-upload__label");
-        const defaultLabelText = "No file(s) selected";
-
-        // Set default text for label
-        label.textContent = defaultLabelText;
-        label.title = defaultLabelText;
-
-        button.addEventListener("click", function() {
-          hiddenInput.click();
-        });
-
-        hiddenInput.addEventListener("change", function() {
-          const filenameList = Array.prototype.map.call(hiddenInput.files, function(
-            file
-          ) {
-            return file.name;
-          });
-
-          label.textContent = filenameList.join(", ") || defaultLabelText;
-          label.title = label.textContent;
-        });
-      }
-    );
-    /////Custom file selector end </script>';
-    }
 }

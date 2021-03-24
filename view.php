@@ -14,13 +14,18 @@ $urlparams = array('id' => $id);
 $url = new moodle_url('/mod/arete/view.php', $urlparams);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'arete');
 
+
+//need to be login for this course
+require_course_login($course, false, $cm);
+
+
 //check if we are in edit mode
 $pagemode = filter_input(INPUT_GET, 'mode' );
 if(!isset($pagemode)){
     $pagemode = '';
     
 }
-    
+
 //page configuration
 $PAGE->set_url($url);
 if($pagemode == 'edit'){
@@ -31,10 +36,8 @@ if($pagemode == 'edit'){
 
 
 $PAGE->requires->css('/mod/arete/css/styles.css');  //pagination css file
-//
-//need to be login for this course
-require_course_login($course, false, $cm);
-
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/scripts.js'));
+        
 //print Moodle header
 echo $OUTPUT->header();
 
@@ -152,21 +155,6 @@ if(has_capability('mod/arete:arlemfulllist', $context))
            $pagination = new pagination();
            echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
 
-
-
-
-       //// for testing only (REMOVE on release)
-       ////  Delete all test arlems 
-       //    $arlemsList = getAllArlems( true);
-       //    foreach ($arlemsList as $arlem) {
-       //           deletePluginArlem($arlem->get_filename(), $arlem->get_itemid());
-       //    }
-       //    $arlemsList = getAllUserArlems( true, 2 ,true);
-       //    foreach ($arlemsList as $arlem) {
-       //        deleteUserArlem($arlem->get_filename(), $arlem->get_itemid(), 2);
-       //    }
-       ////        
-        
     }
     
    
