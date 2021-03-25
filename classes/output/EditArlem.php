@@ -36,11 +36,8 @@ class EditArlem{
 
         
         //The user editing folder
-        $path = 'mod/arete/temp/';
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-        $this->userDirPath = $CFG->dirroot. '/' . $path . strval($USER->id);
+        $path = '/mod/arete/temp/';
+        $this->userDirPath = $CFG->dirroot . $path . strval($USER->id);
         
         //remove temp dir which is used on editing
           $tempDir = $this->userDirPath. '/';
