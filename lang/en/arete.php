@@ -48,3 +48,5 @@ $string['detailviewtitle'] = 'Details of';
 $string['modulenameplural'] = 'Arete';
 $string['validator'] = 'ARLEM\'s JSON Validator';
 $string['jsonnotfound'] = 'Activity or workplace files cannot be found!';
+$string['openvalidator'] = 'Open JSON Validator';
+$string['closevalidator'] = 'Close Validator';

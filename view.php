@@ -36,7 +36,7 @@ if($pagemode == 'edit'){
 
 
 $PAGE->requires->css('/mod/arete/css/styles.css');  //pagination css file
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/scripts.js'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
         
 //print Moodle header
 echo $OUTPUT->header();

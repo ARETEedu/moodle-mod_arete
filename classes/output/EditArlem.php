@@ -18,8 +18,9 @@ class EditArlem{
     
     function __construct(){
         
-        global $USER,$COURSE, $OUTPUT ,$DB ,$CFG;
+        global $USER,$COURSE, $OUTPUT ,$DB ,$CFG,$PAGE;
 
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/editor.js'));
 
         $id = filter_input(INPUT_GET, 'id' );
         $pnum = filter_input(INPUT_GET, 'pnum' );
@@ -104,7 +105,6 @@ class EditArlem{
     function create_edit_UI($dir, $filename, $mainFolder = false){
         
         global $CFG; 
-
         
         $ffs = scandir($dir);
 
@@ -116,7 +116,7 @@ class EditArlem{
                return; 
             }
             
-            //add these once
+            //add these only once
             if($mainFolder == true){
               echo html_writer::start_tag('div' , array('id' => 'borderEditPage'));
               echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . pathinfo($filename, PATHINFO_FILENAME) . '"</h3><br><br>';
@@ -139,26 +139,34 @@ class EditArlem{
                         
                         $url = moodle_url::make_pluginfile_url($tempfile->get_contextid(), $tempfile->get_component(), $tempfile->get_filearea(), $tempfile->get_itemid(), $tempfile->get_filepath(), $tempfile->get_filename(), false);
                         
-                        ///json file should be navigated to json validator
-                        //if file is json
-                        if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0 ))
-                        {
-                            list($activityJSON, $workplaceJSON) = $this->JSONsURL($ff);
-                            $url =  $CFG->wwwroot. "/mod/arete/tools/validator.php?activity=" . $activityJSON . '&workplace=' .  $workplaceJSON;
-                            
-                        }
-                        ///
-                        
-                        
                         echo $this->getIcon($ff) .'<a href="'. $url . '"  target="_blank">'  .$ff . '</a><br>';
                         
+                        //parse the url of the json file 
+                        if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0)){
+                            
+                            //if it is activity json
+                            if( strpos($ff, 'activity') !== false)
+                            {
+                                $activityJSON_URL = GetURL(get_temp_file($ff));
+                            }
+                            //if it is workplace jason
+                            else if(strpos($ff, 'workplace') !== false)
+                            {
+                                $workplaceJSON = GetURL(get_temp_file($ff));
+                            }
+                        }
                     }
                 }
                 echo '</ol>';
             
             //add these once
+                
+            list($activityJSON, $workplaceJSON) = $this->JSONsURL($ff);
+            $url =  $CFG->wwwroot. "/mod/arete/validator.php?activity=" . $activityJSON . '&workplace=' .  $workplaceJSON;
+                            
             if($mainFolder == true){
-                $form = '<br><br>';
+                $form =  html_writer::empty_tag('input', array('type' => 'button' ,'style' => 'margin-left: 40px' ,  'value' => get_string('openvalidator', 'arete'), 'onClick' => 'javascript:window.open("' . $url . '");'));
+                $form .= '<br><br>';
                 $form .=  html_writer::start_tag('div' , array('id' => 'borderUpdateFile'));   
                 $form .= get_string('selectfiles','arete');
                 $form .= '<br>';
