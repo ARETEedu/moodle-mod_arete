@@ -3,6 +3,7 @@
 $string['modulename'] = 'Augmented Reality Experience';
 $string['pluginname'] = 'Augmented Reality Experience';
 $string['arname'] = 'AR experience name';
+$string['modname'] = 'arete';
 $string['description'] = 'Description';
 $string['arlemsectiontitle'] = 'ARLEMs';
 $string['arlemradiobuttonlabel'] = 'The available Arlems in this activity';

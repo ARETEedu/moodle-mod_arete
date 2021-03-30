@@ -3,7 +3,7 @@
 require_once('../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
-class MoodleWebService
+class Autentication
 {
     var $token;
     var $service = 'aretews';

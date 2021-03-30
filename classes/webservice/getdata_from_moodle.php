@@ -3,6 +3,7 @@
 require_once('../../../../config.php');
 require_once($CFG->dirroot.'/lib/filelib.php');
 
+
 //the variables which  are passed from Unity application
 $token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $function = filter_input(INPUT_POST, 'function' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
@@ -28,7 +29,7 @@ if( strpos($parameters , '&') !== false){
     }
 }
 
-
+    
 /// REST CALL
 $serverurl = $CFG->wwwroot . '/webservice/rest/server.php'. '?wstoken=' . $token .  '&moodlewsrestformat=json' .  '&wsfunction='. $function;
 
@@ -46,4 +47,5 @@ switch ($requestedInfo){
         print_r($jsonResult);
         break;
 }
+
 

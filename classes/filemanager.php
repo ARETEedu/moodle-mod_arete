@@ -6,27 +6,16 @@ require_once(dirname(__FILE__). '/../../../config.php');
 
 $system_context = context_system::instance()->id;
 
-///create a textfile in arete filearea (used mainly for testing
-function createArlem($filename, $filetext, $context){
 
-    $fs = get_file_storage();
-
-    // Prepare file record object
-    $fileinfo = array(
-        'contextid' => $context->id, // ID of context
-        'component' => get_string('component', 'arete'),     // usually = table name
-        'filearea' => get_string('filearea', 'arete'),     // usually = table name
-        'itemid' => 0,               // usually = ID of row in table
-        'filepath' => '/',           // any path beginning and ending in /
-        'filename' => $filename  ); // any filename
-
-    // Create file containing text 'hello world'
-    $fs->create_file_from_string($fileinfo, $filetext);
-}
-
-
-
-//delete a file from user draft 
+/**
+ * Delete a file from user draft 
+ * 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ * @param $WITH_USER_CONTEXT If pass true the user id whome is already logged into Moodle will be used
+ * @param $userid Get the contextid of this user
+ * 
+ */
 function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false, $userid = null)
 {
     $fs = get_file_storage();
@@ -58,7 +47,14 @@ function deleteUserArlem($filename, $itemid = null , $WITH_USER_CONTEXT = false,
 
 
 
-//return a single file from plugin filearea by passing filename and item id
+/**
+ * Get a single file from plugin filearea by passing filename and item id
+ * 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ * 
+ * @return The file from file system
+ */
 function getArlemByName($filename, $itemid)
 {
 
@@ -88,7 +84,12 @@ function getArlemByName($filename, $itemid)
 }
 
 
-///get the first itemid of the items with this name that become found in user draft
+/**
+ * get the first itemid of the items with this name that become found in user draft
+ * @param $fileinfo An array of the available info of the ARLEM file in file system  (like itemid, filename, ect)
+ * 
+ * @return an array with all info of the ARLEM file in file system
+ */
 function getItemID($fileinfo){
     global $DB;
     
@@ -102,8 +103,15 @@ function getItemID($fileinfo){
 }
 
 
-///return current user contextid
-//$WITH_USER_CONTEXT pass true the user id whome is already logged into Moodle will be used
+/**
+ * 
+ * return current user contextid
+ * 
+ * @param $WITH_USER_CONTEXT If pass true the user id whome is already logged into Moodle will be used
+ * @param $userid Get the contextid of this user
+ * 
+ * @return Contextid of the user
+ */
 function getUserContextid($WITH_USER_CONTEXT = false, $userid = null){
     global $USER;
     
@@ -120,7 +128,14 @@ function getUserContextid($WITH_USER_CONTEXT = false, $userid = null){
 
 
 
-//get the arlem from draft filearea of the current user
+/**
+ * Get the arlem from draft filearea of the current user
+ * 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ * 
+ * @return The file from user draft area by API if it is exists
+ */
 function getUserArlem($filename, $itemid = null)
 {
     
@@ -155,7 +170,12 @@ function getUserArlem($filename, $itemid = null)
 }
 
 
-//copy file to temp folder
+/**
+ * Copy ARLEM zip file from file system to temp folder
+ * 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ */
 function copyArlemToTemp($filename,  $itemid){
 
     global $USER;
@@ -173,12 +193,14 @@ function copyArlemToTemp($filename,  $itemid){
 
 
 
-//get an array of all files in plug in filearea
+/**
+ * Get an array of all files in allarlems table
+ * 
+ * @return an array with all ARLEMs for manager, and public and user own files for other users
+ */
 function getAllArlems()
 {
-//    $fs = get_file_storage();
-//
-//    $files = $fs->get_area_files( 1 , get_string('component', 'arete'), get_string('filearea', 'arete'), false, 'timecreated DESC ', $emptyFiles);
+
     global $DB,$USER, $COURSE;
     
     //course context
@@ -196,7 +218,11 @@ function getAllArlems()
 }
 
 
-///get the file url
+/**
+ * Get the ARLEM URL 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ */
 function getArlemURL($filename, $itemid)
 {
     $file = getArlemByName($filename, $itemid);
@@ -210,7 +236,7 @@ function getArlemURL($filename, $itemid)
 }
 
 
-/*
+/**
  * Get the URL of any file in mod_arete file system
  * @param $file the file from file API system
  */
@@ -225,19 +251,13 @@ function GetURL($file){
 
 
 
-///for test remove later
-//get an array of all files in plug in filearea
-function getAllUserArlems( $WITH_USER_CONTEXT = false, $userid = null , $emptyFiles = false)
-{
-    $fs = get_file_storage();
 
-    $files = $fs->get_area_files( getUserContextid($WITH_USER_CONTEXT,$userid) , 'user', 'draft', false, 'sortorder', $emptyFiles);
-    
-    return $files;  
-}
-///
-
-//delete a file from plugin filearea
+/**
+ * Delete a file from file system
+ * 
+ * @param $filename name of ARLEM in filearea
+ * @param $itemid the itemid of ARLEM in filearea
+ */
 function deletePluginArlem($filename, $itemid = null )
 {
     global $DB,$system_context;;
@@ -286,9 +306,9 @@ function deletePluginArlem($filename, $itemid = null )
     }
 }
 
-/***
+/**
  * 
- * update arete_allarlems table
+ * Update arete_allarlems table
  * 
  * @param $filename filename of the ARLEM
  * @param $itemid itemid of the ARLEM
@@ -312,7 +332,7 @@ function updateArlemObject($filename, $itemid, $params){
 
 
 
-/*
+/**
  * 
  * Get the thumbnail of Arlemfile by itemid
  * 
@@ -339,7 +359,7 @@ function get_thumbnail($itemid){
 }
 
 
-/*
+/**
  * Get the owner of this Arlem
  * 
  * @param $arlem the arlem record from allarlem table
@@ -361,7 +381,7 @@ function getARLEMOwner($arlem, $PAGE){
 }
 
 
-/*
+/**
  * Return who assigned this arlem to this course module
  * @param $arlem arlem file from allarlem table
  * @param $moduleid the course module id
@@ -388,7 +408,7 @@ function get_who_assigned_ARLEM($arlem, $moduleid){
 
 
 
-/*
+/**
  * Upload a custom file to the mod_arete filearea
  * 
  * @param $filepath the local path of the file
