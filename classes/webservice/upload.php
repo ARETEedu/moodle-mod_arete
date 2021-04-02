@@ -13,6 +13,7 @@ $base64file = filter_input(INPUT_POST, 'base64');
 $userid = filter_input(INPUT_POST, 'userid');
 $thumbnail = filter_input(INPUT_POST, 'thumbnail');
 $public = filter_input(INPUT_POST, 'public');
+$updatefile = filter_input(INPUT_POST, 'updatefile');
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
@@ -23,13 +24,35 @@ global $DB;
 //if base64 file is exists
 if(isset($base64file))
 { 
+    $itemid = random_int(100000000, 999999999);
+    $timemodifeid = 0;
+    $timecreated = time();   
+
+   //store info of the old file and delete it
+   if($updatefile == '1') {
+       
+      $arlem = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid ));
+      $itemid = $arlem->itemid;
+      $fileid = $arlem->fileid;
+      $oldfile_delete = delete_arlem_by_sessionid($sessionid);
+      $timemodifeid = time();
+      $timecreated = $arlem->timecreated;
+      
+      //if unable to delete the old file
+      if($oldfile_delete != true){
+          echo "Cannot delete old file";
+          die;
+      }
+   }
+    
+   
     $parameters = array(
         'wstoken' => $token,
         'wsfunction' => 'core_files_upload',
         'contextid' => $contextid,
         'component' => 'user', 
         'filearea' => 'draft', 
-        'itemid' => random_int(100000000, 999999999), 
+        'itemid' => $itemid, 
         'filepath' => '/', //should start with / and end with /
         'filename' => $filename ,
         'filecontent' => $base64file, 
@@ -37,6 +60,7 @@ if(isset($base64file))
         'instanceid' => $userid,
     );
 
+    //upload file to user draft
     $serverurl = $CFG->wwwroot . '/webservice/rest/server.php' ;
     $response = httpPost($serverurl , $parameters );
 
@@ -63,7 +87,7 @@ if(isset($base64file))
             
             ///insert data to arete_allarlems table
             $arlemdata = new stdClass();
-            $arlemdata->fileid = getArlemByName($filename, $parameters['itemid'])->get_id();
+            $arlemdata->fileid = $fileid !== null ? $fileid : getArlemByName($filename, $parameters['itemid'])->get_id();
             $arlemdata->contextid =  context_system::instance()->id;
             $arlemdata->userid =  $userid;
             $arlemdata->itemid =  $parameters['itemid'];
@@ -71,8 +95,8 @@ if(isset($base64file))
             $arlemdata->filename = $filename;
             $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
             $arlemdata->upublic =  (int) $public;
-            $arlemdata->timecreated = time();
-            $arlemdata->timemodified = 0;
+            $arlemdata->timecreated = $timecreated;
+            $arlemdata->timemodified = $timemodifeid;
             $DB->insert_record('arete_allarlems', $arlemdata);
 
         }
@@ -119,3 +143,4 @@ function upload_thumbnail($contextid,$itemid){
     
 }
     
+

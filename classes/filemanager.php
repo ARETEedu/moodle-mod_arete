@@ -447,3 +447,25 @@ function upload_custom_file($filepath, $filename, $itemid = null, $date = null){
        
        return $newFile;
 }
+
+
+
+/**
+ * Delete an ARLEM from file system using session id
+ * 
+ * @param type $sessionid
+ *
+ */
+function delete_arlem_by_sessionid($sessionid){
+    
+    global $DB;
+          
+    $file = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid));
+    if(!empty($file)){
+        deletePluginArlem($file->filename, $file->itemid);
+        $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
+        return true;
+    }
+    
+    return false;
+}

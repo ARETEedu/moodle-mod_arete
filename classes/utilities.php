@@ -26,13 +26,51 @@ function is_arlem_assigned($areteid, $arlemid)
 function is_arlem_exist($itemid){
     global $DB;
     
-    if($DB->get_record('arete_allarlems' , array ('itemid' => $itemid)) !== null)
+    if(!empty($DB->get_record('arete_allarlems' , array ('itemid' => $itemid))))
     {
         return true;
     }
     
     return false;
 
+}
+
+
+//Returns true if arlem exist
+function is_sessionid_exist($sessionid){
+    global $DB;
+    
+    if(!empty($DB->get_record('arete_allarlems' , array ('sessionid' => $sessionid))))
+    {
+        return true;
+    }
+    
+    return false;
+
+}
+
+
+/**
+ * 
+ * Get if this sessionid is created by this user 
+ * 
+ * @param type $userid
+ * @param type $sessionid
+ * 
+ * @return boolean
+ */
+function is_user_owner_of_file($userid, $sessionid){
+    global $DB;
+    
+    $file = $DB->get_record('arete_allarlems' , array ('sessionid' => $sessionid));
+    if(!empty($file))
+    {
+        if($file->userid == $userid ){
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 
