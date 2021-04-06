@@ -51,3 +51,6 @@ $string['validator'] = 'ARLEM\'s JSON Validator';
 $string['jsonnotfound'] = 'Activity or workplace files cannot be found!';
 $string['openvalidator'] = 'Open JSON Validator';
 $string['closevalidator'] = 'Close Validator';
+$string['search'] = 'Search';
+$string['nomatchfound'] = 'Oops! There are no matches for ';
+$string['noarlemfound'] = 'Oops! There are no activity file on this server!';

@@ -1,5 +1,7 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die;
+
 //include all ouput scripts
 
 require_once(dirname(__FILE__). '/../../../../config.php');

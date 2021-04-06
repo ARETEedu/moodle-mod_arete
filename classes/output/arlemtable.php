@@ -6,6 +6,8 @@ require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
+$searchfield = filter_input(INPUT_GET, 'qword');
+
 /**
  * 
  * Print the activity table for the teachers which will show all available activities
@@ -18,7 +20,35 @@ require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
  */
 function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
-    global $CFG;
+    global $CFG,$searchfield;
+    
+    //if the user searched for somthing
+    $searchquery= '';
+    if(isset($searchfield)){
+        
+        if(empty($splitet_list)){
+            
+            $noARLEMMessage = '<br><br>' . html_writer::start_div('alarm');
+            $noARLEMMessage .= get_string('nomatchfound', 'arete') . '"' . $searchfield . '"';
+            $noARLEMMessage .= html_writer::end_div();
+            echo $noARLEMMessage;
+            return;
+        }
+        
+        $searchquery = '&qword=' . $searchfield;
+        
+    //if there are no arlem on this server at all
+    }else{
+        
+        if(empty($splitet_list)){
+            $noARLEMMessage = '<br><br>' . html_writer::start_div('alarm');
+            $noARLEMMessage .= get_string('noarlemfound', 'arete');
+            $noARLEMMessage .= html_writer::end_div();
+            echo $noARLEMMessage;
+            return;
+        }
+        
+    }
     
     //the popup modal div
     echo add_popup_image_div();
@@ -26,7 +56,7 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     $table = html_writer::start_tag('div');
     $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'method' => 'post' )); //create form
     $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true, $moduleid)); //arlems table
-    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number )); //return to this url after saving the table
+    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . $searchquery . '&pnum=' . $page_number )); //return to this url after saving the table
     $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
     $table .= html_writer::start_tag('div');
     $table .= html_writer::empty_tag('input', array('type' => 'button', 'class' => 'btn btn-primary right' ,'onClick' => 'confirmSubmit(this.form);', 'value' =>  get_string('savebutton', 'arete') )); //bottom save button 
@@ -242,4 +272,25 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     $table->head = $table_headers;
 
     return $table;
+}
+
+
+/**
+ * 
+ *@param URL of view page where the ARLEM tables are displayed
+ *@return A searchbox for arlems
+ * 
+ */
+function searchbox($pageid){
+    global $CFG,$searchfield;
+
+    $searchbox = html_writer::start_div('', array('id' => 'searchbox'));
+    $searchbox .= html_writer::start_tag('form', array('action' => $CFG->wwwroot .'/mod/arete/view.php?id='. $pageid  , 'method' => 'get' )); //create form
+    $searchbox .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id' , 'value' => $pageid )); //bottom save button 
+    $searchbox .= html_writer::empty_tag('input', array('type' => 'text' , 'placeholder' => get_string('search', 'arete') , 'name' => 'qword' , 'value' => isset($searchfield) ? $searchfield : '')); //bottom save button 
+    $searchbox .= html_writer::empty_tag('input', array('type' => 'submit', 'class' => 'btn btn-warning right' , 'value' =>  get_string('search', 'arete') )); //bottom save button 
+    $searchbox .= html_writer::end_tag('form');
+    $searchbox .= html_writer::end_div();
+    
+    return $searchbox;
 }

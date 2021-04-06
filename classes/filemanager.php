@@ -219,6 +219,21 @@ function getAllArlems()
 
 
 /**
+ * 
+ * Search the activity and workplace JSONs and activity name for a word
+ * @return A list of ArLEm files in allalrem table
+ * 
+ */
+function search_arlems($searchWord){
+    global $DB;
+
+    $results = $DB->get_records_select('arete_allarlems', 'filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\''  , null, 'timecreated DESC');  //only public and for the user
+    
+    return $results;
+}
+    
+    
+/**
  * Get the ARLEM URL 
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea

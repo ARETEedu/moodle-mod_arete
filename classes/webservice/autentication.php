@@ -3,6 +3,8 @@
 require_once('../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
+defined('MOODLE_INTERNAL') || die;
+
 class Autentication
 {
     var $token;

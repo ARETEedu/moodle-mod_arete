@@ -35,6 +35,28 @@
     float:right;
 }
 
+
+
+#searchbox {
+    float:right;
+    display: inline;
+}
+
+
+.alarm {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  outline: 1px solid rgba(0,0,0,0.39);
+  border-radius: 1px 1px 1px 1px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #ffd4d4;
+  font-weight: bold; 
+}
+
+
 /*plugin titles*/
 .titles {
     font-weight: bold; 
@@ -373,6 +395,12 @@ only screen and (max-width: 1300px) {
         #detailview{
             width: 60%; /* Full width */
         }
+        
+    #searchbox {
+        z-index: 1;
+        position: relative;
+        display: block;
+    }
 }
 
 @media 

@@ -9,6 +9,9 @@ $userid = filter_input(INPUT_POST, 'userid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
+$activityJson = filter_input(INPUT_POST, 'activity');
+$workplaceJson = filter_input(INPUT_POST, 'workplace');
+
 
 //if file exist and still user not confirmed updating of the file
 if(is_sessionid_exist($sessionid)){
@@ -37,7 +40,7 @@ if(is_sessionid_exist($sessionid)){
  */
 function process(){
     
-    global $CFG,$token,$userid,$sessionid,$public,$updatefile;
+    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson;
     
     //if the file is received from Unity application
     if (isset($_FILES['myfile'])){
@@ -69,7 +72,8 @@ function process(){
             $public_upload_privacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64, 'public' => $public_upload_privacy, 'updatefile' => $updatefile);
+         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
+             'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
 
          $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
          curl_setopt($ch, CURLOPT_POST, true);

@@ -13,8 +13,6 @@ $areteid = filter_input(INPUT_POST, 'moduleid' );
 $arlemid = filter_input(INPUT_POST, 'arlem' );
 
 
-
-
 //assign the activty
 $update_record = new stdClass();
 $update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));

@@ -48,21 +48,18 @@ $moduleid = $cm->instance;
 //course context
 $context = context_course::instance($course->id);
 
-//get all ARLEMS from DB
-$arlems_list = getAllArlems(); 
 
-
-// if all arlem files is deleted, delete the activity too and redirect to the course page
-if(count($arlems_list) == 0)
+//Load ARLEMS
+$searchword = filter_input(INPUT_GET, 'qword');
+if(isset($searchword) && $searchword !== '')
 {
-    echo '<script>alert("' . get_string('noarlemalert', 'arete') . '");</script>';
-    //if no ARLEM files is exist in the DB delete the activity too
-    arete_delete_activity($moduleid);
-    
-    //return to the course page
-    redirect($CFG->wwwroot . '/course/view.php?id='. $course->id, null);
-    return;
+    //search the jsons and return files if exists
+    $arlems_list = search_arlems($searchword); 
+}else{
+    //get all ARLEMS from DB
+    $arlems_list = getAllArlems(); 
 }
+
 
 
 //every body view
@@ -144,16 +141,28 @@ if(has_capability('mod/arete:arlemfulllist', $context))
            $splitet_list = array_chunk($arlems_list, $max_number_on_page); 
 
 
-           //label that show the list of all arlems which  are available
-           echo '<br><span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';
+            //need to add a single line between assigned table and arlem table
+            echo '<br>'; 
+            
+            //Do not display the table tile if there are no ARLEM
+            if(!empty($arlems_list)){
+                 //label that show the list of all arlems which  are available
+                 echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
+            }
 
+           //Draw the searchbox
+            echo searchbox($id);
+           
            //create the ARLEMs tables
            draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
 
 
-           // create the pagination 
-           $pagination = new pagination();
-           echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
+           // create the pagination if arlemlist was not empty
+           if(!empty($arlems_list)){
+                $pagination = new pagination();
+                echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
+           }
+
 
     }
     

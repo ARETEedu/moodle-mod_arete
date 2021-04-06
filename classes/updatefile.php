@@ -15,6 +15,11 @@ $userDirPath = filter_input(INPUT_POST, 'userDirPath');
 
 global $USER;
 
+
+$activityJSON = '';
+$workplaceJSON = '';
+$numberOfUpdatedFiles = 0;
+
 if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 
           //remove temp dir which is used on editing
@@ -47,7 +52,7 @@ if(!empty(array_filter($_FILES['files']['name']))) {
 
 function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = false){
         
-    global $DB, $itemid;
+    global $DB, $itemid,$activityJSON,$workplaceJSON,  $numberOfUpdatedFiles;
     
         $ffs = scandir($dir);
 
@@ -63,13 +68,31 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
             foreach($ffs as $ff){
                 if($file_name == $ff && pathinfo($ff, PATHINFO_EXTENSION) ==  $file_ext){
                     move_uploaded_file($file_tmpname, $dir. '/' . $ff);
+                    
+                    if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0)){
+
+                        //if it is activity json
+                        if( strpos($ff, 'activity') !== false)
+                        {
+                            $activityJSON = file_get_contents ($dir. '/' . $ff, FILE_USE_INCLUDE_PATH);
+                        }
+                        //if it is workplace jason
+                        else if(strpos($ff, 'workplace') !== false)
+                        {
+                            $workplaceJSON = file_get_contents ($dir. '/' . $ff, FILE_USE_INCLUDE_PATH);
+                        }
+                    }
+                    
+                    $numberOfUpdatedFiles ++;
                 }
                 
+
                 //include all files in subfolders
                 if(is_dir($dir.'/'.$ff)){
                     replace_file($dir.'/'.$ff, $file_name, $file_ext, $file_tmpname);
                 }
             }
+            
             
             //only once at the end
             if($mainDir == true){
@@ -79,6 +102,8 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
     }
 
+
+    
     
     function zipFiles($arlem)
     {
@@ -131,7 +156,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
     
     function upload_new_zip($filepath, $filename){
 
-        global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath;
+        global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath,$activityJSON,$workplaceJSON,$numberOfUpdatedFiles;
         
 
          //get the file which need to be updated
@@ -154,15 +179,34 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          $newArlemID = $newArlem->get_id();
                 
 
-         //update the record of the file in allarlems table
+         ///update the record of the file in allarlems table
+         //the common records
          $parameters = array(
             'fileid' => $newArlemID,
             'timecreated' => $Date,
-            'timemodified' => time(),
-            'filesize' => $newArlem->get_filesize()
+            'filesize' => $newArlem->get_filesize(),
          );
-         updateArlemObject($filename, $itemid, $parameters);
          
+         //update activity_json if updated
+         if($activityJSON !== '')
+         {
+             $parameters += array('activity_json' => $activityJSON);
+         }
+         
+         //update workplace_json if updated
+         if($workplaceJSON !== '')
+         {
+             $parameters += array('workplace_json' => $workplaceJSON);
+         }
+         
+         //update timemodified only if at least one file is updated
+         if($numberOfUpdatedFiles != 0){
+              $parameters += array('timemodified' => time());
+         }
+
+         //update the table now
+         updateArlemObject($filename, $itemid, $parameters);
+         ///
 
          
          //update the record of the file in arete_arlem table

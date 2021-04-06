@@ -14,12 +14,13 @@ $userid = filter_input(INPUT_POST, 'userid');
 $thumbnail = filter_input(INPUT_POST, 'thumbnail');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
+$activityJson = filter_input(INPUT_POST, 'activity');
+$workplaceJson = filter_input(INPUT_POST, 'workplace');
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
 
 global $DB;
-
 
 //if base64 file is exists
 if(isset($base64file))
@@ -95,6 +96,8 @@ if(isset($base64file))
             $arlemdata->filename = $filename;
             $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
             $arlemdata->upublic =  (int) $public;
+            $arlemdata->activity_json = $activityJson;
+            $arlemdata->workplace_json = $workplaceJson;
             $arlemdata->timecreated = $timecreated;
             $arlemdata->timemodified = $timemodifeid;
             $DB->insert_record('arete_allarlems', $arlemdata);
