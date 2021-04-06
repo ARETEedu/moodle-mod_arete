@@ -53,6 +53,8 @@ $context = context_course::instance($course->id);
 $searchword = filter_input(INPUT_GET, 'qword');
 if(isset($searchword) && $searchword !== '')
 {
+    //remove invalid characters
+    $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
     //search the jsons and return files if exists
     $arlems_list = search_arlems($searchword); 
 }else{
