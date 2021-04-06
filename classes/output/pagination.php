@@ -13,28 +13,38 @@ defined('MOODLE_INTERNAL') || die;
      * @param $id id of the current activity
      * @return string HTML pagination 
      */
-    public function getPagination($splitet_list, $page_number, $id){
+    public function getPagination($splitet_list, $page_number, $id, $searchword){
+        
+       //pass the search word in url if exist
+       $searchQuery = '';
+       if($searchword !== null){
+           $searchQuery = '&qword=' . $searchword;
+       }
+       
+       
        $nav = html_writer::start_tag('div', array('class' => 'pagination'));
 
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number-1) )); //back button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number-1) . $searchQuery)); //back button
        $nav .= 'Prev';
        $nav .= html_writer::end_tag('a');
 
        for($i = 1; $i < count($splitet_list)+1; $i++)
        {
+           
+           $pageAttr = array('href' => 'view.php?id='. $id . '&pnum=' . $i . $searchQuery);
+           
            //make diffrent color for active page
            if($i == $page_number){
-               $pageAttr = array('class' => 'btn btn-primary', 'href' => 'view.php?id='. $id . '&pnum=' . $i );
-           }else{
-               $pageAttr = array('href' => 'view.php?id='. $id . '&pnum=' . $i );
+               $pageAttr += array('class' => 'btn btn-primary');
            }
 
            $nav .= html_writer::start_tag('a', $pageAttr);
            $nav .= $i;
            $nav .= html_writer::end_tag('a');
        }
+       
 
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number+1) )); //back button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number+1) . $searchQuery )); //next button
        $nav .= 'Next';
        $nav .= html_writer::end_tag('a');
 

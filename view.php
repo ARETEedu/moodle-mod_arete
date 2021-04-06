@@ -160,7 +160,7 @@ if(has_capability('mod/arete:arlemfulllist', $context))
            // create the pagination if arlemlist was not empty
            if(!empty($arlems_list)){
                 $pagination = new pagination();
-                echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
+                echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id,  (isset($searchword) && $searchword !== '') ? $searchword : null);
            }
 
 
