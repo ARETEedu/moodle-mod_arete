@@ -128,7 +128,7 @@ function draw_table_for_students($moduleid){
  */
 function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = null)
 {
-    global $DB, $USER, $CFG, $COURSE,$PAGE;
+    global $USER, $CFG, $COURSE,$PAGE;
 
     $context = context_course::instance($COURSE->id);
 

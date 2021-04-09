@@ -240,6 +240,7 @@ function search_arlems($searchWord){
  */
 function getArlemURL($filename, $itemid)
 {
+    global $DB;
     $file = getArlemByName($filename, $itemid);
     
     $url = '#';
@@ -247,8 +248,12 @@ function getArlemURL($filename, $itemid)
         $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
     }
 
-    return $url;
+    $file_in_allarlem = $DB->get_record('arete_allarlems' , array('filename' => $filename, 'itemid' => $itemid));
+    
+    $path = explode("/" , parse_url($url)[path] );
+    return 'wekit://load?download=' . implode("/" ,array_slice($path, 2)) . '&id=' . $file_in_allarlem->sessionid;
 }
+
 
 
 /**
