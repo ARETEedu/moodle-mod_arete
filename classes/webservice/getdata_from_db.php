@@ -25,26 +25,33 @@
      * 
      */
     function get_arlem_list(){
-        global $DB,$userid,$token;
         
+        global $DB,$userid,$token;
 
+        
         if(isset($userid) && isset($token)){
             
-            //save all arete ids which user are enrolled to
-            $unsorted_arlems =  $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $userid  , null, 'timecreated DESC');  //only public and for the user
-
+            //the moudules that the user enrolled to their activities
             $USER_moduleIDs = get_user_arete_modules_ids();
             
-            //All arlems with the ARLEMs which are assigne to the courses that user is enrolled to on top of the list
-            $arlems = sorted_arlemList_by_user_assigned($unsorted_arlems, $USER_moduleIDs);
-            
-        }else{
-            $arlems =  $DB->get_records('arete_allarlems' , array('upublic' => 1 ), 'timecreated DESC');  //only public and for the user
-            
-            //add author name to ARLEM file
-            foreach ($arlems as $arlem) {
-                $arlem->author = find_author($arlem);
+            //if the user is enrolled atleast to one activity which contains arete module
+            if(!empty($USER_moduleIDs)){
+                
+                //save all arete ids which user are enrolled to
+                $unsorted_arlems =  $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $userid  , null, 'timecreated DESC');  //only public and for the user
+                //All arlems with the ARLEMs which are assigne to the courses that user is enrolled to on top of the list
+                $arlems = sorted_arlemList_by_user_assigned($unsorted_arlems, $USER_moduleIDs);
+                
+                print_r(json_encode($arlems));   
+                return;
             }
+        }
+
+        $arlems =  $DB->get_records('arete_allarlems' , array('upublic' => 1 ), 'timecreated DESC');  //only public and for the user
+        //
+        //add author name to ARLEM file
+        foreach ($arlems as $arlem) {
+            $arlem->author = find_author($arlem);
         }
         
         print_r(json_encode($arlems));   
