@@ -2,9 +2,11 @@
 
     require_once(dirname(__FILE__). '/../../../../config.php');
     require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+    require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
     
     $request = filter_input(INPUT_POST, 'request');
     $itemid = filter_input(INPUT_POST, 'itemid');
+    $sessionid = filter_input(INPUT_POST, 'sessionid');
     $userid = filter_input(INPUT_POST, 'userid');
     $token = filter_input(INPUT_POST, 'token');
 
@@ -12,6 +14,9 @@
     switch ($request){
         case "arlemlist":
             get_arlem_list();
+            break;
+        case "deleteArlem":
+            delete_arlem();
             break;
         default:
             print_r('Error: request is NULL');
@@ -211,4 +216,30 @@
         $authoruser = $DB->get_record('user', array('id' => $arlem->userid));
         return $authoruser->firstname . ' ' .$authoruser->lastname;
         
+    }
+   
+    
+    function delete_arlem(){
+        
+        global $DB,$itemid,$sessionid;
+        
+        if(!isset($sessionid))
+        {
+            $sessionid = '';
+        }
+        
+        if(!isset($itemid))
+        {
+            $itemid = '';
+        }
+        
+        $filename = $DB -> get_field('arete_allarlems', 'filename' , array('itemid'=> $itemid, 'sessionid' => $sessionid));
+        
+        if(isset($itemid) && $filename !== null){
+            deletePluginArlem($filename, $itemid);
+        }
+        else{
+            echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
+        }
+
     }
