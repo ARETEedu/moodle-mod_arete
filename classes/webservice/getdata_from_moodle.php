@@ -43,6 +43,9 @@ switch ($requestedInfo){
     case "userid":
         print_r(current($jsonResult)[0]['id']);
         break;
+    case "mail":
+        print_r(current($jsonResult)[0]['email']);
+        break;
     default:
         print_r($jsonResult);
         break;
