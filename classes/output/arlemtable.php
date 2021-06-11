@@ -140,7 +140,8 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     $arlem_thumbnail = get_string('arlemthumbnail' , 'arete');
     $size_title = get_string('sizetitle' , 'arete');
     $author_title = get_string('authortitle' , 'arete');
-    $download_title = get_string('downloadtitle' , 'arete');
+    $playtitle = get_string('playtitle' , 'arete');
+    $downloadtitle = get_string('downloadtitle' , 'arete');
     $edit_title = get_string('editbutton' , 'arete');
     $qr_title = get_string('qrtitle' , 'arete');
     $public_title = get_string('publictitle' , 'arete');
@@ -152,9 +153,9 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     //show the assign button only to teachers
 
     if($teacherView){
-        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title,  $download_title, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title);
+        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title,  $playtitle, $downloadtitle, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title);
     }else{
-        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title, $assignedby_title,  $download_title,  $qr_title);
+        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title, $assignedby_title,  $playtitle, $downloadtitle,  $qr_title);
     }
     //remove radio buttons and delete button for the students
 
@@ -186,19 +187,23 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . '</span>';
 
         
-        //download button
+        //play button
         $url = getArlemURL($arlem->filename, $arlem->itemid);
-        $dl_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
+        $play_button = '<a name="playBtn" href ="'. $url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/playicon.png"' . '"></a>';
+      
+        //download button
+        $url = getArlemURL($arlem->filename, $arlem->itemid, true);
+        $dl_button = '<a name="dlBtn" href ="'. $url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/downloadicon.png"' . '"></a>';
         
         
         //edit button
         $page_number = filter_input(INPUT_GET, 'pnum' );//page number from pagination
         $id = required_param('id', PARAM_INT); // Course Module ID.
-        $edit_button = '<input type="button" class="button dlbutton"  name="editBtn' . $arlem->fileid . '" onclick="window.open(\''. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '\', \'_self\')" value="'. get_string('editbutton' , 'arete') . '">';
+        $edit_button = '<a name="dlBtn'. $arlem->fileid .'" href ="'. $CFG->wwwroot .'/mod/arete/view.php?id='. $id . '&pnum=' . $page_number . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/editicon.png"' . '"></a>';
 
         
         //qr code button
-        $qr_button = '<input type="button" class="button dlbutton"  name="dlBtn' . $arlem->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrbutton' , 'arete') . '">';
+        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png"' . '"></a>';
 
         //send filename and itemid as value with (,) between
         if($arlem->upublic == 1){ $checked = 'checked';} else {$checked = '';}
@@ -226,9 +231,9 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         
         //Now fill the row
         if($teacherView){
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $dl_button ,$edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn);
+            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn);
         }else{
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author , $assignedby,  $dl_button ,  $qr_button);
+            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button);
         }
 
 

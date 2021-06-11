@@ -77,6 +77,15 @@
   cursor: pointer;
 }
 
+
+.tableicons 
+{
+    width: 40%;
+    min-width : 24px;
+    max-width : 48px;
+}
+
+
 .dlbutton {
   background-color: white;
   color: black;
@@ -171,6 +180,7 @@
 .table-responsive { 
   width: 100%; 
   border-collapse: collapse; 
+  table-layout: auto;
 }
 /* Zebra striping */
 .table-responsive  tr:nth-of-type(odd) { 
@@ -187,13 +197,15 @@
   text-align: center; 
 }
 
+
 #assignedTable td  
 {    
     background-color: #cfffbf; 
     line-height: 40px; 
  }
 
-
+ 
+ 
  /*Thumbnail and modal*/
  
  .ImgThumbnail, .no-thumbnail{
@@ -401,6 +413,11 @@ only screen and (max-width: 1300px) {
         position: relative;
         display: block;
     }
+    
+    .tableicons 
+    {
+        width: 15%;
+    }
 }
 
 @media 
@@ -410,4 +427,10 @@ only screen and (max-width: 640px) {
 
             width: 100%; /* Full width */
         }
+        
+        
+            .tableicons 
+            {
+                width: 30%;
+            }
 }

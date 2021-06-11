@@ -234,11 +234,12 @@ function search_arlems($searchWord){
     
     
 /**
- * Get the ARLEM URL 
+ * Get the ARLEM URL or play link for oopening in WEKIT protocol
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea
+ * @param $downloadMode if true the link with http protocol will be return for direct download
  */
-function getArlemURL($filename, $itemid)
+function getArlemURL($filename, $itemid, $downloadMode = null)
 {
     global $DB;
     $file = getArlemByName($filename, $itemid);
@@ -251,8 +252,16 @@ function getArlemURL($filename, $itemid)
     $file_in_allarlem = $DB->get_record('arete_allarlems' , array('filename' => $filename, 'itemid' => $itemid));
     
     $path = explode("/" , parse_url($url)[path] );
-    return 'wekit://load?download=' . implode("/" ,array_slice($path, 2)) . '&id=' . $file_in_allarlem->sessionid;
+    
+    if($downloadMode != null){
+        return $url;
+    }
+    else{
+        return 'wekit://load?download=' . implode("/" ,array_slice($path, 2)) . '&id=' . $file_in_allarlem->sessionid;
+    }
+
 }
+
 
 
 
