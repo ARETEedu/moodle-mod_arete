@@ -75,7 +75,6 @@ class EditArlem{
     
     
     function unzip_arlem($filename){
-        global $CFG;
         $path = $this->userDirPath. '/';
         $zip = new ZipArchive;
         $res = $zip->open($path. $filename);
@@ -93,7 +92,7 @@ class EditArlem{
         } else {
             
           //unable to unzip zip file
-          echo 'File is damaged!';
+          echo get_string('filedamage', 'arete');
         }
         
     }

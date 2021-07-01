@@ -13,6 +13,8 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         
         $paths[] = new restore_path_element('arete_allarlems', '/activity/arete/arlem/areteinstance/allarlems/arlemfile');
         
+        $paths[] = new restore_path_element('arete_rating', '/activity/arete/arlem/areteinstance/allarlems/arlemfile/ratings/rating');
+        
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);
     }
@@ -58,7 +60,7 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         
         $oldfileid = $data->fileid;
         
-        //if the file is not exist
+        //if the file does not exist
         if(empty($DB->get_record('arete_allarlems',array('fileid' => $oldfileid)))){
            $data->timecreated = $this->apply_date_offset($data->timecreated);
             $data->timemodified = $this->apply_date_offset($data->timemodified);
@@ -66,6 +68,23 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         }
 
     }
+    
+    
+    protected function process_arete_rating($data) {
+        global $DB;
+        $data = (object)$data;
+        
+        
+        $olduserid = $data->userid;
+        $olditemid = $data->itemid;
+        
+        //if the file does not exist
+        if(empty($DB->get_record('arete_rating',array('userid' => $olduserid , 'itemid' => $olditemid)))){
+           $data->timecreated = $this->apply_date_offset($data->timecreated);
+            $newitemid = $DB->insert_record('arete_rating', $data);
+        }
+    }
+    
     
     protected function after_execute() {
         $this->add_related_files('mod_arete', 'intro', null);

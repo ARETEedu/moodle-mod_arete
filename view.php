@@ -5,8 +5,14 @@ require_once($CFG->dirroot.'/mod/arete/locallib.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/output/outputs.php');
 
+defined('MOODLE_INTERNAL') || die;
+
+
 //current user
 global $USER;
+
+//let javascript knows about the userid
+echo '<script>window.userid =' . $USER->id . '</script>';
 
 //Get module id, course and moudle infos
 $id = required_param('id', PARAM_INT); // Course Module ID.
@@ -35,34 +41,26 @@ if($pagemode == 'edit'){
 }
 
 
-$PAGE->requires->css('/mod/arete/css/styles.css');  //pagination css file
+//import font-awesome to use for rating stars
+echo '<link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">';
+
+$PAGE->requires->css('/mod/arete/css/styles.css');  //custom css file
+$PAGE->requires->css('/mod/arete/assets/jquery-bar-rating-master/dist/themes/fontawesome-stars.css');  //rating css file
+
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/jquery-bar-rating-master/dist/jquery.barrating.min.js'), true); //for rating stars
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
-        
+
+$userMenuNode = $PAGE->navigation->add(get_string('youraractivities', 'arete'), new moodle_url($CFG->wwwroot . '/mod/arete/view.php?id='. $id . '&mode=user'), navigation_node::TYPE_CUSTOM);
+$userMenuNode->make_active();
+
 //print Moodle header
 echo $OUTPUT->header();
-
 
 //id of this activity
 $moduleid = $cm->instance;
 
 //course context
 $context = context_course::instance($course->id);
-
-
-//Load ARLEMS
-$searchword = filter_input(INPUT_GET, 'qword');
-if(isset($searchword) && $searchword !== '')
-{
-    //remove invalid characters
-    $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
-    //search the jsons and return files if exists
-    $arlems_list = search_arlems($searchword); 
-}else{
-    //get all ARLEMS from DB
-    $arlems_list = getAllArlems(); 
-}
-
-
 
 //every body view
 if(has_capability('mod/arete:view', $context)){
@@ -80,12 +78,17 @@ if(has_capability('mod/arete:view', $context)){
 
 }
 
-
 ///////Students view and teacher view
 if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mod/arete:arlemfulllist', $context))
 {
-    //dont show on edit mode
+    //create the top menu(not on edit/structure page)
     if($pagemode != "edit")
+    {
+        echo Create_student_menu();    
+    }
+
+    //dont show on edit mode and when on user page
+    if($pagemode != "edit" && $pagemode != "user")
     {
         //add the role to the top of the advtivity
         $roles = get_user_roles($context, $USER->id);
@@ -114,65 +117,107 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
     }
 }
 
-
-///////////Teachers View
-if(has_capability('mod/arete:arlemfulllist', $context))
+//create edit page
+if($pagemode == "edit")
 {
 
-    //edit mode
-    if($pagemode == "edit"){
-        
-        //create edit page
-        $editArlem = new EditArlem();
-
-    }else{ //view mode 
-        
-        //maximum item on each page
-           $max_number_on_page = 10; 
-
-           //get the active page id from GET
-           $page_number = filter_input(INPUT_GET, 'pnum');//current page number
-
-           //start at first page if pnum is not exist in the page url
-           if(!isset($page_number) || $page_number < 1)
-           {
-               $page_number = 1;
-           }
-
-           // split ARLEMs list to small lists
-           $splitet_list = array_chunk($arlems_list, $max_number_on_page); 
-
-
-            //need to add a single line between assigned table and arlem table
-            echo '<br>'; 
-            
-            //Do not display the table tile if there are no ARLEM
-            if(!empty($arlems_list)){
-                 //label that show the list of all arlems which  are available
-                 echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
-            }
-
-           //Draw the searchbox
-            echo searchbox($id);
-           
-           //create the ARLEMs tables
-           draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
-
-
-           // create the pagination if arlemlist was not empty
-           if(!empty($arlems_list)){
-                $pagination = new pagination();
-                echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id,  (isset($searchword) && $searchword !== '') ? $searchword : null);
-           }
-
+    $editArlem = new EditArlem();
+}
+else if($pagemode == "user")
+{
+    //show only User arlems
+    $arlems_list = search_result(true);
+    generate_arlem_table($arlems_list, 1);
+}
+else{
+    
+    ///////////Teachers View
+    if(has_capability('mod/arete:arlemfulllist', $context)){
+        $arlems_list = search_result(false);
+        generate_arlem_table($arlems_list);
 
     }
-    
    
-        
+}
+    
+
+
+//Create an array of needed ARLEMS
+//if search word not findign then find all user arlems if $is_user_table is true otherwise return all arlems for manager
+function search_result($is_user_table){
+   
+   $searchword = filter_input(INPUT_GET, 'qword');
+    if(isset($searchword) && $searchword !== '')
+    {
+        //remove invalid characters
+        $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
+        //search the jsons and return files if exists
+        $arlems_list = search_arlems($searchword, $is_user_table); 
+    }else if($is_user_table){
+        $arlems_list = getAllUserArlems();
+    }else{
+        $arlems_list = getAllArlems();
+    }
+    
+    return $arlems_list;
 }
 
 
+function generate_arlem_table($arlems_list, $userViewMode = 0){
+    
+    global $id, $moduleid;
+    
+    //initiated ata for using in javascript
+    init($userViewMode);
+
+
+    //maximum item on each page
+    $max_number_on_page = 10; 
+
+    //get the active page id from GET
+    $page_number = filter_input(INPUT_GET, 'pnum');//current page number
+
+    
+    // split ARLEMs list to small lists
+    $splitet_list = array_chunk($arlems_list, $max_number_on_page); 
+    
+    
+    //start at first page if pnum is not exist in the page url
+    if(!isset($page_number) || $page_number < 1)
+    {
+        $page_number = 1;
+    }else if($page_number > count($splitet_list)){
+        $page_number =  count($splitet_list);
+    }
+    
+
+     //need to add a single line between assigned table and arlem table
+     echo '<br>'; 
+
+     //Do not display the table tile if there are no ARLEM
+     if(!empty($arlems_list)){
+          //label that show the list of all arlems which  are available
+          echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
+     }
+
+     //show the tab buttons
+     echo create_tabs(count($arlems_list), $userViewMode );
+
+    
+    //Draw the searchbox
+     echo searchbox($id);
+
+    //create the ARLEMs tables
+    draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
+    
+    // create the pagination if arlemlist was not empty
+    if(!empty($arlems_list)){
+         $pagination = new pagination();
+         echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
+    }
+
+}
+    
 
 echo $OUTPUT->footer();
 

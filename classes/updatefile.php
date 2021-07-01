@@ -29,7 +29,7 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
          }
          
          //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum );
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on');
          
          return;
 } 
@@ -225,7 +225,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          
 
          //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum );
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on');
 
     }
     

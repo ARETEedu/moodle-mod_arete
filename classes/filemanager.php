@@ -219,15 +219,34 @@ function getAllArlems()
 
 
 /**
+ * Get an array of all user files in allarlems table
+ * 
+ * @return an array with all ARLEMs for user
+ */
+function getAllUserArlems()
+{
+    global $DB,$USER;
+    
+    $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id) , 'timecreated DESC');  //only public and for the user
+
+    return $files;  
+}
+
+
+
+/**
  * 
  * Search the activity and workplace JSONs and activity name for a word
  * @return A list of ArLEm files in allalrem table
  * 
  */
-function search_arlems($searchWord){
-    global $DB;
-
-    $results = $DB->get_records_select('arete_allarlems', 'filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\''  , null, 'timecreated DESC');  //only public and for the user
+function search_arlems($searchWord, $userSearch){
+    global $DB,$USER;
+    
+    //if it is student activityies table seach only between his/her files
+    $only_user_arlems = $userSearch ? " userid = " . $USER->id . " AND " : "";
+    
+    $results = $DB->get_records_select('arete_allarlems', $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')'  , null, 'timecreated DESC');  //only public and for the user
     
     return $results;
 }
@@ -328,6 +347,13 @@ function deletePluginArlem($filename, $itemid = null )
         if(!empty($DB->get_records('arete_allarlems', array('itemid' => $fileItemId))))
         {
             $DB->delete_records('arete_allarlems', array('itemid' => $fileItemId));
+        }
+        
+        
+        //delete rating of this arlem
+        if(!empty($DB->get_records('arete_rating', array('itemid' => $fileItemId))))
+        {
+            $DB->delete_records('arete_rating', array('itemid' => $fileItemId));
         }
 
         //delete zip file
@@ -497,4 +523,24 @@ function delete_arlem_by_sessionid($sessionid){
     }
     
     return false;
+}
+
+
+
+
+/**
+ * Get the number of views on the app
+ */
+
+function get_views($itemid){
+    global $DB;
+    
+    $views = $DB->get_record('arete_allarlems', array( 'itemid' => $itemid));
+    
+    if(!empty($views)){
+        return $views->views;
+    }
+    else{
+        return 0;
+    }
 }

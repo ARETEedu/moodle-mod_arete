@@ -13,25 +13,36 @@ defined('MOODLE_INTERNAL') || die;
      * @param $id id of the current activity
      * @return string HTML pagination 
      */
-    public function getPagination($splitet_list, $page_number, $id, $searchword){
+    public function getPagination($splitet_list, $page_number, $id){
+        
+        $searchword = filter_input(INPUT_GET, 'qword');
+        $editing = filter_input(INPUT_GET, 'editing');
+        $pagemode = filter_input(INPUT_GET, 'mode');
         
        //pass the search word in url if exist
        $searchQuery = '';
-       if($searchword !== null){
+       if(isset($searchword) && $searchword != ''){
            $searchQuery = '&qword=' . $searchword;
        }
        
+       if(isset($editing) && $editing == "on"){
+           $editingMode = '&editing=on';
+       }
+
+       if(isset($pagemode) && $pagemode != ""){
+           $pagemode = '&mode=' . $pagemode;
+       }  
        
        $nav = html_writer::start_tag('div', array('class' => 'pagination'));
 
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number-1) . $searchQuery)); //back button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number-1) . $pagemode . $editingMode . $searchQuery)); //back button
        $nav .= 'Prev';
        $nav .= html_writer::end_tag('a');
 
        for($i = 1; $i < count($splitet_list)+1; $i++)
        {
            
-           $pageAttr = array('href' => 'view.php?id='. $id . '&pnum=' . $i . $searchQuery);
+           $pageAttr = array('href' => 'view.php?id='. $id . '&pnum=' . $i . $pagemode . $editingMode . $searchQuery);
            
            //make diffrent color for active page
            if($i == $page_number){
@@ -44,7 +55,7 @@ defined('MOODLE_INTERNAL') || die;
        }
        
 
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number+1) . $searchQuery )); //next button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number+1) . $pagemode . $editingMode . $searchQuery )); //next button
        $nav .= 'Next';
        $nav .= html_writer::end_tag('a');
 

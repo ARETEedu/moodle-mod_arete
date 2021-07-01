@@ -18,6 +18,9 @@
         case "deleteArlem":
             delete_arlem();
             break;
+        case "updateViews":
+            update_views();
+            break;
         default:
             print_r('Error: request is NULL');
             break;
@@ -197,7 +200,7 @@
         
         $deadline = $DB->get_field('course', 'enddate', array('id' => $info->cm->course));
 
-        return date('m.d.Y H:i ', $deadline);
+        return date('d.m.Y H:i ', $deadline);
     }
     
     
@@ -219,6 +222,13 @@
     }
    
     
+/**
+ * 
+ * Delete an arlem file
+ * @global type $DB
+ * @global string $itemid
+ * @global string $sessionid
+ */
     function delete_arlem(){
         
         global $DB,$itemid,$sessionid;
@@ -242,4 +252,20 @@
             echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
         }
 
+    }
+    
+    
+    
+    /**
+     * update views of the arlem every time the activity opens on MirageXR
+     */
+    function update_views(){
+        global $DB, $itemid;
+        $currentViews = $DB -> get_record('arete_allarlems' , array('itemid'=> $itemid));
+ 
+        if($currentViews !== null){
+            $currentViews->views += 1;
+            $DB->update_record('arete_allarlems', $currentViews);
+        }
+        
     }

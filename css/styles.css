@@ -40,7 +40,10 @@
 #searchbox {
     float:right;
     display: inline;
+
 }
+
+#searchbox input[type="text"]{ padding: 15px 10px; line-height: 15px; }
 
 
 .alarm {
@@ -176,6 +179,28 @@
 }
 
 
+#tabs{
+   display: inline-block;
+}
+
+
+#studentmenu{
+    width: 100%;
+    background-color: #ccc;
+    height: 50px;
+    box-shadow: 10px 5px 5px #eee;
+}
+
+#studentmenu .menuitem{
+    display: inline;
+    height:100%;
+    background-color: #eee;
+    color: black;
+    margin: 0;
+    font-size: 1.1em;
+    margin-right: 1px;
+}
+
 /*ARLEMs table*/
 .table-responsive { 
   width: 100%; 
@@ -304,6 +329,11 @@
 }
 
 
+.ratingtext{
+    font-size: 12px;
+}
+
+
 /* 
 Max width before this PARTICULAR table gets nasty
 This query will take effect for any screen smaller than 760px
@@ -378,16 +408,18 @@ only screen and (max-width: 1300px) {
 	.table-responsive td:nth-of-type(2):before { content: "Time Modified"; }
 	.table-responsive td:nth-of-type(3):before { content: "Activity Name"; }
         .table-responsive td:nth-of-type(4):before { content: "Thumbnail"; }
-	.table-responsive td:nth-of-type(5):before { content: "Size"; }
-	.table-responsive td:nth-of-type(6):before { content: "Author"; }
-	.table-responsive td:nth-of-type(7):before { content: "Launch"; }
-	.table-responsive td:nth-of-type(8):before { content: "Edit"; }
-	.table-responsive td:nth-of-type(9):before { content: "QR Code"; }
-	.table-responsive td:nth-of-type(10):before { content: "Public"; }
-	.table-responsive td:nth-of-type(11):before { content: "Delete"; }
-	.table-responsive td:nth-of-type(12):before { content: "Assign"; }
-        
-
+        .table-responsive td:nth-of-type(5):before { content: "Views"; }
+	.table-responsive td:nth-of-type(6):before { content: "Size"; }
+	.table-responsive td:nth-of-type(7):before { content: "Author"; }
+	.table-responsive td:nth-of-type(8):before { content: "Launch"; }
+        .table-responsive td:nth-of-type(9):before { content: "Download"; }
+	.table-responsive td:nth-of-type(10):before { content: "Edit"; }
+	.table-responsive td:nth-of-type(11):before { content: "QR Code"; }
+	.table-responsive td:nth-of-type(12):before { content: "Public"; }
+	.table-responsive td:nth-of-type(13):before { content: "Delete"; }
+	.table-responsive td:nth-of-type(14):before { content: "Assign"; }
+	.table-responsive td:nth-of-type(14):before { content: "Assign"; }   
+	.table-responsive td:nth-of-type(15):before { content: "Rating"; }  
         
         
         /*student table on mobile and tablet*/
@@ -399,8 +431,9 @@ only screen and (max-width: 1300px) {
 	#assignedTable td:nth-of-type(6):before { content: "Author"; }
         #assignedTable td:nth-of-type(7):before { content: "Assigned By"; }
 	#assignedTable td:nth-of-type(8):before { content: "Launch"; }
-	#assignedTable td:nth-of-type(9):before { content: "QR Code"; }
-
+        #assignedTable td:nth-of-type(9):before { content: "Download"; }
+	#assignedTable td:nth-of-type(10):before { content: "QR Code"; }
+	#assignedTable td:nth-of-type(11):before { content: "Rating"; }  
         
 
         /*the detailview for the block*/
@@ -418,6 +451,10 @@ only screen and (max-width: 1300px) {
     {
         width: 15%;
     }
+    
+    #studentmenu .menuitem{
+        font-size: 0.9em;
+    }
 }
 
 @media 
@@ -428,9 +465,14 @@ only screen and (max-width: 640px) {
             width: 100%; /* Full width */
         }
         
-        
-            .tableicons 
-            {
-                width: 30%;
-            }
+
+        .tableicons 
+        {
+            width: 30%;
+        }
+
+        #studentmenu{
+            padding-bottom: 50px;
+            width: 85%;
+        }
 }
