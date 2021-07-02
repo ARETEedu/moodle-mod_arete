@@ -1,3 +1,4 @@
+
 /*Pagination*/
 .pagination {
   display: flex;
@@ -217,8 +218,9 @@
 }
 
 .table-responsive  td, th { 
-  padding: 6px; 
-  border: 1px solid #ccc; 
+  padding-top: 6px; 
+  padding-bottom: 6px; 
+  border-bottom: 1px solid #ccc; 
   text-align: center; 
 }
 
@@ -328,9 +330,10 @@
 
 }
 
-
 .ratingtext{
     font-size: 12px;
+    text-align: left;
+    padding-left: 6px;
 }
 
 

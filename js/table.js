@@ -54,11 +54,11 @@
 
 
 var userviewmode, editmodebutton_on_text, editmodebutton_off_text, viewsTitle, playTitle, downloadTitle,
-        editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle = "";
+        editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle , voteRegisteredTitle = "";
 
 
 //get the data from PHP
-function init($userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle){
+function init($userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle, voteRegisteredTitle){
      this.userviewmode = $userViewMode;
      this.editmodebutton_on_text = editmodebutton_on_text;
      this.editmodebutton_off_text = editmodebutton_off_text;
@@ -73,6 +73,7 @@ function init($userViewMode, editmodebutton_on_text , editmodebutton_off_text ,v
      this.ratingTitle = ratingTitle; 
      this.scoreTitle = scoreTitle;
      this.voteTitle = voteTitle;
+     this.voteRegisteredTitle = voteRegisteredTitle;
      
      edit_mode_toggle(false , window.location.href.includes("&editing=on"));
 }
@@ -195,35 +196,87 @@ function forceDownload(href) {
 }
 
 
+var starRatingControl = new StarRating('.star-rating',{
+    maxStars: 5,
+    tooltip: false
+});
 
-//Get all ratings select objects by id (startswith star_rating_) and assgin the correct score from DB
 var rating_objects = $('[id^="star_rating_"]');
-var ids = '';
- //for all rating objects in the page
-for (i = 0; i <= rating_objects.length; i++) {
-     initRatingObject("#" + $(rating_objects[i]).attr('id'));
-}
 
-/*TODO: hm... if we remove one odf these for loops bellow, the rating will not be displayed on assigned table for the students
-and if we remove both, only some of ratings object will be displayed on teacher view. the error is barrating not defined.
-Having these loop affects the performance about 500ms
-*/
-for (i = 0; i <= rating_objects.length; i++) {
-     initRatingObject("#" + $(rating_objects[i]).attr('id'));
-}
-for (i = 0; i <= rating_objects.length; i++) {
-     initRatingObject("#" + $(rating_objects[i]).attr('id'));
-}
-//
+$( document ).ready(function() {
+    initRatingObject();
+});
+
+
+var onStart = 1;
 
 // read ratings from db and add the click event too
-function initRatingObject(id){
-    var full_ID = id,
+function initRatingObject(){
 
-    split_id = full_ID.split("_"),
-    itemid = split_id[2],
-    score_text_id = full_ID.replace("star_rating_" ,"ratingtext_");
+     //for all rating objects in the page
+    for (i = 0; i <= rating_objects.length; i++) {
 
+        var full_ID = "#" + $(rating_objects[i]).attr('id');
+        
+        if(!full_ID){
+            continue;
+        }       
+   
+        var split_id = full_ID.split("_"),
+        itemid = split_id[2],
+        score_text_id = full_ID.replace("star_rating_" ,"ratingtext_");
+
+        if(!itemid){
+            continue;
+        }
+
+        //get rating from DB 
+        getRating(full_ID, itemid, score_text_id);
+        
+        //set value to DB on select stars
+        setRating(full_ID, itemid, score_text_id);
+
+    }
+
+    setTimeout(function(){  onStart = 0; }, 2000);
+   
+}
+
+
+
+function setRating(id, itemid, score_text_id){
+    
+    $(id).on('change', function() {
+
+        $.ajax({
+            url: 'classes/insertRating.php?' + Math.random(),
+            cache: false,
+            type: 'post',
+            data: {
+                itemid: itemid,
+                userid: window.userid,
+                rating: $(id).find(":selected").text(),
+                onstart: onStart
+            },
+            dataType: 'text',
+            success: function (data) {
+                //only onLoading page update the ratings text not when the user vote
+                if(onStart === 1)
+                    $(score_text_id).html(scoreTitle + ':' + $(id).find(":selected").text() + ' (' + voteTitle + ':' + data + ')');  
+                else{
+                    $(score_text_id).html(voteRegisteredTitle);
+                }
+            }
+        });
+            
+    });
+
+}
+
+
+function  getRating(id, itemid, score_text_id){
+    
+    var value = "0";
     $.ajax({
         url: 'classes/getRating.php?' + Math.random(),
         cache: false,
@@ -233,40 +286,25 @@ function initRatingObject(id){
         },
         dataType: 'json',
         success: function (data) {
-            var value = Math.floor(data['avrage']),
-                vote = data['votes'];
-            try{
-                $(full_ID).barrating(
-                    {
-                        theme: 'fontawesome-stars',
-                        allowEmpty : null,
-                        onSelect: function (selectedValue, text, event) {
-
-                            if (typeof (event) !== 'undefined') {
-
-                                $.ajax({
-                                    url: 'classes/insertRating.php?' + Math.random(),
-                                    cache: false,
-                                    type: 'post',
-                                    data: {
-                                        itemid: itemid,
-                                        userid: window.userid,
-                                        rating: selectedValue
-                                    },
-                                    dataType: 'json',
-                                    success: function (data) {
-                                    }
-                                });
-                            }
-                        }
-                    });
-                $(full_ID).barrating('set', value);
-            }catch(err) {
-            }
-            $(score_text_id).html(scoreTitle + ':' + value + ' (' + voteTitle + ':' + vote + ')'); 
+                value = Math.floor(data['avrage']);
+                var vote = data['votes'];
+                
+                
+                if(value > 0){
+                    $(id).val(value.toString()).change();
+                    $(score_text_id).html(scoreTitle + ':' + value + ' (' + voteTitle + ':' + vote + ')');  
+                }else{
+                    $(score_text_id).html(scoreTitle + ':0 (' + voteTitle + ':0)');  
+                }
+        },
+        complete: function() {
+            starRatingControl.rebuild();
         }
     });
+    
 }
+
+
 
 
 /**

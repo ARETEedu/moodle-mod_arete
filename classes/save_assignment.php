@@ -44,8 +44,6 @@ if($moduleid == null && isset($areteid) && isset($arlemid))
 
 
 
-
-
 ///update the public privacy
 //course context
 $context = context_course::instance($COURSE->id);

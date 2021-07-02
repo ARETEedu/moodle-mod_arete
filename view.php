@@ -41,13 +41,10 @@ if($pagemode == 'edit'){
 }
 
 
-//import font-awesome to use for rating stars
-echo '<link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">';
-
 $PAGE->requires->css('/mod/arete/css/styles.css');  //custom css file
-$PAGE->requires->css('/mod/arete/assets/jquery-bar-rating-master/dist/themes/fontawesome-stars.css');  //rating css file
+$PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  //rating css file
 
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/jquery-bar-rating-master/dist/jquery.barrating.min.js'), true); //for rating stars
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); //for rating stars
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
 
 $userMenuNode = $PAGE->navigation->add(get_string('youraractivities', 'arete'), new moodle_url($CFG->wwwroot . '/mod/arete/view.php?id='. $id . '&mode=user'), navigation_node::TYPE_CUSTOM);
@@ -81,6 +78,10 @@ if(has_capability('mod/arete:view', $context)){
 ///////Students view and teacher view
 if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mod/arete:arlemfulllist', $context))
 {
+    
+    //initiated ata for using in javascript
+    init(0);
+    
     //create the top menu(not on edit/structure page)
     if($pagemode != "edit")
     {

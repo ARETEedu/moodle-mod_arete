@@ -229,6 +229,7 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
             $assignedby = get_who_assigned_ARLEM($arlem, $moduleid);
         }
 
+//        $rating = 'Temporary disabled';
         $rating = generate_rating_stars($arlem->itemid,$teacherView);
 
                 
@@ -390,7 +391,7 @@ function init($userViewMode){
     echo '<script>$(document).ready(function() { init(' . $userViewMode . ', "' . get_string('editmodeenabledbutton', 'arete') . '" , "' 
     . get_string('editmodedisabledbutton', 'arete'). '" , "'. get_string('viewstitle', 'arete') . '" , "'. get_string('playtitle', 'arete') . '" , "'. get_string('downloadtitle', 'arete') . '" , "'. get_string('editbutton', 'arete'). '" , "' . get_string('qrtitle', 'arete') .
     '","'  . get_string('publictitle', 'arete') . '","' . get_string('deletetitle', 'arete') . '","' . get_string('assigntitle', 'arete') . '","' . get_string('ratingtitle', 'arete') . '","' . get_string('scoretitle', 'arete') .
-            '","' . get_string('votetitle', 'arete') . '" ); });</script>';
+            '","' . get_string('votetitle', 'arete') . '","' . get_string('voteregistered', 'arete') . '" ); });</script>';
 
 }
 
@@ -404,7 +405,7 @@ function generate_rating_stars($itemid, $teacherView){
     $idSuffix = $teacherView ? "" : "_studentView";
     
     $ratingSystem = html_writer::start_div('ratingcontainer');    
-        $ratingSystem .= html_writer::start_tag('select', array('class' => 'rating', 'id' => 'star_rating_' . $itemid . $idSuffix  ));
+        $ratingSystem .= html_writer::start_tag('select', array('class' => 'star-rating', 'id' => 'star_rating_' . $itemid . $idSuffix  ));
             $ratingSystem .= html_writer::start_tag('option ', array('value' => '')); $ratingSystem .= '' . html_writer::end_tag('option');
             $ratingSystem .= html_writer::start_tag('option ', array('value' => '1')); $ratingSystem .= '1' . html_writer::end_tag('option');
             $ratingSystem .= html_writer::start_tag('option ', array('value' => '2')); $ratingSystem .= '2' . html_writer::end_tag('option');
@@ -417,7 +418,3 @@ function generate_rating_stars($itemid, $teacherView){
    
     return $ratingSystem;
 }
-
-
-
-

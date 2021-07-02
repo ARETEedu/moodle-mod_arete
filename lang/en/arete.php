@@ -68,3 +68,4 @@ $string['scoretitle'] = 'Score';
 $string['votetitle'] = 'Votes';
 $string['youraractivities'] = 'Your AR Activities';
 $string['filedamage'] = 'File is damaged!';
+$string['voteregistered'] = 'Registered!';
