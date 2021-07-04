@@ -214,7 +214,16 @@
 }
 .table-responsive  th { 
   font-weight: bold; 
-    background-color: #eee; 
+  background-color: #eee; 
+}
+
+.table-responsive  th a{ 
+    color: #316091;
+    cursor: pointer;
+}
+
+.table-responsive  th a:hover{ 
+    color: orange;
 }
 
 .table-responsive  td, th { 

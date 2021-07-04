@@ -9,6 +9,9 @@ defined('MOODLE_INTERNAL') || die;
 $itemid = filter_input(INPUT_POST, 'itemid');
 $pageId = filter_input(INPUT_POST, 'pageId');
 $pnum = filter_input(INPUT_POST, 'pnum');
+$sorting = filter_input(INPUT_POST, 'sort');
+$order = filter_input(INPUT_POST, 'order');
+$searchQuery = filter_input(INPUT_POST, 'qword');
 $userDirPath = filter_input(INPUT_POST, 'userDirPath');
 
 //if cancel button is pressed
@@ -20,6 +23,10 @@ $activityJSON = '';
 $workplaceJSON = '';
 $numberOfUpdatedFiles = 0;
 
+$qword = isset($searchQuery) && $searchQuery != '' ? '&qword=' . $searchQuery : '';
+$sortingMode = isset($sorting) && $sorting != '' ? '&sort=' . $sorting : '';
+$orderMode = isset($order) && $order != '' ? '&order=' . $order : '';
+
 if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 
           //remove temp dir which is used on editing
@@ -29,7 +36,7 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
          }
          
          //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on');
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on' . $sortingMode . $orderMode . $qword);
          
          return;
 } 
@@ -223,9 +230,9 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
               deleteDir($tempDir);
          }
          
-
+         global $sortingMode, $orderMode, $qword;
          //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on');
+         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on' . $sortingMode . $orderMode . $qword);
 
     }
     

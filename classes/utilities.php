@@ -229,3 +229,75 @@ function httpPost($url, $data){
 
 
 
+/**
+ * create the queried needed
+ */
+function get_queries($onlyValue = false){
+   
+    
+    $id = filter_input(INPUT_GET, 'id' );
+    $pnum = filter_input(INPUT_GET, 'pnum' );
+    $itemid = filter_input(INPUT_GET, 'itemid' );
+    $arlemuserid = filter_input(INPUT_GET, 'user' );
+    $searchword = filter_input(INPUT_GET, 'qword');
+    $editing = filter_input(INPUT_GET, 'editing');
+    $pagetype = filter_input(INPUT_GET, 'mode');
+    $sorting = filter_input(INPUT_GET, 'sort');
+    $order = filter_input(INPUT_GET, 'order');
+    
+    //
+    $idValue = '';
+    if(isset($id) && $id != ''){
+        $idValue = !$onlyValue ? '&id=' . $id : $id;
+    }
+    
+    //
+    $pnumValue = '';
+    if(isset($pnum) && $pnum != ''){
+        $pnumValue = !$onlyValue ? '&pnum=' . $pnum: $pnum;
+    }
+    
+    //
+    $itemidValue = '';
+    if(isset($itemid) && $itemid != ''){
+        $itemidValue = !$onlyValue ? '&itemid=' . $itemid: $itemid;
+    }
+    
+    //
+    $arlemuseridValue = '';
+    if(isset($arlemuserid) && $arlemuserid != ''){
+        $arlemuseridValue = !$onlyValue ? '&user=' . $arlemuserid : $arlemuserid;
+    }
+    
+    
+    $editing_mode = '';
+    if(isset($editing) && $editing == "on"){
+        $editing_mode = !$onlyValue ? '&editing=' . 'on' : 'on';
+    }
+
+    $pagemode = '';
+    if(isset($pagetype) && $pagetype != ""){
+        $pagemode = !$onlyValue ? '&mode=' . $pagetype : $pagetype;
+    }  
+
+    $sortingMode = '';
+    if(isset($sorting) && $sorting != ""){
+        $sortingMode = !$onlyValue ? '&sort=' . $sorting : $sorting;
+    }
+
+
+    //pass the search word in url if exist
+    $searchQuery = '';
+    if(isset($searchword) && $searchword != ''){
+        $searchQuery = !$onlyValue ? '&qword=' . $searchword : $searchword;
+    }
+    
+    //
+    $orderMode = '';
+    if(isset($order) && $order != ''){
+        $orderMode = !$onlyValue ? '&order=' . $order : $order;
+    }
+    
+    return array('id' => $idValue, 'pnum' => $pnumValue, 'itemid' => $itemidValue, 'user' => $arlemuseridValue, 'mode' => $pagemode, 'editing' => $editing_mode, 'sort' => $sortingMode,'qword' => $searchQuery , 'order' => $orderMode);
+}
+

@@ -4,8 +4,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__). '/../../../config.php');
 
-$system_context = context_system::instance()->id;
+//sort the table by ASC or DESC 
+$order = filter_input(INPUT_GET, 'order' );
+if(!isset($order)){
+    $order = "DESC"; 
+}
 
+$system_context = context_system::instance()->id;
 
 /**
  * Delete a file from user draft 
@@ -198,20 +203,38 @@ function copyArlemToTemp($filename,  $itemid){
  * 
  * @return an array with all ARLEMs for manager, and public and user own files for other users
  */
-function getAllArlems()
+function getAllArlems($sorting)
 {
-
-    global $DB,$USER, $COURSE;
+    global $DB,$USER, $COURSE, $order;
+    
+    $sortingMode = validate_sorting($sorting);
     
     //course context
     $context = context_course::instance($COURSE->id);
        
     //manager
     if(has_capability('mod/arete:manageall', $context)){
-            $files = $DB->get_records('arete_allarlems' , null, 'timecreated DESC'); //all arlems
+
+        switch ($sortingMode){
+            case "author": //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+                $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id ORDER BY u.username ' . $order); //all arlems
+                break;
+            default:
+                $files = $DB->get_records('arete_allarlems' , null, $sortingMode . ' ' . $order); //all arlems
+                break;
+        }
+        
     }else //others
     {
-           $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $USER->id  , null, 'timecreated DESC');  //only public and for the user
+        switch ($sortingMode){
+            case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+                $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE a.upublic = 1 OR a.userid = '. $USER->id . ' ORDER BY u.username ' . $order); //all arlems
+                break;
+            default:
+                $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $USER->id  , null, $sortingMode . ' ' . $order);  //only public and for the user
+                break;
+        }
+
     }
 
     return $files;  
@@ -223,11 +246,20 @@ function getAllArlems()
  * 
  * @return an array with all ARLEMs for user
  */
-function getAllUserArlems()
+function getAllUserArlems($sorting)
 {
-    global $DB,$USER;
+    global $DB,$USER,$order;
     
-    $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id) , 'timecreated DESC');  //only public and for the user
+    $sortingMode = validate_sorting($sorting);
+    
+    switch ($sortingMode){
+        case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+            $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE a.userid = '. $USER->id . ' ORDER BY u.username ' . $order); 
+            break;
+        default:
+            $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id) , $sortingMode . ' ' . $order);  
+            break;
+    }
 
     return $files;  
 }
@@ -240,13 +272,23 @@ function getAllUserArlems()
  * @return A list of ArLEm files in allalrem table
  * 
  */
-function search_arlems($searchWord, $userSearch){
-    global $DB,$USER;
+function search_arlems($searchWord, $userSearch, $sorting){
+    global $DB,$USER,$order;
+    
+    $sortingMode = validate_sorting($sorting);
     
     //if it is student activityies table seach only between his/her files
     $only_user_arlems = $userSearch ? " userid = " . $USER->id . " AND " : "";
     
-    $results = $DB->get_records_select('arete_allarlems', $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')'  , null, 'timecreated DESC');  //only public and for the user
+    switch ($sortingMode){
+        case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+            $results = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE ' . $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  .
+                    'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')' . ' ORDER BY u.username ' . $order); 
+            break;
+        default:
+            $results = $DB->get_records_select('arete_allarlems', $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')'  , null, $sortingMode . ' ' . $order);  //only public and for the user
+            break;
+    }
     
     return $results;
 }
@@ -443,7 +485,6 @@ function getARLEMOwner($arlem, $PAGE){
  * 
  * return the first and last name of the teacher/manager who assigned this ARLEM to this course module
  */
-
 function get_who_assigned_ARLEM($arlem, $moduleid){
     
     global $DB;
@@ -497,7 +538,6 @@ function upload_custom_file($filepath, $filename, $itemid = null, $date = null){
         'timecreated'=>$date
       );
         
-
        $newFile = $fs->create_file_from_pathname($fileinfo, $filepath);
        
        return $newFile;
@@ -531,7 +571,6 @@ function delete_arlem_by_sessionid($sessionid){
 /**
  * Get the number of views on the app
  */
-
 function get_views($itemid){
     global $DB;
     
@@ -542,5 +581,26 @@ function get_views($itemid){
     }
     else{
         return 0;
+    }
+}
+
+
+
+/**
+ * validate sorting query
+ */
+function validate_sorting($sortingMode){
+    
+    switch ($sortingMode){
+        case "filename":
+        case "views":
+        case "filesize":
+        case "timecreated":
+        case "timemodified":
+        case "rate":
+        case "author":
+            return $sortingMode;
+        default :
+            return "timecreated";
     }
 }

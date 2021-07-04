@@ -10,8 +10,13 @@ class EditArlem{
     var $itemid = '';
     var $pageId = '';
     var $pnum = '';
+    var $mode = '';
+    var $sort = '';
+    var $editing = '';
+    var $order = '';
+    var $searchQuerty = '';
     var $userDirPath = '';
-    
+    var $arlemuserid = '';
     /*
      * constructor will call other functions in this class
      */
@@ -21,18 +26,22 @@ class EditArlem{
         global $USER,$COURSE, $OUTPUT ,$DB ,$CFG,$PAGE;
 
         $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/editor.js'));
-
-        $id = filter_input(INPUT_GET, 'id' );
-        $pnum = filter_input(INPUT_GET, 'pnum' );
-        $itemid = filter_input(INPUT_GET, 'itemid' );
-        $arlemuserid = filter_input(INPUT_GET, 'user' );
         
-        $this->itemid = $itemid;
-        $this->pageId = $id;
-        $this->pnum = $pnum;
+        //get all get queries of the edit page (true means only values not the keys)
+        $queries = get_queries(true);
+        
+        $this->itemid = $queries['itemid'];
+        $this->pageId = $queries['id'];
+        $this->pnum = $queries['pnum'];
+        $this->sort = $queries['sort'];
+        $this->editing = $queries['editing'];
+        $this->order = $queries['order'];
+        $this->searchQuerty = $queries['qword'];
+        $this->mode = $queries['mode'];
+        $this->arlemuserid = $queries['user'];
                 
         $context = context_course::instance($COURSE->id);
-        $author = $DB->get_field('user', 'username', array('id' => $arlemuserid));
+        $author = $DB->get_field('user', 'username', array('id' => $this->arlemuserid));
 
         
         //The user editing folder
@@ -46,14 +55,14 @@ class EditArlem{
         }
         
         //only the owner of the file and the manager can edit files
-        if(!isset($arlemuserid) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
+        if(!isset($this->arlemuserid) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
             echo $OUTPUT->notification(get_string('accessnotallow', 'arete'));
 
         }else{
 
-            $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid));
+            $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $this->itemid));
             if(isset($filename)){
-               $this->copy_arlem_to_temp($filename, $itemid);
+               $this->copy_arlem_to_temp($filename, $this->itemid);
             }
 
         }
@@ -177,6 +186,11 @@ class EditArlem{
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'itemid', 'value' => $this->itemid )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pageId', 'value' => $this->pageId )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pnum', 'value' => $this->pnum )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sort', 'value' => $this->sort )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'order', 'value' => $this->order )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'mode', 'value' => $this->mode )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'qword', 'value' => $this->searchQuerty )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'editing', 'value' => $this->editing )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $this->userDirPath )); 
                 $form .= '<br>';
                 $form .= html_writer::empty_tag('input', array('type' => 'button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 

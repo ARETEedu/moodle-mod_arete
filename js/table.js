@@ -1,4 +1,22 @@
-///ARLEM Table scripts
+///ARLEM Table page scripts
+
+
+//Do On Start
+$(document).ready(function() {
+    
+    //change the color of the header which the table is sorted by
+    const params = new URLSearchParams(window.location.search);
+    change_sorted_header_color(params);
+    
+    //set the scroll bar back to saved play if it was saved
+    if (sessionStorage.scrollTop !== "undefined") {
+        $(window).scrollTop(sessionStorage.scrollTop);
+    }
+
+    //initiate rating objects
+    initRatingObject();
+
+});
 
 
 //thumbnail display
@@ -52,14 +70,14 @@
      }
  }
 
-
-var userviewmode, editmodebutton_on_text, editmodebutton_off_text, viewsTitle, playTitle, downloadTitle,
+//Gets from PHP 
+var domain, userviewmode, editmodebutton_on_text, editmodebutton_off_text, viewsTitle, playTitle, downloadTitle,
         editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle , voteRegisteredTitle = "";
 
 
 //get the data from PHP
-function init($userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle, voteRegisteredTitle){
-     this.userviewmode = $userViewMode;
+function init(userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle, voteRegisteredTitle){
+     this.userviewmode = userViewMode;
      this.editmodebutton_on_text = editmodebutton_on_text;
      this.editmodebutton_off_text = editmodebutton_off_text;
      this.viewsTitle = viewsTitle;
@@ -76,6 +94,13 @@ function init($userViewMode, editmodebutton_on_text , editmodebutton_off_text ,v
      this.voteRegisteredTitle = voteRegisteredTitle;
      
      edit_mode_toggle(false , window.location.href.includes("&editing=on"));
+     
+     const params = new URLSearchParams(window.location.search);
+     if(!params.has('sort')){
+        params.append('sort', 'timecreated');
+        change_sorted_header_color(params);
+     }
+
 }
 
 
@@ -149,7 +174,11 @@ function edit_mode_on(ButtonCallBack){
     //add  editing parameter from url
     
     //if editig=on does not exist in the URL add it
-    if(!window.location.href.includes("&editing=on")){
+    if(window.location.href.includes("&editing=off")){
+        var url = window.location.href.replace("&editing=off", "&editing=on");
+        window.history.replaceState(null, null, url);  
+    }
+    else if(!window.location.href.includes("&editing=on")){
         var url = window.location.href + "&editing=on";
         window.history.replaceState(null, null, url);  
     }
@@ -201,14 +230,9 @@ var starRatingControl = new StarRating('.star-rating',{
     tooltip: false
 });
 
+
 var rating_objects = $('[id^="star_rating_"]');
-
-$( document ).ready(function() {
-    initRatingObject();
-});
-
-
-var onStart = 1;
+var onStart = 1; //changes to 0 after all rating objects are initiated
 
 // read ratings from db and add the click event too
 function initRatingObject(){
@@ -305,17 +329,47 @@ function  getRating(id, itemid, score_text_id){
 }
 
 
-
-
 /**
- * save and store scroll bar position
+ * save scroll bar position
  */
 $(window).scroll(function() {
   sessionStorage.scrollTop = $(this).scrollTop();
 });
-$(document).ready(function() {
-  if (sessionStorage.scrollTop !== "undefined") {
-    $(window).scrollTop(sessionStorage.scrollTop);
-  }
-});
+
+
+
+ //change the color of the header which the table is sorted by
+function change_sorted_header_color(params){
     
+    $('.headers').each(function(i, obj) {
+        if(params.get('sort') === $(obj).attr('id')){
+           $('#'+ $(obj).attr('id')+ ' a').css('color', 'orange');
+        }        
+    });
+
+}
+
+
+
+function reverse_sorting(sorting){
+    
+const params = new URLSearchParams(window.location.search);
+
+    if(params.has('order')){
+        if(params.get('order') === "DESC"){  
+            params.set('order' , 'ASC');
+        }else if(params.get('order') === "ASC"){
+            params.set('order' , 'DESC');
+        }
+    }else{
+        params.append('order' , 'ASC');
+    }
+
+    if(!params.has('sort')){
+        params.append('sort' , sorting);
+    }else{
+        params.set('sort' , sorting);
+    }
+
+    window.location = 'view.php?' + params;
+}

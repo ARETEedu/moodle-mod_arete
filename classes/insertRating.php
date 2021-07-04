@@ -27,7 +27,7 @@ $currentRating = $DB->get_record('arete_rating', array('userid' => $userid , 'it
 if($currentRating != null){
     $currentRating->rating = $rating;
     $DB->update_record('arete_rating', $currentRating);
-    
+
 }else{
     $ratingData = new stdClass();
     $ratingData->userid = $userid;
@@ -38,11 +38,25 @@ if($currentRating != null){
 }
 
 
-echo getVotes();
 
+//calculate the avrage and update/insert into the allarlem table
+$ratings = $DB->get_records('arete_rating', array('itemid' => $itemid));
+$counter = 0;
+foreach ($ratings as $r) {
+    $counter += intval($r->rating);
+}
+$avragerate = floor($counter/ count($ratings));
+$arlem_to_update = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+$arlem_to_update->rate = intval($avragerate);
+$DB->update_record('arete_allarlems', $arlem_to_update);
+
+
+//return the number of votes of the activity
 function getVotes(){
     global $DB, $itemid;
     $votes = $DB->get_records_select('arete_rating', 'itemid = ' . $itemid . ' AND rating <> 0'  , null, 'timecreated DESC'); 
     return strval(count($votes));
 }
 
+
+echo getVotes();

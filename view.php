@@ -78,7 +78,6 @@ if(has_capability('mod/arete:view', $context)){
 ///////Students view and teacher view
 if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mod/arete:arlemfulllist', $context))
 {
-    
     //initiated ata for using in javascript
     init(0);
     
@@ -118,6 +117,7 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
     }
 }
 
+
 //create edit page
 if($pagemode == "edit")
 {
@@ -140,24 +140,29 @@ else{
     }
    
 }
-    
-
 
 //Create an array of needed ARLEMS
 //if search word not findign then find all user arlems if $is_user_table is true otherwise return all arlems for manager
 function search_result($is_user_table){
    
    $searchword = filter_input(INPUT_GET, 'qword');
+   $sortingMode = filter_input(INPUT_GET, 'sort');
+   
+   if(!isset($sortingMode)){
+       $sortingMode = "timecreated";
+   }
+   
+   
     if(isset($searchword) && $searchword !== '')
     {
         //remove invalid characters
         $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
         //search the jsons and return files if exists
-        $arlems_list = search_arlems($searchword, $is_user_table); 
+        $arlems_list = search_arlems($searchword, $is_user_table, $sortingMode); 
     }else if($is_user_table){
-        $arlems_list = getAllUserArlems();
+        $arlems_list = getAllUserArlems($sortingMode);
     }else{
-        $arlems_list = getAllArlems();
+        $arlems_list = getAllArlems($sortingMode);
     }
     
     return $arlems_list;
