@@ -289,6 +289,11 @@ class EditArlem{
                     break;
                 case 'txt':
                     $type='txt';
+                case 'manifest':
+                    $type='manifest';
+                    break;
+                case '':
+                    $type='bundle';
                     break;
                 default:
                     $type='unknow';
