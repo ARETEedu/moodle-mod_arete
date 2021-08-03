@@ -7,14 +7,13 @@ require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
+$sessionID = filter_input(INPUT_POST, 'sessionID');
 $pageId = filter_input(INPUT_POST, 'pageId');
 $pnum = filter_input(INPUT_POST, 'pnum');
 $sorting = filter_input(INPUT_POST, 'sort');
 $order = filter_input(INPUT_POST, 'order');
 $searchQuery = filter_input(INPUT_POST, 'qword');
 $userDirPath = filter_input(INPUT_POST, 'userDirPath');
-
-//if cancel button is pressed
 
 global $USER;
 
@@ -27,6 +26,7 @@ $qword = isset($searchQuery) && $searchQuery != '' ? '&qword=' . $searchQuery : 
 $sortingMode = isset($sorting) && $sorting != '' ? '&sort=' . $sorting : '';
 $orderMode = isset($order) && $order != '' ? '&order=' . $order : '';
 
+//if cancel button is pressed
 if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 
           //remove temp dir which is used on editing
@@ -42,24 +42,55 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 } 
 
 
-
+//replace user selected files
 if(!empty(array_filter($_FILES['files']['name']))) { 
+
     // Loop through each file in files[] array 
     foreach ($_FILES['files']['tmp_name'] as $key => $value) { 
+
         $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
         $file_name = $_FILES['files']['name'][$key]; 
         $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
 
-        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , true);
+        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , false);
     }
 }
 
 
+///replace the new json file after editing in jason validator
+
+$activityJson_will_updated_by_user = in_array( $sessionID . '-activity.json' , array_filter($_FILES['files']['name']));
+$workplaceJson_will_updated_by_user = in_array( $sessionID . '-workplace.json' , array_filter($_FILES['files']['name']));
+
+//replcace activity json if user does not select it manually to update
+if(!$activityJson_will_updated_by_user){
+    replace_file($userDirPath, $sessionID . '-activity' , 'json', $sessionID . '-activity.json' , $workplaceJson_will_updated_by_user ? false : true);
+}
+//replcace workplace json if user does not select it manually to update
+if( !$workplaceJson_will_updated_by_user){
+    replace_file($userDirPath, $sessionID . '-workplace' , 'json', $sessionID . '-workplace.json' , true);
+}
+
+///
 
 
-function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = false){
+/**
+ * replace old files with new files in temp folder before zipping them a
+ * @global type $DB
+ * @global type $itemid
+ * @global type $activityJSON
+ * @global type $workplaceJSON
+ * @global int $numberOfUpdatedFiles
+ * @param type $dir
+ * @param type $file_name
+ * @param type $file_ext
+ * @param type $file_tmpname
+ * @param type $mainDir
+ * @return type
+ */
+function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile = false){
         
-    global $DB, $itemid,$activityJSON,$workplaceJSON,  $numberOfUpdatedFiles;
+    global  $DB,$itemid, $numberOfUpdatedFiles,$userDirPath;
     
         $ffs = scandir($dir);
 
@@ -73,54 +104,56 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
             
             //replace files with same name and extension
             foreach($ffs as $ff){
-                if($file_name == $ff && pathinfo($ff, PATHINFO_EXTENSION) ==  $file_ext){
-                    move_uploaded_file($file_tmpname, $dir. '/' . $ff);
-                    
-                    if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0)){
 
-                        //if it is activity json
-                        if( strpos($ff, 'activity') !== false)
-                        {
-                            $activityJSON = file_get_contents ($dir. '/' . $ff, FILE_USE_INCLUDE_PATH);
-                        }
-                        //if it is workplace jason
-                        else if(strpos($ff, 'workplace') !== false)
-                        {
-                            $workplaceJSON = file_get_contents ($dir. '/' . $ff, FILE_USE_INCLUDE_PATH);
-                        }
-                    }
-                    
+                //thumbnail file can be uploaded even if it not exist already
+                if(!in_array('thumbnail.jpg', $ffs) && $file_name == "thumbnail.jpg"){
+                    move_uploaded_file($file_tmpname, $userDirPath . '/thumbnail.jpg' );
+                    $numberOfUpdatedFiles ++;
+                
+                //other selected file need to have a similar file in the zip file to be replaced
+                }else if($file_name == $ff && pathinfo($ff, PATHINFO_EXTENSION) ==  $file_ext){
+                    move_uploaded_file($file_tmpname, $dir. '/' . $ff);
+
                     $numberOfUpdatedFiles ++;
                 }
-                
 
                 //include all files in subfolders
-                if(is_dir($dir.'/'.$ff)){
+                else if(is_dir($dir.'/'.$ff)){
                     replace_file($dir.'/'.$ff, $file_name, $file_ext, $file_tmpname);
                 }
             }
             
             
-            //only once at the end
-            if($mainDir == true){
+            //only once at the end. create zip file after all file are replaced
+            if($is_lastFile == true){
                $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
                 zipFiles($file); 
             }
 
     }
 
-
     
-    
+/**
+ * Create the zip file for this ARLEM file and replace it in file system
+ * @global type $userDirPath the user folder inside temp folder where all files including the new files are located there
+ * @param type $arlem ARLEM object (from all_arlem table)
+ */    
     function zipFiles($arlem)
     {
-        global $userDirPath ;
+        global $userDirPath,$sessionID ,$activityJSON, $workplaceJSON;
         // Get real path for our folder
         $rootPath = $userDirPath ;
 
+
+        //get JSON data from files
+        $activityJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-activity.json' , FILE_USE_INCLUDE_PATH);
+        $workplaceJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-workplace.json', FILE_USE_INCLUDE_PATH);
+        
+        $newFileName = json_decode($activityJSON)->name . '.zip';
+        
         // Initialize archive object
         $zip = new ZipArchive();
-        $zip->open($rootPath . '/' . $arlem->filename , ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->open($rootPath . '/' . $newFileName , ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         // Create recursive directory iterator
         /** @var SplFileInfo[] $files */
@@ -136,7 +169,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
             $filename = $path_parts['basename'];
 
             // Skip directories (they would be added automatically) and the zipfile itself
-            if (!$file->isDir() && $filename != $arlem->filename)
+            if (!$file->isDir() && $filename != $newFileName)
             {
                 // Get real and relative path for current file
                 $filePath = $file->getRealPath();
@@ -144,30 +177,49 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
 
                 // Add current file to archive
                 $zip->addFile($filePath, $relativePath);
-                
 
                 //update thumbnail
-                if($filename == 'thumbnail.jpg' ){
+                if($filename === 'thumbnail.jpg' ){
                     updateThumbnail($filePath);  
                 }
             }
         }
+        
+        //add JSON files to the new zip file
+        $zip->addFile($userDirPath . '/' . $sessionID . '-activity.json',  $sessionID . '-activity.json');
+        $zip->addFile($userDirPath . '/' . $sessionID . '-workplace.json', $sessionID . '-workplace.json');
 
         // Zip archive will be created only after closing object
         $zip->close();
 
-        upload_new_zip($rootPath .'/' . $arlem->filename, $arlem->filename);
+        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName);
     }
     
     
-    
-    function upload_new_zip($filepath, $filename){
+    /**
+     * Upload the new zip file into the file system
+     * @global type $itemid
+     * @global type $DB
+     * @global type $pageId
+     * @global type $pnum
+     * @global type $CFG
+     * @global type $userDirPath
+     * @global string $activityJSON
+     * @global string $workplaceJSON
+     * @global int $numberOfUpdatedFiles
+     * @global type $sortingMode
+     * @global type $orderMode
+     * @global type $qword
+     * @param type $filepath
+     * @param type $filename
+     */
+    function upload_new_zip($filepath, $oldFileName, $newFileName){
 
         global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath,$activityJSON,$workplaceJSON,$numberOfUpdatedFiles;
+      
         
-
          //get the file which need to be updated
-         $existingArlem = getArlemByName($filename, $itemid);
+         $existingArlem = getArlemByName($oldFileName, $itemid);
          $oldfileid = $existingArlem->get_id();
          
          //use the same date if file exist
@@ -180,7 +232,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
          }
 
          //add the updated file to the file system
-         $newArlem =  upload_custom_file($filepath, $filename, $itemid, $Date); 
+         $newArlem =  upload_custom_file($filepath, $newFileName, $itemid, $Date); 
          
          //the new file id
          $newArlemID = $newArlem->get_id();
@@ -206,13 +258,19 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
              $parameters += array('workplace_json' => $workplaceJSON);
          }
          
-         //update timemodified only if at least one file is updated
-         if($numberOfUpdatedFiles != 0){
+         //get the 
+         $arlem_data = $DB->get_records('arete_allarlems', array('itemid' => $itemid ));
+                  
+         //update timemodified only if at least one file is updated or json files are edited
+         if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
               $parameters += array('timemodified' => time());
          }
 
+         //update the file name
+        $parameters += array('filename' => $newFileName);
+                       
          //update the table now
-         updateArlemObject($filename, $itemid, $parameters);
+         updateArlemObject($oldFileName , $itemid, $parameters);
          ///
 
          
@@ -260,5 +318,11 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $mainDir = fal
         
 
         $fs->create_file_from_pathname($file_record, $filePath);
+        
+    }
+    
+    
+    
+    function copy_Activity_Workplace_JSON(){
         
     }

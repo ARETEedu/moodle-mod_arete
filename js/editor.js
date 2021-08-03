@@ -1,11 +1,9 @@
 /////check file for editing is selected start
     function checkFiles(form){
-        if( document.getElementById("files").files.length === 0 ){
-            alert("Please select at lease one file to update this activity");
-            return;
-        }else{
+            //do what you want here before submit update form
+            
             form.submit();
-        }
+        
     };
     /////check file for editing is selected end
 
@@ -43,5 +41,10 @@
     );
     /////Custom file selector end
     
+    
+    function toggle_validator(){
+        $("#validator-modal").toggle();
+
+    }
     
     

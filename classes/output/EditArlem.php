@@ -2,8 +2,17 @@
 require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+require_once($CFG->libdir . '/pagelib.php');
 
 defined('MOODLE_INTERNAL') || die;
+//
+
+$mode = filter_input(INPUT_GET, 'mode');
+if(isset($mode) && $mode == 'edit'){
+    echo '<link  rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />';
+    echo '<link  rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsoneditor@9/dist/jsoneditor.min.css" />';
+}
+
 
 class EditArlem{
 
@@ -26,7 +35,9 @@ class EditArlem{
         global $USER,$COURSE, $OUTPUT ,$DB ,$CFG,$PAGE;
 
         $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/editor.js'));
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/JsonValidatorController.js'));
         
+        //
         //get all get queries of the edit page (true means only values not the keys)
         $queries = get_queries(true);
         
@@ -124,8 +135,9 @@ class EditArlem{
             //add these only once
             if($mainFolder == true){
               echo html_writer::start_tag('div' , array('id' => 'borderEditPage'));
-              echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . pathinfo($filename, PATHINFO_FILENAME) . '"</h3><br><br>';
-              echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">'; 
+                echo html_writer::empty_tag('input', array('type' => 'button' ,'id' => 'open-editor-button' ,  'value' => get_string('openvalidator', 'arete'), 'onClick' => 'toggle_validator();'));
+                echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . pathinfo($filename, PATHINFO_FILENAME) . '"</h3><br><br>';
+                echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">'; 
             }
 
                 echo '<ol>';
@@ -146,13 +158,17 @@ class EditArlem{
                         
                         echo $this->getIcon($ff) .'<a href="'. $url . '"  target="_blank">'  .$ff . '</a><br>';
                         
+                        if($ff == 'thumbnail.jpg'){
+                            $activity_has_thumbnail = true;
+                        }
+                            
                         //parse the url of the json file 
                         if((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0)){
                             
                             //if it is activity json
                             if( strpos($ff, 'activity') !== false)
                             {
-                                $activityJSON_URL = GetURL(get_temp_file($ff));
+                                $activityJSON = GetURL(get_temp_file($ff));
                             }
                             //if it is workplace jason
                             else if(strpos($ff, 'workplace') !== false)
@@ -164,26 +180,33 @@ class EditArlem{
                 }
                 echo '</ol>';
             
-            //add these once
+            ///add these once
                 
-            list($activityJSON, $workplaceJSON) = $this->JSONsURL($ff);
             $url =  $CFG->wwwroot. "/mod/arete/validator.php?activity=" . $activityJSON . '&workplace=' .  $workplaceJSON;
-                            
+        
             if($mainFolder == true){
-                $form =  html_writer::empty_tag('input', array('type' => 'button' ,'style' => 'margin-left: 40px' ,  'value' => get_string('openvalidator', 'arete'), 'onClick' => 'javascript:window.open("' . $url . '");'));
-                $form .= '<br><br>';
+    
+                $form = '<br><br>';
                 $form .=  html_writer::start_tag('div' , array('id' => 'borderUpdateFile'));   
-                $form .= get_string('selectfiles','arete');
+                $form .=  get_string('selectfiles','arete');
                 $form .= '<br>';
                 $form .= '<div class="file-upload">' .html_writer::empty_tag('input', array('type' => 'file', 'name' => 'files[]', 'id' => 'files', 'value' => $this->pageId , 'multiple' => 'multiple', 'class' => 'file-upload__input' )).'</div>'; 
                 $form .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'file-upload__button' , 'value' => get_string('choosefilesbutton', 'arete'))) ;
                 $form .= html_writer::start_span('span', array( 'class' => 'file-upload__label' )) . get_string('nofileselected', 'arete') . html_writer::end_span() ;
                 $form .= '<br><br>';
+                
+                //if activity has not thumbnail let the user know
+                if(!$activity_has_thumbnail){
+                    $form .= '*' . get_string('addthumbnail', 'arete');
+                    $form .= '<br>';
+                }
+ 
                 $form .= html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/warning.png',  'class' => 'icon')); //warning icon
                 $form .= '<span style="color: #ff0000">'.get_string('selectfileshelp', 'arete'). '</span>'; //warning
                 $form .= '<br>';
                 $form .= html_writer::end_tag('div');
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'itemid', 'value' => $this->itemid )); 
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sessionID', 'value' => str_replace("-activity.json" , "" ,basename($activityJSON)) )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pageId', 'value' => $this->pageId )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pnum', 'value' => $this->pnum )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sort', 'value' => $this->sort )); 
@@ -192,63 +215,49 @@ class EditArlem{
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'qword', 'value' => $this->searchQuerty )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'editing', 'value' => $this->editing )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $this->userDirPath )); 
-                $form .= '<br>';
-                $form .= html_writer::empty_tag('input', array('type' => 'button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 
+                $form .= '<br><div class="saving-warning" style="display:none;"></div>';
+                $form .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_page_save_button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 
                 $form .= '&nbsp;&nbsp;';
                 $form .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'cancelBtn' , 'class' => 'btn btn-primary' , 'value' => get_string('cancelbutton', 'arete') ));
+                $form .= '<br><div class="saving-warning" style="display:none; color:red;">' . get_string('savewarning', 'arete') . '</div>'; 
                 $form .= html_writer::end_tag('form');
                 $form .= html_writer::end_tag('div');
                 
                 echo $form;
+                
+                
+                ///JSON Validator Modal
+                echo html_writer::start_div('validator', array('id' => 'validator-modal', 'role' => "dialog", 'data-backdrop' => "static"));
+                    echo html_writer::start_div('validator-content', array('id' => 'validator-modal-content'));
+                        $buttons = html_writer::start_div('text-right');
+                            $buttons .= html_writer::empty_tag('input', array('type' => 'button' , 'id' => 'saveJSON', 'value' => get_string('validatorsave', 'arete'), 'onClick' => 'On_Save_JSON_Pressed();'));
+                            $buttons .= html_writer::empty_tag('input', array('type' => 'button' , 'value' => get_string('closevalidator', 'arete'), 'onClick' => 'toggle_validator();'));
+                        $buttons .= html_writer::end_div();
+
+                        echo $buttons;
+
+                        $validator = html_writer::start_div('', array('id' => 'container'));
+                            $validator .= html_writer::start_tag('noscript');
+                                $validator .= 'JavaScript needs to be enabled';
+                            $validator .= html_writer::end_tag('noscript');
+                            $validator .= html_writer::start_tag('script', array('src' => new moodle_url('https://openarlem.github.io/arlem.js/arlem.js'),  'data-app-activity-ref' => 'activityEditor' ,  'data-app-workplace-ref' => 'workplaceEditor', 'data-app-activity' => $activityJSON,  'data-app-workplace' => $workplaceJSON) );
+                            $validator .= html_writer::end_tag('script');
+                         $validator .= html_writer::end_div();
+
+                        echo $validator;
+                    echo html_writer::end_div();
+                echo html_writer::end_div();
+                ///
+                
 
             }
+            
+            
+            
     }
     
     
-    
-    /*
-     * return the path of activity and workplace jsons from file API
-     * 
-     */
-    function JSONsURL($jsonFilename){
 
-        $activityJSON_URL = null;
-        $workplaceJSON_URL = null;
-        
-        if (strpos($jsonFilename, 'activity') !== false) {
-            
-            $workplaceFilename = str_replace("activity","workplace",$jsonFilename);
-            
-            $activityFile = get_temp_file($jsonFilename);
-            $workplaceFile = get_temp_file($workplaceFilename);
-            
-            
-            $activityJSON_URL = GetURL($activityFile);
-                    
-            if($workplaceFile){
-               $workplaceJSON_URL = GetURL($workplaceFile);
-            }
-            
-
-        }else if (strpos($jsonFilename, 'workplace') !== false){
-            
-            $activityFilename = str_replace("workplace","activity",$jsonFilename);
-            
-            $activityFile = get_temp_file($activityFilename);
-            $workplaceFile = get_temp_file($jsonFilename);
-            
-            if($activityFile){
-                $activityJSON_URL = GetURL($activityFile);
-            }
-           
-            $workplaceJSON_URL = GetURL($workplaceFile);
-
-        }
-        
-        return array($activityJSON_URL, $workplaceJSON_URL);
-        
-    }
-    
     
     
     function getIcon($filepath)

@@ -230,7 +230,7 @@ function httpPost($url, $data){
 
 
 /**
- * create the queried needed
+ * create an object with all existing get queries
  */
 function get_queries($onlyValue = false){
    
@@ -300,4 +300,3 @@ function get_queries($onlyValue = false){
     
     return array('id' => $idValue, 'pnum' => $pnumValue, 'itemid' => $itemidValue, 'user' => $arlemuseridValue, 'mode' => $pagemode, 'editing' => $editing_mode, 'sort' => $sortingMode,'qword' => $searchQuery , 'order' => $orderMode);
 }
-

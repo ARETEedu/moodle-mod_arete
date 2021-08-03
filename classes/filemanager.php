@@ -422,7 +422,6 @@ function updateArlemObject($filename, $itemid, $params){
     }
     
     $DB->update_record('arete_allarlems' ,$alrem);
-    
 }
 
 

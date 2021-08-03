@@ -47,8 +47,8 @@ $PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  //r
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); //for rating stars
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
 
-$userMenuNode = $PAGE->navigation->add(get_string('youraractivities', 'arete'), new moodle_url($CFG->wwwroot . '/mod/arete/view.php?id='. $id . '&mode=user'), navigation_node::TYPE_CUSTOM);
-$userMenuNode->make_active();
+//$userMenuNode = $PAGE->navigation->add(get_string('youraractivities', 'arete'), new moodle_url($CFG->wwwroot . '/mod/arete/view.php?id='. $id . '&mode=user'), navigation_node::TYPE_CUSTOM);
+//$userMenuNode->make_active();
 
 //print Moodle header
 echo $OUTPUT->header();
