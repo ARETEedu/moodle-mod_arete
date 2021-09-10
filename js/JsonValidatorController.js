@@ -4,15 +4,28 @@ var originalWorkplaceString = '';
 
 $( document ).ready(function() {
     setTimeout(function(){ 
-        var originalActivityOBJ = JSON.parse(activityEditor.getText());
-        originalSessionID = originalActivityOBJ.id;
-        
-        originalActivityString = activityEditor.getText();
-        originalWorkplaceString = workplaceEditor.getText();
-    }, 500);
-
+        init();
+    }, 1000);
 
 });
+
+
+function init(){
+    
+    setTimeout(function(){ 
+        if (typeof activityEditor === 'undefined' || typeof workplaceEditor === 'undefined') {
+         init();
+         return;
+       }
+       
+        var originalActivityOBJ = JSON.parse(activityEditor.getText());
+        originalSessionID = originalActivityOBJ.id;
+
+        originalActivityString = activityEditor.getText();
+        originalWorkplaceString = workplaceEditor.getText();
+    }, 1000);
+
+}
 
 
 function On_Save_JSON_Pressed(){
