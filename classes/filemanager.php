@@ -231,7 +231,7 @@ function getAllArlems($sorting)
                 $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE a.upublic = 1 OR a.userid = '. $USER->id . ' ORDER BY u.username ' . $order); //all arlems
                 break;
             default:
-                $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $USER->id  , null, $sortingMode . ' ' . $order);  //only public and for the user
+                $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ? '   , array($USER->id), $sortingMode . ' ' . $order);  //only public and for the user
                 break;
         }
 

@@ -296,6 +296,9 @@ class EditArlem{
                 case 'bin':
                     $type='bin';
                     break;
+                case 'tilt':
+                    $type='tilt';
+                    break;
                 case 'txt':
                     $type='txt';
                 case 'manifest':

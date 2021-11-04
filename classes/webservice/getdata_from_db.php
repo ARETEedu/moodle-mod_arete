@@ -38,10 +38,9 @@
 
         
         if(isset($userid) && isset($token)){
-            
+
             //All pulblic and user's ARLEMs
-            $unsorted_arlems =  $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ' . $userid  , null, 'timecreated DESC');  //only public and for the user
-            
+            $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = 1 OR userid = ? ' , array($userid), 'timecreated DESC');  //only public and for the user
             
             //the moudules that the user enrolled to their activities
             $USER_moduleIDs = get_user_arete_modules_ids();
@@ -145,7 +144,7 @@
         global $DB;
 
         //get arete_arlems which user is enrolled to its areteid
-        $arete_arlem_list = $DB->get_records_select('arete_arlem', 'areteid IN (' . implode(',', $user_arete_list) . ')'  , null);
+        $arete_arlem_list = $DB->get_records_select('arete_arlem', 'areteid IN ( ? )'  , array(implode(',', $user_arete_list) ));
 
         $temp_arlemList = $arlemList;
 
