@@ -191,7 +191,7 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         
 
         //arlem title
-        $filename = pathinfo($arlem->filename, PATHINFO_FILENAME);
+        $filename = pathinfo(urldecode($arlem->filename), PATHINFO_FILENAME);
         
         
         //thumbnail

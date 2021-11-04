@@ -72,7 +72,7 @@ function process(){
             $public_upload_privacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => $filename, 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
+         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => urlencode($filename), 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
              'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
 
          $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
