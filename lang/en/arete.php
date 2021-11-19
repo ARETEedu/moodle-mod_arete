@@ -73,3 +73,4 @@ $string['voteregistered'] = 'Registered!';
 $string['validatorsavemsg'] = 'All changes are applied to the JSON files. Close this editor and click "Save" Button to update the activity with these new changes. Do you want to close the editor?';
 $string['savewarning'] = 'JSON files are edited. To apply these changes to this activity, click "Save" button.';
 $string['validatorsave'] = 'Apply';
+$string['confirmchanges'] = 'I know the changes are not reversible';

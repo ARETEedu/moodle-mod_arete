@@ -54,7 +54,8 @@ $DB->update_record('arete_allarlems', $arlem_to_update);
 //return the number of votes of the activity
 function getVotes(){
     global $DB, $itemid;
-    $votes = $DB->get_records_select('arete_rating', 'itemid = ' . $itemid . ' AND rating <> 0'  , null, 'timecreated DESC'); 
+    $params = [$itemid, 0];
+    $votes = $DB->get_records_select('arete_rating', 'itemid = ? AND rating <> ?'  , $params, 'timecreated DESC'); 
     return strval(count($votes));
 }
 

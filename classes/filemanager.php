@@ -217,7 +217,7 @@ function getAllArlems($sorting)
 
         switch ($sortingMode){
             case "author": //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-                $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id ORDER BY u.username ' . $order); //all arlems
+                $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id ORDER BY u.username ' . $order); //all arlems
                 break;
             default:
                 $files = $DB->get_records('arete_allarlems' , null, $sortingMode . ' ' . $order); //all arlems
@@ -226,12 +226,13 @@ function getAllArlems($sorting)
         
     }else //others
     {
+        $params = [1, $USER->id];
         switch ($sortingMode){
             case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-                $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE a.upublic = 1 OR a.userid = '. $USER->id . ' ORDER BY u.username ' . $order); //all arlems
+                $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE a.upublic = ? OR a.userid = ? ORDER BY u.username ' . $order, $params); //all arlems
                 break;
             default:
-                $files = $DB->get_records_select('arete_allarlems', 'upublic = 1 OR userid = ? '   , array($USER->id), $sortingMode . ' ' . $order);  //only public and for the user
+                $files = $DB->get_records_select('arete_allarlems', 'upublic = ? OR userid = ? '   , $params , $sortingMode . ' ' . $order);  //only public and for the user
                 break;
         }
 
@@ -254,7 +255,8 @@ function getAllUserArlems($sorting)
     
     switch ($sortingMode){
         case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-            $files = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE a.userid = '. $USER->id . ' ORDER BY u.username ' . $order); 
+            $params = array($USER->id);
+            $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE a.userid = ? ORDER BY u.username ' . $order, $params); 
             break;
         default:
             $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id) , $sortingMode . ' ' . $order);  
@@ -273,22 +275,36 @@ function getAllUserArlems($sorting)
  * 
  */
 function search_arlems($searchWord, $userSearch, $sorting){
-    global $DB,$USER,$order;
+    global $DB,$USER,$order,$COURSE;
     
     $sortingMode = validate_sorting($sorting);
     
     //if it is student activityies table seach only between his/her files
-    $only_user_arlems = $userSearch ? " userid = " . $USER->id . " AND " : "";
+    $userid_if_available = $userSearch ? $USER->id : '';
     
-    switch ($sortingMode){
-        case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-            $results = $DB->get_records_sql('SELECT a.* FROM mdl_arete_allarlems AS a JOIN mdl_user AS u ON a.userid = u.id WHERE ' . $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  .
-                    'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')' . ' ORDER BY u.username ' . $order); 
-            break;
-        default:
-            $results = $DB->get_records_select('arete_allarlems', $only_user_arlems . '(filename LIKE \'%' . $searchWord . '%\''  . 'OR activity_json LIKE \'%' . $searchWord . '%\''  . 'OR workplace_json LIKE \'%' . $searchWord. '%\')'  , null, $sortingMode . ' ' . $order);  //only public and for the user
-            break;
+    $searchQuerty = '%'. $searchWord .'%';
+    
+    //course context
+    $context = context_course::instance($COURSE->id);
+    
+    //All result for the managers
+    if(has_capability('mod/arete:manageall', $context)){
+        $params = [$searchQuerty, $searchQuerty, $searchQuerty];
+        $results = $DB->get_records_select('arete_allarlems',  '(filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)'  , $params, $sortingMode . ' ' . $order);  //only public and for the user
     }
+    else{
+        $params = [1, $userid_if_available, $searchQuerty, $searchQuerty, $searchQuerty];
+        switch ($sortingMode){
+            case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+                $results = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE (a.upublic = ? OR a.userid = ?) AND (filename LIKE ? '
+                        . 'OR activity_json LIKE ?  OR workplace_json LIKE ?) ORDER BY u.username ' . $order, $params); 
+                break;
+            default:
+                $results = $DB->get_records_select('arete_allarlems', '(upublic = ? OR userid = ?) AND (filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)'  , $params, $sortingMode . ' ' . $order);  //only public and for the user
+                break;
+        }  
+    }
+
     
     return $results;
 }
@@ -312,7 +328,7 @@ function getArlemURL($filename, $itemid, $downloadMode = null)
 
     $file_in_allarlem = $DB->get_record('arete_allarlems' , array('filename' => $filename, 'itemid' => $itemid));
     
-    $path = explode("/" , parse_url($url)[path] );
+    $path = explode("/" , parse_url($url,PHP_URL_PATH));
     
     if($downloadMode != null){
         return $url;

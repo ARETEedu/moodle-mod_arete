@@ -15,6 +15,11 @@ $(document).ready(function() {
 
     //initiate rating objects
     initRatingObject();
+    
+    //editmode button pressed
+    $("#editModeButton").click(function(){
+        edit_mode_toggle(true, window.location.href.includes("&editing=on"));
+    });
 
 });
 
@@ -135,9 +140,6 @@ function edit_mode_toggle(ButtonCallBack ,editmode){
 
 //disable edit mode
 function edit_mode_off(ButtonCallBack){
-    $("#saveButton").hide();
-    $("#editModeButton").attr("value",editmodebutton_off_text);
-
     //remove editing parameter from url
     var url = window.location.href.replace("&editing=on", "");
     window.history.replaceState(null, null, url ); 
@@ -162,17 +164,12 @@ function edit_mode_off(ButtonCallBack){
             $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').hide();
         }
     });
-
 }
 
 
 //enable edit mode
 function edit_mode_on(ButtonCallBack){
-    
-    $("#saveButton").show();
-    $("#editModeButton").attr("value",editmodebutton_on_text);
     //add  editing parameter from url
-    
     //if editig=on does not exist in the URL add it
     if(window.location.href.includes("&editing=off")){
         var url = window.location.href.replace("&editing=off", "&editing=on");
@@ -210,7 +207,6 @@ function edit_mode_on(ButtonCallBack){
             $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').hide();
         }
     });
-   
 }
 
 

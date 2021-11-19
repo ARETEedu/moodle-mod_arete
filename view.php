@@ -206,9 +206,6 @@ function generate_arlem_table($arlems_list, $userViewMode = 0){
           echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
      }
 
-     //show the tab buttons
-     echo create_tabs(count($arlems_list), $userViewMode );
-
     
     //Draw the searchbox
      echo searchbox($id);

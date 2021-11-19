@@ -5,6 +5,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/output/teacher_table_form.php');
 
 $searchfield = filter_input(INPUT_GET, 'qword');
 
@@ -20,7 +21,7 @@ $searchfield = filter_input(INPUT_GET, 'qword');
  */
 function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
-    global $CFG, $searchfield;
+    global  $searchfield;
     
     //if the user searched for somthing
     $searchquery= '';
@@ -52,15 +53,21 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     
     //the popup modal div
     echo add_popup_image_div();
+
     
-    $table = html_writer::start_tag('div');
-    $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'id' => 'tableDataForm' , 'method' => 'post' )); //create form
-    $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true, $moduleid)); //arlems table
-    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . $searchquery . '&pnum=' . $page_number . '&editing=on')); //return to this url after saving the table
-    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
-    $table .= html_writer::end_tag('form');
-    $table .= html_writer::end_tag('div');
-    echo $table;
+    ///print the arlem table for the teachers
+    $table_form = new teacher_table_form('classes/save_assignment.php', array('splitet_list'=>$splitet_list, 'page_number'=> $page_number , 'moduleid' => $moduleid, 'course_module_id' => $id , 'searchquery' => $searchquery) );
+    
+    //Form processing and displaying is done here
+    if ($table_form->is_cancelled()) {
+        //Handle form cancel operation, if cancel button is present on form
+    } else if ($fromform = $table_form->get_data()) {
+      //In this case you process validated data. $mform->get_data() returns data posted in form.
+    } else {
+      //displays the form
+      $table_form->display();
+    }
+    ///
 }
 
 
@@ -223,12 +230,13 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         
         //edit button
         $queries = get_queries(true);
+        
         $edit_button = '<a name="dlBtn'. $arlem->fileid .'" href ="'. $CFG->wwwroot .'/mod/arete/view.php?id='. $queries['id'] . '&pnum=' . $queries['pnum'] . '&sort=' . $queries['sort'] . '&order=' . $queries['order'] .
                 '&editing=' . $queries['editing'] . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/editicon.png" alt="Edit Activity"></a>';
 
         
         //qr code button
-        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $download_url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png" alt="QR Code"></a>';
+        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $play_url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png" alt="QR Code"></a>';
 
         //send filename and itemid as value with (,) between
         if($arlem->upublic == 1){ $checked = 'checked';} else {$checked = '';}
@@ -336,37 +344,6 @@ function searchbox($pageid){
 }
 
 
-/**
- * 
- *@param URL of view page where the ARLEM tables are displayed
- *@return A searchbox for arlems
- * 
- */
-function create_tabs($arlem_num){
-    
-    //do not show the buttons if the list is empty
-    if($arlem_num == null || $arlem_num == 0){
-        return;
-    }
-    
-    $tabs = '<br>';
-    $tabs .= html_writer::start_div('', array('id' => 'tabs'));
-    
-    //editModeButton
-    $tabs .= html_writer::empty_tag('input', array('type' => 'button' , 'id' => 'editModeButton', 'value' => get_string('editmodedisabledbutton', 'arete') , 'onclick' => 'edit_mode_toggle(true, window.location.href.includes("&editing=on"));' )); 
-    
-    //savebutton
-    $tabs .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'saveButton', 'class' => 'btn btn-primary right' ,
-        'onClick' => 'confirmSubmit(document.getElementById("tableDataForm"));', 'value' =>  get_string('savebutton', 'arete'))); //bottom save button 
-    
-    $tabs .= html_writer::end_div();
-
-    
-    return $tabs;
-}
-
-
-
 
 /**
  * Create student menu bar
@@ -374,7 +351,7 @@ function create_tabs($arlem_num){
 function Create_student_menu(){
     global $CFG;
     
-    $menu .= html_writer::start_div('', array('id' => 'studentmenu'));
+    $menu = html_writer::start_div('', array('id' => 'studentmenu'));
 
     //Terms Of use Button
     $onclick = 'window.open ("'. $CFG->wwwroot.'/mod/arete/termsofuse.html' . '","Terms of Uses","menubar=1,resizable=1,width=600,height=400");';

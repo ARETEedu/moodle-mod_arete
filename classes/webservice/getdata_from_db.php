@@ -39,10 +39,11 @@
         
         if(isset($userid) && isset($token)){
 
+            $params = [1, $userid];
             //All pulblic and user's ARLEMs
-            $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = 1 OR userid = ? ' , array($userid), 'timecreated DESC');  //only public and for the user
+            $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ' , $params, 'timecreated DESC');  //only public and for the user
             
-            //the moudules that the user enrolled to their activities
+            //the moudules that the user enrolled to their activitie
             $USER_moduleIDs = get_user_arete_modules_ids();
             
             //if the user is enrolled atleast to one activity which contains arete module
