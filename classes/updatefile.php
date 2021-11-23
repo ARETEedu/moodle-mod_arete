@@ -8,7 +8,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
 $sessionID = filter_input(INPUT_POST, 'sessionID');
-$pageId = filter_input(INPUT_POST, 'pageId');
+$pageId = filter_input(INPUT_POST, 'id');
 $pnum = filter_input(INPUT_POST, 'pnum');
 $sorting = filter_input(INPUT_POST, 'sort');
 $order = filter_input(INPUT_POST, 'order');
@@ -41,24 +41,31 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
          return;
 } 
 
+$uploaded_file = $_FILES['files']['tmp_name'];
+$lastfile = end($uploaded_file);
 
 //replace user selected files
 if(!empty(array_filter($_FILES['files']['name']))) { 
 
+    $sesskey = filter_input(INPUT_POST, 'sesskey');
+    if(!isset($sesskey) || $sesskey !== sesskey()){
+        echo get_string('accessdenied', 'arete');
+        die;
+    }
+    
     // Loop through each file in files[] array 
-    foreach ($_FILES['files']['tmp_name'] as $key => $value) { 
+    foreach ($uploaded_file as $key => $value) { 
 
         $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
         $file_name = $_FILES['files']['name'][$key]; 
         $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
 
-        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , false);
+        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , $lastfile == $value);
     }
 }
 
 
-///replace the new json file after editing in jason validator
-
+///replace the new json file after editing in json validator
 $activityJson_will_updated_by_user = in_array( $sessionID . '-activity.json' , array_filter($_FILES['files']['name']));
 $workplaceJson_will_updated_by_user = in_array( $sessionID . '-workplace.json' , array_filter($_FILES['files']['name']));
 
@@ -122,7 +129,6 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
                     replace_file($dir.'/'.$ff, $file_name, $file_ext, $file_tmpname);
                 }
             }
-            
             
             //only once at the end. create zip file after all file are replaced
             if($is_lastFile == true){
@@ -262,8 +268,10 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
          $arlem_data = $DB->get_records('arete_allarlems', array('itemid' => $itemid ));
                   
          //update timemodified only if at least one file is updated or json files are edited
-         if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
+         if(isset($arlem_data['activity_json']) && isset($arlem_data['workplace_json'])){
+            if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
               $parameters += array('timemodified' => time());
+            }
          }
 
          //update the file name
@@ -273,7 +281,6 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
          updateArlemObject($oldFileName , $itemid, $parameters);
          ///
 
-         
          //update the record of the file in arete_arlem table
          $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
          foreach ($activities_that_use_this_arlem as $activity) {

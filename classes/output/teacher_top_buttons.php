@@ -5,7 +5,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once("$CFG->libdir/formslib.php");
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
-class teacher_table_form extends moodleform{
+class teacher_top_buttons extends moodleform{
     
      public function definition() {
         global $CFG;

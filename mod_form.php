@@ -11,10 +11,8 @@ $arlemsList = array();
 class mod_arete_mod_form extends moodleform_mod {
     
     public function definition() {
-        global $CFG, $arlemsList , $COURSE;
-        
-        $courseid = $COURSE->id;
-        $context = context_course::instance($courseid);
+        global $CFG ;
+
         
         $mform = $this->_form;
         
@@ -32,27 +30,7 @@ class mod_arete_mod_form extends moodleform_mod {
         
         $this->standard_intro_elements(get_string('description', 'arete'));
         
-//-------------------------------------------------------------------------------
-     /*   
-        $mform->addElement('header', 'title', get_string('arlemsectiontitle', 'arete'));
-        
-        $mform->addElement('static', 'arlemlisttitle', get_string('arlemradiobuttonlabel', 'arete'));
-         
-        //get the list of arlem files from 
-        $arlemsList = getAllArlems();
-        
-        $arlemsGroup = array();
-        foreach($arlemsList as $arlem){
-             $arlemsGroup[] = $mform->createElement('radio', 'arlemid' , '', $arlem->get_filename(), $arlem->get_id());
-        }
-        $mform->addGroup($arlemsGroup, 'arlemsButtons', '', array(' <br> '), false);
-        $mform->addRule('arlemsButtons', null, 'required', null, 'client');
-        
-        if(isset($arlemsList[1])){
-            $mform->setDefault('arlemid', $arlemsList[1]->get_id()); //set the first element as default
-        }
-      
-      */
+
 //-------------------------------------------------------------------------------
         
 

@@ -2,16 +2,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-//$function = array
-//(
-//        'moodle_webservice_get_token' => array(
-//            'classname' => 'core_webservice_external',
-//            'methodname' => 'get_user_token',
-//            'classpath' => '/login/token.php',
-//            'description' => 'Return token',
-//            'type' => 'read',
-//      ),  
-//);
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
 $services = array(

@@ -16,16 +16,8 @@ if(isset($mode) && $mode == 'edit'){
 
 class EditArlem{
 
-    var $itemid = '';
-    var $pageId = '';
-    var $pnum = '';
-    var $mode = '';
-    var $sort = '';
-    var $editing = '';
-    var $order = '';
-    var $searchQuerty = '';
+    var $params = array();
     var $userDirPath = '';
-    var $arlemuserid = '';
     /*
      * constructor will call other functions in this class
      */
@@ -41,19 +33,38 @@ class EditArlem{
         //get all get queries of the edit page (true means only values not the keys)
         $queries = get_queries(true);
         
-        $this->itemid = $queries['itemid'];
-        $this->pageId = $queries['id'];
-        $this->pnum = $queries['pnum'];
-        $this->sort = $queries['sort'];
-        $this->editing = $queries['editing'];
-        $this->order = $queries['order'];
-        $this->searchQuerty = $queries['qword'];
-        $this->mode = $queries['mode'];
-        $this->arlemuserid = $queries['user'];
-                
+        if(isset($queries['id'])){
+            $this->params['id'] = $queries['id'];
+        }
+        if(isset($queries['itemid'])){
+            $this->params['itemid'] = $queries['itemid'];
+        }
+        if(isset($queries['pnum'])){
+            $this->params['pnum'] = $queries['pnum'];
+        }
+        if(isset($queries['sort'])){
+            $this->params['sort'] = $queries['sort'];
+        }
+        if(isset($queries['editing'])){
+            $this->params['editing'] = $queries['editing'];
+        }
+        if(isset($queries['order'])){
+            $this->params['order'] = $queries['order'];
+        }
+        if(isset($queries['qword'])){
+            $this->params['qword'] = $queries['qword'];
+        }
+        if(isset($queries['mode'])){
+            $this->params['mode'] = $queries['mode'];
+        }
+        if(isset($queries['author'])){
+            $this->params['author'] = $queries['author'];
+        }
+        
+        $this->params['sesskey'] = sesskey();
+              
         $context = context_course::instance($COURSE->id);
-        $author = $DB->get_field('user', 'username', array('id' => $this->arlemuserid));
-
+        $author = $DB->get_field('user', 'username', array('id' => $this->params['author']));
         
         //The user editing folder
         $path = '/mod/arete/temp/';
@@ -66,14 +77,14 @@ class EditArlem{
         }
         
         //only the owner of the file and the manager can edit files
-        if(!isset($this->arlemuserid) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
+        if(!isset($this->params['author']) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
             echo $OUTPUT->notification(get_string('accessnotallow', 'arete'));
 
         }else{
 
-            $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $this->itemid));
+            $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $this->params['itemid']));
             if(isset($filename)){
-               $this->copy_arlem_to_temp($filename, $this->itemid);
+               $this->copy_arlem_to_temp($filename, $this->params['itemid']);
             }
 
         }
@@ -190,7 +201,7 @@ class EditArlem{
                 $form .=  html_writer::start_tag('div' , array('id' => 'borderUpdateFile'));   
                 $form .=  get_string('selectfiles','arete');
                 $form .= '<br>';
-                $form .= '<div class="file-upload">' .html_writer::empty_tag('input', array('type' => 'file', 'name' => 'files[]', 'id' => 'files', 'value' => $this->pageId , 'multiple' => 'multiple', 'class' => 'file-upload__input' )).'</div>'; 
+                $form .= '<div class="file-upload">' .html_writer::empty_tag('input', array('type' => 'file', 'name' => 'files[]', 'id' => 'files', 'value' => $this->params['id'] , 'multiple' => 'multiple', 'class' => 'file-upload__input' )).'</div>'; 
                 $form .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'file-upload__button' , 'value' => get_string('choosefilesbutton', 'arete'))) ;
                 $form .= html_writer::start_span('span', array( 'class' => 'file-upload__label' )) . get_string('nofileselected', 'arete') . html_writer::end_span() ;
                 $form .= '<br><br>';
@@ -205,16 +216,14 @@ class EditArlem{
                 $form .= '<span style="color: #ff0000">'.get_string('selectfileshelp', 'arete'). '</span>'; //warning
                 $form .= '<br>';
                 $form .= html_writer::end_tag('div');
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'itemid', 'value' => $this->itemid )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sessionID', 'value' => str_replace("-activity.json" , "" ,basename($activityJSON)) )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pageId', 'value' => $this->pageId )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pnum', 'value' => $this->pnum )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sort', 'value' => $this->sort )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'order', 'value' => $this->order )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'mode', 'value' => $this->mode )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'qword', 'value' => $this->searchQuerty )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'editing', 'value' => $this->editing )); 
                 $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $this->userDirPath )); 
+                
+                //add all other existing parameters to the url
+                foreach($this->params as $key => $value){
+                    $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $key, 'value' => $value )); 
+                }
+                
                 $form .= '<br><div class="saving-warning" style="display:none;"></div>';
                 $form .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_page_save_button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 
                 $form .= '&nbsp;&nbsp;';

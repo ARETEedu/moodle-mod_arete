@@ -13,23 +13,6 @@ function arete_add_instance($data, $mform)
     $data-> timemodified = $data-> timecreated;
 
     $data->id = $DB->insert_record('arete', $data);
-    
-//    $formdata = $mform->get_data();
-    
-//get context using cource id if you need to get the files from somewhere else than user draft
-//    $courseid = $COURSE->id;
-//    $context = context_course::instance($courseid);
-    
-    //insert selected arlem files into arete_arlem which keeps the arlems of each module 
-//    if(isset($formdata))
-//    {
-//        $arlems = new stdClass();
-//        $arlems->areteid = $data->id;
-//        $arlems->timecreated = time();
-//
-//        $arlems->arlemid = $formdata->arlemid;
-//        $DB->insert_record("arete_arlem", $arlems);
-//    }
 
     return $data->id;
 }
