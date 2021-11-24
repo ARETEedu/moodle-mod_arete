@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 
- class pagination{
+class pagination{
      
       /**
      * creates a pagination for the ARLEMs list.

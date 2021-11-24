@@ -49,7 +49,8 @@ class backup_arete_activity_structure_step extends backup_activity_structure_ste
         $allarlems = new backup_nested_element('allarlems');
 
         $arlem = new backup_nested_element('arlemfile', array('id'), array(
-            'contextid', 'fileid', 'userid', 'itemid', 'sessionid', 'filename', 'views', 'filesize', 'upublic', 'activity_json', 'workplace_json', 'timecreated', 'timemodified'));
+            'contextid', 'fileid', 'userid', 'itemid', 'sessionid', 'filename', 'views', 'filesize', 'upublic',
+            'activity_json', 'workplace_json', 'timecreated', 'timemodified'));
         
         //rating
         $ratings = new backup_nested_element('ratings');

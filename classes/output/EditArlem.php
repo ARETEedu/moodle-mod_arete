@@ -101,7 +101,8 @@ class EditArlem{
         }
         
         //only the owner of the file and the manager can edit files
-        if(!isset($this->params['author']) || !isset($author) || ($USER->username != $author && !has_capability('mod/arete:manageall', $context))){
+        if(!isset($this->params['author']) || !isset($author) || ($USER->username != $author &&
+                !has_capability('mod/arete:manageall', $context))){
             echo $OUTPUT->notification(get_string('accessnotallow', 'arete'));
 
         }else{
@@ -155,7 +156,7 @@ class EditArlem{
     
     function create_edit_UI($dir, $filename, $mainFolder = false){
         
-        global $CFG; 
+        global $CFG,$DB; 
         
         $activityJSON = '';
         $workplaceJSON = '';
@@ -174,9 +175,18 @@ class EditArlem{
             //add these only once
             if($mainFolder == true){
               echo html_writer::start_tag('div' , array('id' => 'borderEditPage'));
-                echo html_writer::empty_tag('input', array('type' => 'button' ,'id' => 'open-editor-button' ,  'value' => get_string('openvalidator', 'arete'), 'onClick' => 'toggle_validator();'));
-                echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . pathinfo($filename, PATHINFO_FILENAME) . '"</h3><br><br>';
-                echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' . '" method="post" enctype="multipart/form-data">'; 
+                $validatorButtonParams = array(
+                    'type' => 'button' ,
+                    'id' => 'open-editor-button' ,
+                    'value' => get_string('openvalidator', 'arete'),
+                    'onClick' => 'toggle_validator();'
+                );
+                echo html_writer::empty_tag('input', $validatorButtonParams);
+                
+                $title = $DB->get_field('arete_allarlems', 'title', array('itemid' => $this->params['itemid']));
+                echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . $title . '"</h3><br><br>';
+                echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' .
+                        '" method="post" enctype="multipart/form-data">'; 
             }
 
                 echo '<ol>';
@@ -184,7 +194,12 @@ class EditArlem{
                     
                     //for folders
                     if(is_dir($dir.'/'.$ff)){
-                        echo html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/folder.png', 'class' => 'editicon' ))  . '<b>' . $ff . '/</b><br>';
+                        $imgParams = array(
+                            'src' => $CFG->wwwroot. '/mod/arete/pix/folder.png',
+                            'class' => 'editicon'
+                        );
+                        echo html_writer::empty_tag('img', $imgParams);
+                        echo  '<b>' . $ff . '/</b><br>';
                         $this->create_edit_UI($dir.'/'.$ff, $filename);
                         
                     //for files    
@@ -193,7 +208,9 @@ class EditArlem{
                         //create a temp file of this file and store in file system temp filearea
                         $tempfile = create_temp_files($dir.'/'.$ff, $ff);
                         
-                        $url = moodle_url::make_pluginfile_url($tempfile->get_contextid(), $tempfile->get_component(), $tempfile->get_filearea(), $tempfile->get_itemid(), $tempfile->get_filepath(), $tempfile->get_filename(), false);
+                        $url = moodle_url::make_pluginfile_url($tempfile->get_contextid(), $tempfile->get_component(),
+                                $tempfile->get_filearea(), $tempfile->get_itemid(),
+                                $tempfile->get_filepath(), $tempfile->get_filename(), false);
                         
                         echo $this->getIcon($ff) .'<a href="'. $url . '"  target="_blank">'  .$ff . '</a><br>';
                         
@@ -229,9 +246,27 @@ class EditArlem{
                 $form .=  html_writer::start_tag('div' , array('id' => 'borderUpdateFile'));   
                 $form .=  get_string('selectfiles','arete');
                 $form .= '<br>';
-                $form .= '<div class="file-upload">' .html_writer::empty_tag('input', array('type' => 'file', 'name' => 'files[]', 'id' => 'files', 'value' => $this->params['id'] , 'multiple' => 'multiple', 'class' => 'file-upload__input' )).'</div>'; 
-                $form .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'file-upload__button' , 'value' => get_string('choosefilesbutton', 'arete'))) ;
-                $form .= html_writer::start_span('span', array( 'class' => 'file-upload__label' )) . get_string('nofileselected', 'arete') . html_writer::end_span() ;
+                
+                $uploaderParams = array(
+                    'type' => 'file',
+                    'name' => 'files[]',
+                    'id' => 'files',
+                    'value' => $this->params['id'],
+                    'multiple' => 'multiple',
+                    'class' => 'file-upload__input'
+                );
+                $form .= '<div class="file-upload">' .html_writer::empty_tag('input', $uploaderParams).'</div>'; 
+                
+                $uploadButtonParams = array(
+                    'type' => 'button' ,
+                    'class' => 'file-upload__button',
+                    'value' => get_string('choosefilesbutton', 'arete')
+                );
+                $form .= html_writer::empty_tag('input', $uploadButtonParams) ;
+                
+                $form .= html_writer::start_span('span', array( 'class' => 'file-upload__label' )) .
+                        get_string('nofileselected', 'arete') . html_writer::end_span();
+                
                 $form .= '<br><br>';
                 
                 //if activity has not thumbnail let the user know
@@ -239,13 +274,18 @@ class EditArlem{
                     $form .= '*' . get_string('addthumbnail', 'arete');
                     $form .= '<br>';
                 }
- 
-                $form .= html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/warning.png',  'class' => 'icon')); //warning icon
+                
+                 //warning icon
+                $form .= html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/warning.png',  'class' => 'icon'));
                 $form .= '<span style="color: #ff0000">'.get_string('selectfileshelp', 'arete'). '</span>'; //warning
                 $form .= '<br>';
                 $form .= html_writer::end_tag('div');
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sessionID', 'value' => str_replace("-activity.json" , "" ,basename($activityJSON)) )); 
-                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $this->userDirPath )); 
+                
+                $sessionID = str_replace("-activity.json" , "" ,basename($activityJSON));
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sessionID', 'value' => $sessionID)); 
+                
+                $userDir = $this->userDirPath;
+                $form .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'userDirPath', 'value' => $userDir)); 
                 
                 //add all other existing parameters to the url
                 foreach($this->params as $key => $value){
@@ -253,10 +293,29 @@ class EditArlem{
                 }
                 
                 $form .= '<br><div class="saving-warning" style="display:none;"></div>';
-                $form .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'edit_page_save_button', 'name' => 'saveBtn' , 'class' => 'btn btn-primary' ,'onClick' => 'checkFiles(this.form);', 'value' => get_string('savebutton', 'arete') )); 
+                
+                $saveButtonParams = array(
+                    'type' => 'button',
+                    'id' => 'edit_page_save_button',
+                    'name' => 'saveBtn',
+                    'class' => 'btn btn-primary',
+                    'onClick' => 'checkFiles(this.form);',
+                    'value' => get_string('savebutton', 'arete')
+                );
+                $form .= html_writer::empty_tag('input', $saveButtonParams); 
+                
                 $form .= '&nbsp;&nbsp;';
-                $form .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'cancelBtn' , 'class' => 'btn btn-primary' , 'value' => get_string('cancelbutton', 'arete') ));
-                $form .= '<br><div class="saving-warning" style="display:none; color:red;">' . get_string('savewarning', 'arete') . '</div>'; 
+                
+                $cancelButtonParams = array(
+                    'type' => 'submit',
+                    'name' => 'cancelBtn',
+                    'class' => 'btn btn-primary',
+                    'value' => get_string('cancelbutton', 'arete')
+                );
+                $form .= html_writer::empty_tag('input', $cancelButtonParams);
+                
+                $form .= '<br><div class="saving-warning" style="display:none; color:red;">' .
+                        get_string('savewarning', 'arete') . '</div>';
                 $form .= html_writer::end_tag('form');
                 $form .= html_writer::end_tag('div');
                 
@@ -264,36 +323,58 @@ class EditArlem{
                 
                 
                 ///JSON Validator Modal
-                echo html_writer::start_div('validator', array('id' => 'validator-modal', 'role' => "dialog", 'data-backdrop' => "static"));
-                    echo html_writer::start_div('validator-content', array('id' => 'validator-modal-content'));
-                        $buttons = html_writer::start_div('text-right');
-                            $buttons .= html_writer::empty_tag('input', array('type' => 'button' , 'id' => 'saveJSON', 'value' => get_string('validatorsave', 'arete'), 'onClick' => 'On_Save_JSON_Pressed();'));
-                            $buttons .= html_writer::empty_tag('input', array('type' => 'button' , 'value' => get_string('closevalidator', 'arete'), 'onClick' => 'toggle_validator();'));
-                        $buttons .= html_writer::end_div();
-
-                        echo $buttons;
-
-                        $validator = html_writer::start_div('', array('id' => 'container'));
-                            $validator .= html_writer::start_tag('noscript');
-                                $validator .= 'JavaScript needs to be enabled';
-                            $validator .= html_writer::end_tag('noscript');
-                            $validator .= html_writer::start_tag('script', array('src' => new moodle_url('https://openarlem.github.io/arlem.js/arlem.js'),  'data-app-activity-ref' => 'activityEditor' ,  'data-app-workplace-ref' => 'workplaceEditor', 'data-app-activity' => $activityJSON,  'data-app-workplace' => $workplaceJSON) );
-                            $validator .= html_writer::end_tag('script');
-                         $validator .= html_writer::end_div();
-
-                        echo $validator;
-                    echo html_writer::end_div();
-                echo html_writer::end_div();
-                ///
+                $this->Modal($activityJSON, $workplaceJSON);
                 
-
+                ///
             }
-            
-            
-            
     }
     
     
+    function Modal($activityJSON, $workplaceJSON){
+        echo html_writer::start_div('validator', array('id' => 'validator-modal', 'role' => "dialog", 'data-backdrop' => "static"));
+        echo html_writer::start_div('validator-content', array('id' => 'validator-modal-content'));
+        $buttons = html_writer::start_div('text-right');
+        
+        $saveJsonButtonParams = array(
+            'type' => 'button',
+            'id' => 'saveJSON',
+            'value' => get_string('validatorsave', 'arete'),
+            'onClick' => 'On_Save_JSON_Pressed();'
+        );
+        $buttons .= html_writer::empty_tag('input', $saveJsonButtonParams);
+        
+        $validatorCloseButtonParams =  array(
+            'type' => 'button',
+            'value' => get_string('closevalidator', 'arete'),
+            'onClick' => 'toggle_validator();'
+        );
+        $buttons .= html_writer::empty_tag('input',$validatorCloseButtonParams);
+        
+        $buttons .= html_writer::end_div();
+
+        echo $buttons;
+
+        $validator = html_writer::start_div('', array('id' => 'container'));
+        $validator .= html_writer::start_tag('noscript');
+        $validator .= 'JavaScript needs to be enabled';
+        $validator .= html_writer::end_tag('noscript');
+        
+        $validatorScriptParams = array(
+            'src' => new moodle_url('https://openarlem.github.io/arlem.js/arlem.js'),
+            'data-app-activity-ref' => 'activityEditor',
+            'data-app-workplace-ref' => 'workplaceEditor',
+            'data-app-activity' => $activityJSON,
+            'data-app-workplace' => $workplaceJSON
+        );
+        
+        $validator .= html_writer::start_tag('script', $validatorScriptParams);
+        $validator .= html_writer::end_tag('script');
+        $validator .= html_writer::end_div();
+
+        echo $validator;
+        echo html_writer::end_div();
+        echo html_writer::end_div();
+    }
 
     
     
@@ -348,7 +429,11 @@ class EditArlem{
                     $type='unknow';
             }
 
-            return html_writer::empty_tag('img', array('src' => $CFG->wwwroot. '/mod/arete/pix/'. $type . '.png',  'class' => 'editicon')) ;
+            $iconImageParams = array(
+                'src' => $CFG->wwwroot. '/mod/arete/pix/'. $type . '.png',
+                'class' => 'editicon'
+            );
+            return html_writer::empty_tag('img', $iconImageParams) ;
     }
 
 }

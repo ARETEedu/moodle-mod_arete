@@ -177,7 +177,10 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
         $activityJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-activity.json' , FILE_USE_INCLUDE_PATH);
         $workplaceJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-workplace.json', FILE_USE_INCLUDE_PATH);
         
-        $newFileName = json_decode($activityJSON)->name . '.zip';
+        $newTitle = json_decode($activityJSON)->name;
+        
+        //Edit $sessionID if filename needs to be changed
+        $newFileName = $sessionID . '.zip';
         
         // Initialize archive object
         $zip = new ZipArchive();
@@ -220,7 +223,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
         // Zip archive will be created only after closing object
         $zip->close();
 
-        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName);
+        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName, $newTitle);
     }
     
     
@@ -241,7 +244,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
      * @param type $filepath
      * @param type $filename
      */
-    function upload_new_zip($filepath, $oldFileName, $newFileName){
+    function upload_new_zip($filepath, $oldFileName, $newFileName, $newTitle){
 
         global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath,$activityJSON,$workplaceJSON,$numberOfUpdatedFiles;
       
@@ -272,6 +275,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
             'fileid' => $newArlemID,
             'timecreated' => $Date,
             'filesize' => $newArlem->get_filesize(),
+            'title' => $newTitle
          );
          
          //update activity_json if updated

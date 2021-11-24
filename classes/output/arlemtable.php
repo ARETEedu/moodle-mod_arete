@@ -220,12 +220,15 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         
 
         //arlem title
-        $filename = pathinfo(urldecode($arlem->filename), PATHINFO_FILENAME);
-        
+        if(!empty($arlem->title)){
+            $title = $arlem->title;
+        }else{
+            $title = pathinfo($arlem->filename, PATHINFO_FILENAME);
+        }
         
         //thumbnail
         list($thumb_url, $css) = get_thumbnail($arlem->itemid);
-        $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $filename));
+        $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $title));
 
         
         //number of views on app
@@ -290,9 +293,9 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
                 
         //Now fill the row
         if($teacherView){
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img, $views  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn, $rating);
+            $table_row = array($date, $modified_date,  $title, $thumbnail_img, $views  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn, $rating);
         }else{
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button, $rating);
+            $table_row = array($date, $modified_date,  $title, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button, $rating);
         }
 
 

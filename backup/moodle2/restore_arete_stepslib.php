@@ -36,9 +36,11 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
 
         $paths[] = new restore_path_element('arete_arlem', '/activity/arete/arlem/areteinstance');
         
-        $paths[] = new restore_path_element('arete_allarlems', '/activity/arete/arlem/areteinstance/allarlems/arlemfile');
+        $paths[] = new restore_path_element('arete_allarlems',
+                '/activity/arete/arlem/areteinstance/allarlems/arlemfile');
         
-        $paths[] = new restore_path_element('arete_rating', '/activity/arete/arlem/areteinstance/allarlems/arlemfile/ratings/rating');
+        $paths[] = new restore_path_element('arete_rating', 
+                '/activity/arete/arlem/areteinstance/allarlems/arlemfile/ratings/rating');
         
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);

@@ -399,7 +399,8 @@ function deletePluginArlem($filename, $itemid = null )
         'contextid' => $system_context, 
         'filepath' => '/',           // any path beginning and ending in /
         'filename' => $filename); 
-
+    
+    
     //use itemid too if it is provided
     if(isset($itemid)){
         $fileItemId = $itemid;

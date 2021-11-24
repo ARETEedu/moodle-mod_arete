@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 $token = filter_input(INPUT_POST, 'token');
 $userid = filter_input(INPUT_POST, 'userid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
+$title = filter_input(INPUT_POST, 'title');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
 $activityJson = filter_input(INPUT_POST, 'activity');
@@ -62,12 +63,11 @@ if(is_sessionid_exist($sessionid)){
  */
 function process(){
     
-    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson;
+    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson, $title;
     
     //if the file is received from Unity application
     if (isset($_FILES['myfile'])){
 
-        $filename = $_FILES['myfile']['name']; //file name
         $file = $_FILES['myfile']['tmp_name'];
 
         //convert the file to base64 string
@@ -94,7 +94,7 @@ function process(){
             $public_upload_privacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => urlencode($filename), 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
+         $data = array('base64' => $file_base64, 'token' => $token, 'title' =>$title ,  'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
              'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
 
          $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
