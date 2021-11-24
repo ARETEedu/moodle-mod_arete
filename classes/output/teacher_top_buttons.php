@@ -1,9 +1,30 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/formslib.php");
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 
 class teacher_top_buttons extends moodleform{
     
@@ -19,9 +40,9 @@ class teacher_top_buttons extends moodleform{
         $buttonarray=array();
         
         //get the get queries from the URL
-        $queries = get_queries(true);
+        $editmode = optional_param('editing', null, PARAM_TEXT);
         
-        if($queries['editing'] === 'on'){
+        if($editmode === 'on'){
             //Show the save button only in edit mode
             $buttonarray[] = $mform->createElement('submit', 'submitbutton',  get_string('savebutton', 'arete'),  array ('id' => 'saveButton'));
             
@@ -35,15 +56,13 @@ class teacher_top_buttons extends moodleform{
         
         
         //confirm delete
-        if($queries['editing'] === 'on'){
-            $mform->addElement('checkbox', 'deleteConfirm', get_string('confirmchanges', 'arete'));
+        if($editmode === 'on'){
+            $mform->addElement('checkbox', 'deleteConfirm', get_string('confirmchanges', 'arete'), '', array('id' => 'confirmchk'));
         }
-                
+        
         //table
         $table = html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true, $moduleid)); //arlems table
         $mform->addElement('html', $table); 
-        
-        $mform->disabledIf('submitbutton', 'deleteConfirm', 'notchecked');
                             
         //hiddens
         $id = $this->_customdata['course_module_id'];

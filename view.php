@@ -18,7 +18,7 @@
  * Prints a particular instance of Augmented Reality Experience plugin
  *
  * @package    mod_arete
- * @copyright  2021 UC Regents
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

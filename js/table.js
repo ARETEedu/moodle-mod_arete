@@ -21,6 +21,14 @@ $(document).ready(function() {
         edit_mode_toggle(true, window.location.href.includes("&editing=on"));
     });
 
+    //disable save button  at the start (enabled by checkbox)
+    $("#saveButton").prop('disabled', true);
+    $("#confirmchk").change(function(){
+        
+        //toggle savebutton activition
+        $("#saveButton").prop('disabled', function(i, v) { return !v; });
+    });
+    
 });
 
 

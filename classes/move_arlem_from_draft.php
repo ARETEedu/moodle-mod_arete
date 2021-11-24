@@ -1,34 +1,35 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__). '/../../../config.php');
 
-/**
- * This function is a copy of file_save_draft_area_files inside filelip.php
- * We replaced the global $USER->id with our userid from Unity
- * We will remove the file from user draft at the end
- *
- * @category files
 
- * @param int $userid the userid which will be retrieved from Unity
- * @param int $draftitemid the id of the draft area to use. Normally obtained
- *      from file_get_submitted_draft_itemid('elementname') or similar.
- *      When set to -1 (probably, by a WebService) it won't process file merging, keeping the original state of the file area.
- * @param int $contextid This parameter and the next two identify the file area to save to.
- * @param string $component
- * @param string $filearea indentifies the file area.
- * @param int $itemid helps identifies the file area.
- * @param array $options area options (subdirs=>false, maxfiles=-1, maxbytes=0)
- * @param string $text some html content that needs to have embedded links rewritten
- *      to the @@PLUGINFILE@@ form for saving in the database.
- * @param bool $forcehttps force https urls.
- * @return string|null if $text was passed in, the rewritten $text is returned. Otherwise NULL.
- */
-    
-    function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $component, $filearea, $itemid, array $options=null, $text=null, $forcehttps=false) {
-
-
+function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $component, $filearea, $itemid, array $options=null, $text=null, $forcehttps=false)
+{
     $usercontext = context_user::instance($userid);
     $fs = get_file_storage();
 
