@@ -184,6 +184,13 @@ class EditArlem{
                 echo html_writer::empty_tag('input', $validatorButtonParams);
                 
                 $title = $DB->get_field('arete_allarlems', 'title', array('itemid' => $this->params['itemid']));
+                
+                //get the activity title from json string if it is not exist in the table
+                if(empty($title)){
+                    $activityJsonString = $DB->get_field('arete_allarlems', 'activity_json', array('itemid' => $this->params['itemid']));
+                    $title = json_decode($activityJsonString)->name;
+                }
+
                 echo '<h3>' . get_string('arlemstructure', 'arete') . ' "' . $title . '"</h3><br><br>';
                 echo '<form name="editform" action="' . $CFG->wwwroot. '/mod/arete/classes/updatefile.php' .
                         '" method="post" enctype="multipart/form-data">'; 

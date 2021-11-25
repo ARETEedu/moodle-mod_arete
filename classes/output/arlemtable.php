@@ -223,7 +223,8 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         if(!empty($arlem->title)){
             $title = $arlem->title;
         }else{
-            $title = pathinfo($arlem->filename, PATHINFO_FILENAME);
+            //if title is not exist get it from activity json string
+            $title = json_decode($arlem->activity_json)->name;
         }
         
         //thumbnail
