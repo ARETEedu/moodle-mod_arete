@@ -67,22 +67,6 @@ $(document).ready(function() {
     }
 
 
-//ARLEM delete confirm
- function confirmSubmit(form)
- {
-     var checked = document.querySelectorAll('input.deleteCheckbox:checked');
-
-     if (checked.length === 0) {
-
-             form.submit();
-     } else {
-
- if (confirm("Are you sure you want to delete these files?")) {
-      form.submit();
-             }
-     }
- }
-
 //Gets from PHP 
 var domain, userviewmode, editmodebutton_on_text, editmodebutton_off_text, viewsTitle, playTitle, downloadTitle,
         editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle , voteRegisteredTitle = "";
