@@ -1,4 +1,26 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once(dirname(__FILE__). '/../../config.php');
 require_once($CFG->dirroot.'/mod/arete/locallib.php');
@@ -26,11 +48,7 @@ require_course_login($course, false, $cm);
 
 
 //check if we are in edit mode
-$pagemode = filter_input(INPUT_GET, 'mode' );
-if(!isset($pagemode)){
-    $pagemode = '';
-    
-}
+$pagemode = optional_param('mode', '', PARAM_TEXT); 
 
 //page configuration
 $PAGE->set_url($url);
@@ -47,8 +65,6 @@ $PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  //r
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); //for rating stars
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
 
-//$userMenuNode = $PAGE->navigation->add(get_string('youraractivities', 'arete'), new moodle_url($CFG->wwwroot . '/mod/arete/view.php?id='. $id . '&mode=user'), navigation_node::TYPE_CUSTOM);
-//$userMenuNode->make_active();
 
 //print Moodle header
 echo $OUTPUT->header();
@@ -145,16 +161,13 @@ else{
 //if search word not findign then find all user arlems if $is_user_table is true otherwise return all arlems for manager
 function search_result($is_user_table){
    
-   $searchword = filter_input(INPUT_GET, 'qword');
-   $sortingMode = filter_input(INPUT_GET, 'sort');
-   
-   if(!isset($sortingMode)){
-       $sortingMode = "timecreated";
-   }
-   
+   $searchword = optional_param('qword', null, PARAM_TEXT);
+   $sortingMode = optional_param('sort', 'timecreated', PARAM_TEXT);
    
     if(isset($searchword) && $searchword !== '')
     {
+        require_sesskey();
+        
         //remove invalid characters
         $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
         //search the jsons and return files if exists
@@ -181,15 +194,13 @@ function generate_arlem_table($arlems_list, $userViewMode = 0){
     $max_number_on_page = 10; 
 
     //get the active page id from GET
-    $page_number = filter_input(INPUT_GET, 'pnum');//current page number
-
+    $page_number = optional_param('pnum', 1, PARAM_INT);
     
     // split ARLEMs list to small lists
     $splitet_list = array_chunk($arlems_list, $max_number_on_page); 
     
-    
     //start at first page if pnum is not exist in the page url
-    if(!isset($page_number) || $page_number < 1)
+    if($page_number < 1)
     {
         $page_number = 1;
     }else if($page_number > count($splitet_list)){
@@ -206,12 +217,9 @@ function generate_arlem_table($arlems_list, $userViewMode = 0){
           echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
      }
 
-     //show the tab buttons
-     echo create_tabs(count($arlems_list), $userViewMode );
-
     
     //Draw the searchbox
-     echo searchbox($id);
+     echo searchbox();
 
     //create the ARLEMs tables
     draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);

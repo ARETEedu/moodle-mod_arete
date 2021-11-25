@@ -1,4 +1,26 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once('../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
@@ -7,6 +29,7 @@ require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
 $token = filter_input(INPUT_POST, 'token');
 $userid = filter_input(INPUT_POST, 'userid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
+$title = filter_input(INPUT_POST, 'title');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
 $activityJson = filter_input(INPUT_POST, 'activity');
@@ -40,12 +63,11 @@ if(is_sessionid_exist($sessionid)){
  */
 function process(){
     
-    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson;
+    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson, $title;
     
     //if the file is received from Unity application
     if (isset($_FILES['myfile'])){
 
-        $filename = $_FILES['myfile']['name']; //file name
         $file = $_FILES['myfile']['tmp_name'];
 
         //convert the file to base64 string
@@ -72,7 +94,7 @@ function process(){
             $public_upload_privacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'filename' => urlencode($filename), 'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
+         $data = array('base64' => $file_base64, 'token' => $token, 'title' =>$title ,  'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
              'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
 
          $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');

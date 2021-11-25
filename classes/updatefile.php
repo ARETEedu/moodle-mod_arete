@@ -1,4 +1,26 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once(dirname(__FILE__). '/../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
@@ -8,7 +30,7 @@ defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
 $sessionID = filter_input(INPUT_POST, 'sessionID');
-$pageId = filter_input(INPUT_POST, 'pageId');
+$pageId = filter_input(INPUT_POST, 'id');
 $pnum = filter_input(INPUT_POST, 'pnum');
 $sorting = filter_input(INPUT_POST, 'sort');
 $order = filter_input(INPUT_POST, 'order');
@@ -41,24 +63,31 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
          return;
 } 
 
+$uploaded_file = $_FILES['files']['tmp_name'];
+$lastfile = end($uploaded_file);
 
 //replace user selected files
 if(!empty(array_filter($_FILES['files']['name']))) { 
 
+    $sesskey = filter_input(INPUT_POST, 'sesskey');
+    if(!isset($sesskey) || $sesskey !== sesskey()){
+        echo get_string('accessdenied', 'arete');
+        die;
+    }
+    
     // Loop through each file in files[] array 
-    foreach ($_FILES['files']['tmp_name'] as $key => $value) { 
+    foreach ($uploaded_file as $key => $value) { 
 
         $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
         $file_name = $_FILES['files']['name'][$key]; 
         $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
 
-        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , false);
+        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , $lastfile == $value);
     }
 }
 
 
-///replace the new json file after editing in jason validator
-
+///replace the new json file after editing in json validator
 $activityJson_will_updated_by_user = in_array( $sessionID . '-activity.json' , array_filter($_FILES['files']['name']));
 $workplaceJson_will_updated_by_user = in_array( $sessionID . '-workplace.json' , array_filter($_FILES['files']['name']));
 
@@ -123,7 +152,6 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
                 }
             }
             
-            
             //only once at the end. create zip file after all file are replaced
             if($is_lastFile == true){
                $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
@@ -149,7 +177,10 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
         $activityJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-activity.json' , FILE_USE_INCLUDE_PATH);
         $workplaceJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-workplace.json', FILE_USE_INCLUDE_PATH);
         
-        $newFileName = json_decode($activityJSON)->name . '.zip';
+        $newTitle = json_decode($activityJSON)->name;
+        
+        //Edit $sessionID if filename needs to be changed
+        $newFileName = $sessionID . '.zip';
         
         // Initialize archive object
         $zip = new ZipArchive();
@@ -192,7 +223,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
         // Zip archive will be created only after closing object
         $zip->close();
 
-        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName);
+        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName, $newTitle);
     }
     
     
@@ -213,7 +244,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
      * @param type $filepath
      * @param type $filename
      */
-    function upload_new_zip($filepath, $oldFileName, $newFileName){
+    function upload_new_zip($filepath, $oldFileName, $newFileName, $newTitle){
 
         global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath,$activityJSON,$workplaceJSON,$numberOfUpdatedFiles;
       
@@ -244,6 +275,7 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
             'fileid' => $newArlemID,
             'timecreated' => $Date,
             'filesize' => $newArlem->get_filesize(),
+            'title' => $newTitle
          );
          
          //update activity_json if updated
@@ -262,8 +294,10 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
          $arlem_data = $DB->get_records('arete_allarlems', array('itemid' => $itemid ));
                   
          //update timemodified only if at least one file is updated or json files are edited
-         if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
+         if(isset($arlem_data['activity_json']) && isset($arlem_data['workplace_json'])){
+            if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
               $parameters += array('timemodified' => time());
+            }
          }
 
          //update the file name
@@ -273,7 +307,6 @@ function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile =
          updateArlemObject($oldFileName , $itemid, $parameters);
          ///
 
-         
          //update the record of the file in arete_arlem table
          $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
          foreach ($activities_that_use_this_arlem as $activity) {

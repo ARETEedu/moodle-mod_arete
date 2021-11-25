@@ -192,11 +192,6 @@
 }
 
 
-#tabs{
-   display: inline-block;
-}
-
-
 #studentmenu{
     width: 100%;
     background-color: #ccc;
@@ -378,6 +373,12 @@
   width: 80%; /* Could be more or less, depending on screen size */
 }
 
+#editModeButton,
+#saveButton {
+    height: 3em;
+    position:relative;
+    left:-13em;
+}
 
 /* 
 Max width before this PARTICULAR table gets nasty
@@ -385,7 +386,7 @@ This query will take effect for any screen smaller than 760px
 and also iPads specifically.
 */
 @media 
-only screen and (max-width: 1300px) {
+only screen and (max-width: 1200px) {
 
         .table-responsive  td, th { 
           text-align: left; 
@@ -500,6 +501,11 @@ only screen and (max-width: 1300px) {
     #studentmenu .menuitem{
         font-size: 0.9em;
     }
+    
+    #editModeButton,
+    #saveButton {
+        left:0em;
+    }
 }
 
 @media 
@@ -519,5 +525,12 @@ only screen and (max-width: 640px) {
         #studentmenu{
             padding-bottom: 50px;
             width: 85%;
+        }
+        
+        
+        
+        #editModeButton,
+        #saveButton {
+            left:0em;
         }
 }

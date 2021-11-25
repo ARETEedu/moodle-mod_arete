@@ -1,10 +1,33 @@
 <?php
+// This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Prints a particular instance of Augmented Reality Experience plugin
+ *
+ * @package    mod_arete
+ * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__). '/../../../../config.php');
 require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+require_once($CFG->dirroot.'/mod/arete/classes/output/teacher_top_buttons.php');
 
 $searchfield = filter_input(INPUT_GET, 'qword');
 
@@ -20,7 +43,7 @@ $searchfield = filter_input(INPUT_GET, 'qword');
  */
 function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
-    global $CFG, $searchfield;
+    global  $searchfield;
     
     //if the user searched for somthing
     $searchquery= '';
@@ -52,15 +75,21 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
     
     //the popup modal div
     echo add_popup_image_div();
+
     
-    $table = html_writer::start_tag('div');
-    $table .= html_writer::start_tag('form', array('action' => 'classes/save_assignment.php', 'id' => 'tableDataForm' , 'method' => 'post' )); //create form
-    $table .= html_writer::table(draw_table($splitet_list[$page_number-1],'arlemTable',  true, $moduleid)); //arlems table
-    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'returnurl', 'name' => 'returnurl', 'value' => $CFG->wwwroot .'/mod/arete/view.php?id='. $id . $searchquery . '&pnum=' . $page_number . '&editing=on')); //return to this url after saving the table
-    $table .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'moduleid', 'name' => 'moduleid', 'value' => $moduleid )); //id of the current arete module
-    $table .= html_writer::end_tag('form');
-    $table .= html_writer::end_tag('div');
-    echo $table;
+    ///print the arlem table for the teachers
+    $table_form = new teacher_top_buttons('classes/save_assignment.php', array('splitet_list'=>$splitet_list, 'page_number'=> $page_number , 'moduleid' => $moduleid, 'course_module_id' => $id , 'searchquery' => $searchquery) );
+    
+    //Form processing and displaying is done here
+    if ($table_form->is_cancelled()) {
+        //Handle form cancel operation, if cancel button is present on form
+    } else if ($fromform = $table_form->get_data()) {
+      //In this case you process validated data. $mform->get_data() returns data posted in form.
+    } else {
+      //displays the form
+      $table_form->display();
+    }
+    ///
 }
 
 
@@ -150,26 +179,26 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     //sortable headers for teachers
     if($teacherView){
         $sortMode = filter_input(INPUT_GET, 'sort');
-        $orderIcon = $sortMode === 'timecreated' || !isset($sortMode) ? filter_input(INPUT_GET, 'order') === 'ASC' ? ' ↑' : ' ↓' : '';
-        $date_title = '<div class="headers" id="timecreated">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'timecreated' . '");')) . get_string('datetitle' , 'arete') . $orderIcon . html_writer::end_tag('a') . '</div>';
+        $timecreated_orderIcon = $sortMode === 'timecreated' || !isset($sortMode) ? filter_input(INPUT_GET, 'order') === 'ASC' ? ' ↑' : ' ↓' : '';
+        $date_title = '<div class="headers" id="timecreated">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'timecreated' . '");')) . get_string('datetitle' , 'arete') . $timecreated_orderIcon . html_writer::end_tag('a') . '</div>';
         
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'timemodified' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $modified_date_title = '<div class="headers" id="timemodified">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("'  . 'timemodified' . '");')) . get_string('modifieddatetitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>';
+        $timemodified_orderIcon = filter_input(INPUT_GET, 'sort') === 'timemodified' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
+        $modified_date_title = '<div class="headers" id="timemodified">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("'  . 'timemodified' . '");')) . get_string('modifieddatetitle' , 'arete') . $timemodified_orderIcon . html_writer::end_tag('a'). '</div>';
         
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'filename' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $arlem_title = '<div class="headers" id="filename">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filename' . '");')) . get_string('arlemtitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>';
+        $filename_orderIcon = filter_input(INPUT_GET, 'sort') === 'filename' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
+        $arlem_title = '<div class="headers" id="filename">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filename' . '");')) . get_string('arlemtitle' , 'arete') . $filename_orderIcon . html_writer::end_tag('a'). '</div>';
         
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'views' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $viewsTitle = '<div class="headers" id="views">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'views' . '");')) . get_string('viewstitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>';
+        $views_orderIcon = filter_input(INPUT_GET, 'sort') === 'views' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
+        $viewsTitle = '<div class="headers" id="views">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'views' . '");')) . get_string('viewstitle' , 'arete') . $views_orderIcon . html_writer::end_tag('a'). '</div>';
         
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'filesize' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $size_title = '<div class="headers" id="filesize">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filesize' . '");')) . get_string('sizetitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>'; 
+        $filesize_orderIcon = filter_input(INPUT_GET, 'sort') === 'filesize' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
+        $size_title = '<div class="headers" id="filesize">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filesize' . '");')) . get_string('sizetitle' , 'arete') . $filesize_orderIcon . html_writer::end_tag('a'). '</div>'; 
 
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'author' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
-        $author_title = '<div class="headers" id="author">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'author' . '");')) . get_string('authortitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>'; 
+        $author_orderIcon = filter_input(INPUT_GET, 'sort') === 'author' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
+        $author_title = '<div class="headers" id="author">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'author' . '");')) . get_string('authortitle' , 'arete') . $author_orderIcon . html_writer::end_tag('a'). '</div>'; 
         
-        $orderIcon = filter_input(INPUT_GET, 'sort') === 'rate' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
-        $rating_title = '<div class="headers" id="rate">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'rate' . '");')) . get_string('ratingtitle' , 'arete') . $orderIcon . html_writer::end_tag('a'). '</div>'; 
+        $rate_orderIcon = filter_input(INPUT_GET, 'sort') === 'rate' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
+        $rating_title = '<div class="headers" id="rate">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'rate' . '");')) . get_string('ratingtitle' , 'arete') . $rate_orderIcon . html_writer::end_tag('a'). '</div>'; 
     }
 
 
@@ -184,19 +213,23 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     foreach ($arlemslist as $arlem) {
 
         //date
-        $date =  date('m.d.Y H:i ', $arlem->timecreated);
+        $date =  date('d.m.Y H:i ', $arlem->timecreated);
 
         //modified date
-        $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') :  date('m.d.Y H:i ',  $arlem->timemodified);
+        $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') :  date('d.m.Y H:i ',  $arlem->timemodified);
         
 
         //arlem title
-        $filename = pathinfo(urldecode($arlem->filename), PATHINFO_FILENAME);
-        
+        if(!empty($arlem->title)){
+            $title = $arlem->title;
+        }else{
+            //if title is not exist get it from activity json string
+            $title = json_decode($arlem->activity_json)->name;
+        }
         
         //thumbnail
         list($thumb_url, $css) = get_thumbnail($arlem->itemid);
-        $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $filename));
+        $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $title));
 
         
         //number of views on app
@@ -208,27 +241,28 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
         
         //author (photo, firstname, lastname
         list($authoruser, $src) = getARLEMOwner($arlem, $PAGE);
-        $photo = '<span class="author"><img  class="profileImg" src="'. $src . '" alt="profile picture" width="40" height="40">&nbsp;'; 
+        $photo = '<span class="author"><img  class="profileImg" src="'. $src . '" alt="'. get_string('profileimagealt', 'arete') . '" width="40" height="40">&nbsp;'; 
         $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . '</span>';
 
         
         //play button
         $play_url = getArlemURL($arlem->filename, $arlem->itemid);
-        $play_button = '<a name="playBtn" href ="'. $play_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/playicon.png" alt="Launch on device"></a>';
+        $play_button = '<a name="playBtn" href ="'. $play_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/playicon.png" alt="'. get_string('playbuttonalt', 'arete') .'"></a>';
       
         //download button
         $download_url = getArlemURL($arlem->filename, $arlem->itemid, true);
-        $dl_button = '<a name="dlBtn" href ="'. $download_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/downloadicon.png" alt="Download Activity"></a>';
+        $dl_button = '<a name="dlBtn" href ="'. $download_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/downloadicon.png" alt="' . get_string('downloadbuttonalt', 'arete') . '"></a>';
         
         
         //edit button
-        $queries = get_queries(true);
-        $edit_button = '<a name="dlBtn'. $arlem->fileid .'" href ="'. $CFG->wwwroot .'/mod/arete/view.php?id='. $queries['id'] . '&pnum=' . $queries['pnum'] . '&sort=' . $queries['sort'] . '&order=' . $queries['order'] .
-                '&editing=' . $queries['editing'] . '&mode=edit&itemid='. $arlem->itemid . '&user=' . $arlem->userid . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/editicon.png" alt="Edit Activity"></a>';
+        $queries = get_queries();
+        
+        $edit_button = '<a name="dlBtn'. $arlem->fileid .'" href ="'. $CFG->wwwroot .'/mod/arete/view.php?'. $queries['id'] . $queries['pnum'] . $queries['sort'] . $queries['order'] .
+               '&mode=edit&itemid='. $arlem->itemid . '&author=' . $arlem->userid . '&sesskey=' . sesskey() . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/editicon.png" alt="' . get_string('editbuttonalt', 'arete') . '"></a>';
 
         
         //qr code button
-        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $download_url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png" alt="QR Code"></a>';
+        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $play_url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png" alt="' . get_string('qrcodebuttonalt', 'arete') . '"></a>';
 
         //send filename and itemid as value with (,) between
         if($arlem->upublic == 1){ $checked = 'checked';} else {$checked = '';}
@@ -260,9 +294,9 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
                 
         //Now fill the row
         if($teacherView){
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img, $views  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn, $rating);
+            $table_row = array($date, $modified_date,  $title, $thumbnail_img, $views  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn, $rating);
         }else{
-            $table_row = array($date, $modified_date,  $filename, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button, $rating);
+            $table_row = array($date, $modified_date,  $title, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button, $rating);
         }
 
 
@@ -315,56 +349,50 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
  *@return A searchbox for arlems
  * 
  */
-function searchbox($pageid){
+function searchbox(){
     global $CFG,$searchfield;
 
-    $queries = get_queries();
+    $queries = get_queries(true);
+    $id = $queries['id'];
     $pagemode = $queries['mode'];
     $editing_mode = $queries['editing'];
     $sortingMode = $queries['sort'];
     $orderMode = $queries['order'];
+    $pagenumber = $queries['pnum'];
     
+    $params = array('id' => $id, 'sesskey' => sesskey());
+    
+    if(!empty($pagemode)){
+        $params['mode'] =  $pagemode;
+    }
+    if(!empty($editing_mode)){
+        $params['editing'] = $editing_mode;
+    }
+    if(!empty($sortingMode)){
+        $params['sort'] = $sortingMode;
+    }
+    if(!empty($orderMode)){
+        $params['order'] = $orderMode;
+    }
+    if(!empty($pagenumber)){
+        $params['pnum'] = $pagenumber;
+    }
+    
+    $action = new moodle_url($CFG->wwwroot .'/mod/arete/view.php');
+
     $searchbox = html_writer::start_div('', array('id' => 'searchbox'));
-    $searchbox .= html_writer::start_tag('form', array('action' => $CFG->wwwroot .'/mod/arete/view.php?id='. $pageid . $pagemode . $editing_mode . $sortingMode. $orderMode, 'method' => 'get' )); //create form
-    $searchbox .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id' , 'value' => $pageid )); 
+    $searchbox .= html_writer::start_tag('form', array('action' => $action, 'method' => 'get' )); //create form
+    foreach ($params as $key => $value) {
+        $searchbox .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $key , 'value' => $value )); 
+    }
+    
     $searchbox .= html_writer::empty_tag('input', array('type' => 'text' , 'placeholder' => get_string('search', 'arete') , 'name' => 'qword' , 'value' => isset($searchfield) ? $searchfield : '')); 
-    $searchbox .= html_writer::empty_tag('input', array('type' => 'submit', 'class' => 'btn btn-warning right' , 'value' =>  get_string('search', 'arete') )); 
+    $searchbox .= html_writer::empty_tag('input', array('type' => 'submit', 'class' => 'btn right' , 'value' =>  get_string('search', 'arete') )); 
     $searchbox .= html_writer::end_tag('form');
     $searchbox .= html_writer::end_div();
     
     return $searchbox;
 }
-
-
-/**
- * 
- *@param URL of view page where the ARLEM tables are displayed
- *@return A searchbox for arlems
- * 
- */
-function create_tabs($arlem_num){
-    
-    //do not show the buttons if the list is empty
-    if($arlem_num == null || $arlem_num == 0){
-        return;
-    }
-    
-    $tabs = '<br>';
-    $tabs .= html_writer::start_div('', array('id' => 'tabs'));
-    
-    //editModeButton
-    $tabs .= html_writer::empty_tag('input', array('type' => 'button' , 'id' => 'editModeButton', 'value' => get_string('editmodedisabledbutton', 'arete') , 'onclick' => 'edit_mode_toggle(true, window.location.href.includes("&editing=on"));' )); 
-    
-    //savebutton
-    $tabs .= html_writer::empty_tag('input', array('type' => 'button', 'id' => 'saveButton', 'class' => 'btn btn-primary right' ,
-        'onClick' => 'confirmSubmit(document.getElementById("tableDataForm"));', 'value' =>  get_string('savebutton', 'arete'))); //bottom save button 
-    
-    $tabs .= html_writer::end_div();
-
-    
-    return $tabs;
-}
-
 
 
 
@@ -374,10 +402,10 @@ function create_tabs($arlem_num){
 function Create_student_menu(){
     global $CFG;
     
-    $menu .= html_writer::start_div('', array('id' => 'studentmenu'));
+    $menu = html_writer::start_div('', array('id' => 'studentmenu'));
 
     //Terms Of use Button
-    $onclick = 'window.open ("'. $CFG->wwwroot.'/mod/arete/termsofuse.html' . '","Terms of Uses","menubar=1,resizable=1,width=600,height=400");';
+    $onclick = 'window.open ("'. $CFG->wwwroot.'/mod/arete/termsofuse.html' . '","'. get_string('termsofuse', 'arete') .'","menubar=1,resizable=1,width=600,height=400");';
     $menu .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'menuitem' , 'value' => get_string('termsofuse', 'arete') , 'onclick' => $onclick )); 
     
     //Calibration Marker button
