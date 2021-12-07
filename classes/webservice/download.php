@@ -63,9 +63,3 @@ function httpPost($url, $data){
     curl_close($curl);
     return $response;
 }
-        
-
-
-    
-    
-    

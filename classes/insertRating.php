@@ -38,7 +38,7 @@ if($onstart == 1){
 
 
 if(!isset($userid) || !isset($itemid) || !isset($rating)){
-    echo 'Unable to set your rating record!';
+    echo get_string('unabletosetrating', 'arete');;
     exit;
 }
 
@@ -77,7 +77,8 @@ $DB->update_record('arete_allarlems', $arlem_to_update);
 function getVotes(){
     global $DB, $itemid;
     $params = [$itemid, 0];
-    $votes = $DB->get_records_select('arete_rating', 'itemid = ? AND rating <> ?'  , $params, 'timecreated DESC'); 
+    $sql = 'itemid = ? AND rating <> ?';
+    $votes = $DB->get_records_select('arete_rating', $sql, $params, 'timecreated DESC'); 
     return strval(count($votes));
 }
 

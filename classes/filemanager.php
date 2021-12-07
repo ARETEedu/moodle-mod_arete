@@ -238,11 +238,17 @@ function getAllArlems($sorting)
     if(has_capability('mod/arete:manageall', $context)){
 
         switch ($sortingMode){
-            case "author": //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-                $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id ORDER BY u.username ' . $order); //all arlems
+            //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+            case "author": 
+                $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
+                    . 'JOIN {user} AS u '
+                    . 'ON a.userid = u.id '
+                    . 'ORDER BY u.username '. $order;
+                $files = $DB->get_records_sql($sql); 
                 break;
             default:
-                $files = $DB->get_records('arete_allarlems' , null, $sortingMode . ' ' . $order); //all arlems
+                //all arlems
+                $files = $DB->get_records('arete_allarlems' , null, $sortingMode . ' ' . $order); 
                 break;
         }
         
@@ -250,11 +256,19 @@ function getAllArlems($sorting)
     {
         $params = [1, $USER->id];
         switch ($sortingMode){
-            case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-                $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE a.upublic = ? OR a.userid = ? ORDER BY u.username ' . $order, $params); //all arlems
+            //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+            case "author":
+                $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
+                    . 'JOIN {user} AS u '
+                    . 'ON a.userid = u.id '
+                    . 'WHERE a.upublic = ? '
+                    . 'OR a.userid = ? '
+                    . 'ORDER BY u.username ';
+                $files = $DB->get_records_sql($sql . $order, $params); 
                 break;
             default:
-                $files = $DB->get_records_select('arete_allarlems', 'upublic = ? OR userid = ? '   , $params , $sortingMode . ' ' . $order);  //only public and for the user
+                $sql = 'upublic = ? OR userid = ? ';
+                $files = $DB->get_records_select('arete_allarlems', $sql, $params , $sortingMode . ' ' . $order);
                 break;
         }
 
@@ -276,9 +290,15 @@ function getAllUserArlems($sorting)
     $sortingMode = validate_sorting($sorting);
     
     switch ($sortingMode){
-        case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+        //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+        case "author":
+            $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
+                . 'JOIN {user} AS u '
+                . 'ON a.userid = u.id '
+                . 'WHERE a.userid = ? '
+                . 'ORDER BY u.username ';
             $params = array($USER->id);
-            $files = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE a.userid = ? ORDER BY u.username ' . $order, $params); 
+            $files = $DB->get_records_sql($sql . $order, $params); 
             break;
         default:
             $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id) , $sortingMode . ' ' . $order);  
@@ -311,18 +331,28 @@ function search_arlems($searchWord, $userSearch, $sorting){
     
     //All result for the managers
     if(has_capability('mod/arete:manageall', $context)){
+        $sql = '(filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)';
         $params = [$searchQuerty, $searchQuerty, $searchQuerty];
-        $results = $DB->get_records_select('arete_allarlems',  '(filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)'  , $params, $sortingMode . ' ' . $order);  //only public and for the user
+        $results = $DB->get_records_select('arete_allarlems',  $sql, $params, $sortingMode . ' ' . $order);  
     }
     else{
         $params = [1, $userid_if_available, $searchQuerty, $searchQuerty, $searchQuerty];
         switch ($sortingMode){
-            case "author"://author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
-                $results = $DB->get_records_sql('SELECT a.* FROM {arete_allarlems} AS a JOIN {user} AS u ON a.userid = u.id WHERE (a.upublic = ? OR a.userid = ?) AND (filename LIKE ? '
-                        . 'OR activity_json LIKE ?  OR workplace_json LIKE ?) ORDER BY u.username ' . $order, $params); 
+            //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
+            case "author":
+                $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
+                    . 'JOIN {user} AS u ON a.userid = u.id '
+                    . 'WHERE (a.upublic = ? OR a.userid = ?) '
+                    . 'AND (filename LIKE ? '
+                    . 'OR activity_json LIKE ? '
+                    . 'OR workplace_json LIKE ?) '
+                    . 'ORDER BY u.username ';
+                $results = $DB->get_records_sql($sql . $order, $params); 
                 break;
             default:
-                $results = $DB->get_records_select('arete_allarlems', '(upublic = ? OR userid = ?) AND (filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)'  , $params, $sortingMode . ' ' . $order);  //only public and for the user
+                $sql = '(upublic = ? OR userid = ?) '
+                    . 'AND (filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)';
+                $results = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingMode . ' ' . $order);
                 break;
         }  
     }
@@ -345,7 +375,9 @@ function getArlemURL($filename, $itemid, $downloadMode = null)
     
     $url = '#';
     if($file){
-        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                $file->get_filearea(), $file->get_itemid(),
+                $file->get_filepath(), $file->get_filename(), false);
     }
 
     $file_in_allarlem = $DB->get_record('arete_allarlems' , array('filename' => $filename, 'itemid' => $itemid));
@@ -371,7 +403,9 @@ function getArlemURL($filename, $itemid, $downloadMode = null)
 function GetURL($file){
     $url = '#';
     if($file){
-        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
+        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                $file->get_filearea(), $file->get_itemid(),
+                $file->get_filepath(), $file->get_filename(), false);
     }
 
     return $url;
@@ -482,7 +516,9 @@ function get_thumbnail($itemid){
         $thumbnail = $fs->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $itemid, '/', 'thumbnail.jpg');
         //if the thumbnail file exists
        if($thumbnail){
-          $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(), $thumbnail->get_filearea(), $thumbnail->get_itemid(), $thumbnail->get_filepath(), $thumbnail->get_filename(), false);
+          $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(),
+                  $thumbnail->get_filearea(), $thumbnail->get_itemid(),
+                  $thumbnail->get_filepath(), $thumbnail->get_filename(), false);
           $css = 'ImgThumbnail';
        }else{
            $thumb_url= $CFG->wwwroot.'/mod/arete/pix/no-thumbnail.jpg';

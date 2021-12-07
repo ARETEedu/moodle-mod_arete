@@ -46,14 +46,44 @@ class pagination{
        
        $nav = html_writer::start_tag('div', array('class' => 'pagination'));
 
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number-1) . $pagemode . $editingMode . $searchQuery . $sortingMode . $orderMode)); //back button
+       $prevButtonHrefParams = array(
+           'id=' . $id,
+           'pnum=' . strval($page_number-1),
+       );
+       
+       //Add page mode if exist (eg. =edit)
+       if(!empty($pagemode)){
+           $prevButtonHrefParams[] = $pagemode;
+       }
+       //Add editing mode if exist (eq. =on)
+        if(!empty($editingMode)){
+           $prevButtonHrefParams[] = $editingMode;
+       }
+       //Add searched word if exist
+        if(!empty($searchQuery)){
+           $prevButtonHrefParams[] = $searchQuery;
+       }
+       //Add sorting type if exist (eg. =views)
+        if(!empty($sortingMode)){
+           $prevButtonHrefParams[] = $sortingMode;
+       }
+       //Add order type if exist (eg. =ASC)
+        if(!empty($orderMode)){
+           $prevButtonHrefParams[] = $orderMode;
+       }
+       
+       //back button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == 1 ? '#' : 'view.php?' . implode('&', $prevButtonHrefParams) )); 
        $nav .= 'Prev';
        $nav .= html_writer::end_tag('a');
 
        for($i = 1; $i < count($splitet_list)+1; $i++)
        {
+           //replace pnum at index 1 by the new page number
+           $prevButtonHrefParams[1] = 'pnum=' . $i;
            
-           $pageAttr = array('href' => 'view.php?id='. $id . '&pnum=' . $i . $pagemode . $editingMode . $searchQuery . $sortingMode  . $orderMode);
+           //the new page url
+           $pageAttr = array('href' => 'view.php?'. implode('&', $prevButtonHrefParams));
            
            //make diffrent color for active page
            if($i == $page_number){
@@ -65,8 +95,11 @@ class pagination{
            $nav .= html_writer::end_tag('a');
        }
        
-
-       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?id=' . $id . '&pnum=' . strval($page_number+1) . $pagemode . $editingMode . $searchQuery . $sortingMode . $orderMode)); //next button
+       //replace pnum at index 1 by the new page number
+       $prevButtonHrefParams[1] = 'pnum=' . strval($page_number+1);
+       
+       //next button
+       $nav .= html_writer::start_tag('a', array('href' => $page_number == count($splitet_list) ? '#' : 'view.php?' . implode('&', $prevButtonHrefParams))); 
        $nav .= 'Next';
        $nav .= html_writer::end_tag('a');
 

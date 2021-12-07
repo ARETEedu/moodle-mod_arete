@@ -37,7 +37,8 @@ global $USER;
 echo '<script>window.userid =' . $USER->id . '</script>';
 
 //Get module id, course and moudle infos
-$id = required_param('id', PARAM_INT); // Course Module ID.
+// Course Module ID.
+$id = required_param('id', PARAM_INT); 
 $urlparams = array('id' => $id);
 $url = new moodle_url('/mod/arete/view.php', $urlparams);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'arete');
@@ -58,11 +59,13 @@ if($pagemode == 'edit'){
     $PAGE->set_title(get_string('modulename', 'arete'));
 }
 
+//custom css file
+$PAGE->requires->css('/mod/arete/css/styles.css');  
+//rating css file
+$PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  
 
-$PAGE->requires->css('/mod/arete/css/styles.css');  //custom css file
-$PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  //rating css file
-
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); //for rating stars
+//for rating stars
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); 
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
 
 
@@ -80,13 +83,22 @@ if(has_capability('mod/arete:view', $context)){
 
     //edit mode
     if( $pagemode == "edit"){
-        echo '<span class="titles">' . get_string('editpagetitle', 'arete') . '</span><br><br>';
+        $editpageTitle = html_writer::start_tag('span' , ['class' => 'titles']);
+        $editpageTitle .= get_string('editpagetitle', 'arete');
+        $editpageTitle .= html_writer::end_tag('span');
+        $editpageTitle .= html_writer::empty_tag('br');
+        $editpageTitle .= html_writer::empty_tag('br');
+        echo $editpageTitle;
         
     }else{
         //Print the description
-          echo '<span class="titles">' . get_string('description', 'arete') . '</span>';
-          $description = $DB->get_field('arete', 'intro', array('id' => $moduleid));
-          echo '<h5>'.$description.'</h5></br>';     
+        $descriptionLabel = html_writer::start_tag('span' , ['class' => 'titles']);
+        $descriptionLabel .= get_string('description', 'arete');
+        $descriptionLabel .= html_writer::end_tag('span');
+        echo $descriptionLabel;
+        $description = $DB->get_field('arete', 'intro', array('id' => $moduleid));
+        echo '<h5>'.$description.'</h5>';  
+        echo html_writer::empty_tag('br');
     }
 
 }
@@ -113,26 +125,38 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
         }
         $rolestr = implode(', ', $rolestr);
 
+        //Print the role of the user
         if(isset($rolestr)){
-               echo '<div class="right">'. get_string('rolelabel', 'arete') . '<span id="role">' . $rolestr . '</span></div>';
+            $role = html_writer::start_tag('div' , ['class' => 'right']);
+            $role .= get_string('rolelabel', 'arete');
+            $role .= html_writer::start_tag('span' , ['id' => 'role']);
+            $role .= $rolestr;
+            $role .= html_writer::end_tag('span');
+            $role .= html_writer::end_tag('div');
+            echo $role;
         }else{
-                echo '<div class="right">'. get_string('roleundefined', 'arete') . '</div>';
+            //undefined
+            $role = html_writer::start_tag('div' , ['class' => 'right']);
+            $role .= get_string('roleundefined', 'arete');
+            $role .= html_writer::end_tag('div');
+            echo $role;
         }
 
-
-         //label that show this arlem is assinged to this activity
-        echo '<span class="titles">' . get_string('assignedarlem', 'arete') . '</span>';
+        //The label of assinged ARLEM
+        $assignedLabel .= html_writer::start_tag('span' , ['class' => 'titles']);
+        $assignedLabel .= get_string('assignedarlem', 'arete');
+        $assignedLabel .= html_writer::end_tag('span');
+        echo $assignedLabel;
 
         //print assigned table
-         $result = draw_table_for_students($moduleid);
+        $result = draw_table_for_students($moduleid);
 
          //show notification if no arlem is assigned
-         if($result == false){
-             echo $OUTPUT->notification(get_string('notassignedyer' , 'arete'));
-         }
+        if($result == false){
+            echo $OUTPUT->notification(get_string('notassignedyer' , 'arete'));
+        }
     }
 }
-
 
 //create edit page
 if($pagemode == "edit")
@@ -189,7 +213,6 @@ function generate_arlem_table($arlems_list, $userViewMode = 0){
     //initiated ata for using in javascript
     init($userViewMode);
 
-
     //maximum item on each page
     $max_number_on_page = 10; 
 
@@ -208,31 +231,32 @@ function generate_arlem_table($arlems_list, $userViewMode = 0){
     }
     
 
-     //need to add a single line between assigned table and arlem table
-     echo '<br>'; 
+    //need to add a single line between assigned table and arlem table
+    echo '<br>'; 
 
-     //Do not display the table tile if there are no ARLEM
-     if(!empty($arlems_list)){
+    //Do not display the table tile if there are no ARLEM
+    if(!empty($arlems_list)){
           //label that show the list of all arlems which  are available
-          echo '<span class="titles">' . get_string('availabledarlem', 'arete') . '</span>';        
+        $availableArlemLabel = html_writer::start_tag('span' , ['class' => 'titles']);
+        $availableArlemLabel .= get_string('availabledarlem', 'arete');
+        $availableArlemLabel .= html_writer::end_tag('span');
+        echo $availableArlemLabel;        
      }
 
-    
     //Draw the searchbox
-     echo searchbox();
+    echo searchbox();
 
     //create the ARLEMs tables
     draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
     
     // create the pagination if arlemlist was not empty
     if(!empty($arlems_list)){
-         $pagination = new pagination();
-         echo '<br>' . $pagination->getPagination($splitet_list, $page_number, $id);
+        $pagination = new pagination();
+        echo html_writer::empty_tag('br') . $pagination->getPagination($splitet_list, $page_number, $id);
     }
 
 }
     
-
 echo $OUTPUT->footer();
 
 

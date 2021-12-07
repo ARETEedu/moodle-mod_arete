@@ -90,17 +90,13 @@ if(isset($_POST['publicarlem'])){
 
                 updateArlemObject($filename, $itemid, array('upublic' => 0));
             }
-         
             
             //make the assigned ARLEM become public
             if(isset($ARLEM)){
                updateArlemObject($ARLEM->filename,  $ARLEM->itemid, array('upublic' => 1));
             }
-
         }
-
     }
-
 }
 
 
@@ -116,7 +112,6 @@ if(isset($_POST['deletearlem'])){
 
     } 
 }
-
 
 
 //redirect

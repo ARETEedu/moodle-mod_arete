@@ -63,7 +63,7 @@ function get_arlem_list(){
 
         $params = [1, $userid];
         //All pulblic and user's ARLEMs
-        $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ' , $params, 'timecreated DESC');  //only public and for the user
+        $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ' , $params, 'timecreated DESC');
 
         //the moudules that the user enrolled to their activitie
         $USER_moduleIDs = get_user_arete_modules_ids();
@@ -85,8 +85,9 @@ function get_arlem_list(){
         return;
 
     }
-
-    $arlems =  $DB->get_records('arete_allarlems' , array('upublic' => 1 ), 'timecreated DESC');  //only public and for the user
+    
+    //only public
+    $arlems =  $DB->get_records('arete_allarlems' , array('upublic' => 1 ), 'timecreated DESC');  
     //
     //add author name to ARLEM file
     foreach ($arlems as $arlem) {
@@ -109,7 +110,13 @@ function user_courses_contains_arete($courseID){
 
 global $CFG,$token;
 
-$response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_course_get_contents', 'courseid' => $courseID ) );
+$params = array(
+    'wstoken' => $token,
+    'moodlewsrestformat' => 'json',
+    'wsfunction' => 'core_course_get_contents',
+    'courseid' => $courseID 
+    );
+$response = httpPost($CFG->wwwroot . '/webservice/rest/server.php', $params);
 
 $arete_modules = array();
 foreach (json_decode($response) as $items) {
@@ -138,7 +145,13 @@ function get_user_arete_modules_ids(){
 
     global $CFG,$token,$userid;
 
-    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_enrol_get_users_courses', 'userid' => $userid ) );
+    $params =  array(
+        'wstoken' => $token,
+        'moodlewsrestformat' => 'json',
+        'wsfunction' => 'core_enrol_get_users_courses',
+        'userid' => $userid
+        );
+    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php', $params);
 
     $USER_moduleIDs = array();
 
@@ -225,7 +238,14 @@ function get_course_deadline_by_arete_id($areteid){
 
     global $CFG,$token,$DB;
 
-    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_course_get_course_module_by_instance', 'module' => 'arete' , 'instance' =>  $areteid) );
+    $params = array(
+        'wstoken' => $token,
+        'moodlewsrestformat' => 'json',
+        'wsfunction' => 'core_course_get_course_module_by_instance',
+        'module' => 'arete',
+        'instance' =>  $areteid
+    );
+    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php', $params);
 
     $info = json_decode( $response);
 

@@ -43,7 +43,12 @@ class Autentication
     function requestToken($username, $password)
     {
 
-        $response = httpPost($this->domain . '/login/token.php' , array('username' => $username, 'password'=> $password ,'service' => $this->service) );
+        $loginParams = array(
+            'username' => $username,
+            'password'=> $password,
+            'service' => $this->service
+        );
+        $response = httpPost($this->domain . '/login/token.php' , $loginParams);
 
         $this->token = json_decode($response)->{'token'};
         

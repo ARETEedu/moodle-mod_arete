@@ -93,11 +93,11 @@ $workplaceJson_will_updated_by_user = in_array( $sessionID . '-workplace.json' ,
 
 //replcace activity json if user does not select it manually to update
 if(!$activityJson_will_updated_by_user){
-    replace_file($userDirPath, $sessionID . '-activity' , 'json', $sessionID . '-activity.json' , $workplaceJson_will_updated_by_user ? false : true);
+    replace_file($userDirPath, $sessionID . '-activity', 'json', $sessionID . '-activity.json', $workplaceJson_will_updated_by_user ? false : true);
 }
 //replcace workplace json if user does not select it manually to update
 if( !$workplaceJson_will_updated_by_user){
-    replace_file($userDirPath, $sessionID . '-workplace' , 'json', $sessionID . '-workplace.json' , true);
+    replace_file($userDirPath, $sessionID . '-workplace', 'json', $sessionID . '-workplace.json', true);
 }
 
 ///

@@ -180,7 +180,9 @@ function get_temp_file($filename){
          
     
     //add the updated file to the file system
-    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'], getItemID($fileinfo), $fileinfo['filepath'], $filename);
+    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'],
+            $fileinfo['filearea'], getItemID($fileinfo),
+            $fileinfo['filepath'], $filename);
     
     return $file;
          
@@ -195,7 +197,11 @@ function delete_all_temp_file(){
     $fs = get_file_storage();
 
     // Get temp files
-    $temps = $DB->get_records('files', array('component' => get_string('component', 'arete'), 'filearea' => 'temp'));
+    $params = array(
+        'component' => get_string('component', 'arete'),
+        'filearea' => 'temp'
+        );
+    $temps = $DB->get_records('files', $params);
     
     foreach ($temps as $temp) {
         $tempfile = $fs->get_file($temp->contextid, get_string('component', 'arete'), 'temp', $temp->itemid, '/', $temp->filename);
@@ -320,5 +326,16 @@ function get_queries($onlyValue = false){
         $orderMode = !$onlyValue ? '&order=' . $order : $order;
     }
     
-    return array('id' => $idValue, 'pnum' => $pnumValue, 'itemid' => $itemidValue, 'author' => $arlemuseridValue, 'mode' => $pagemode, 'editing' => $editing_mode, 'sort' => $sortingMode,'qword' => $searchQuery , 'order' => $orderMode);
+    $queries = array(
+        'id' => $idValue,
+        'pnum' => $pnumValue,
+        'itemid' => $itemidValue,
+        'author' => $arlemuseridValue,
+        'mode' => $pagemode,
+        'editing' => $editing_mode,
+        'sort' => $sortingMode,
+        'qword' => $searchQuery,
+        'order' => $orderMode);
+    
+    return $queries;
 }

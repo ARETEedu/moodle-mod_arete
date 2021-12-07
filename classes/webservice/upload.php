@@ -95,7 +95,8 @@ if(isset($base64file))
     if($response == true){
         
         //move it to the plugin filearea
-        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id , get_string('component', 'arete'), get_string('filearea', 'arete'), $parameters['itemid']);
+        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id,
+                get_string('component', 'arete'), get_string('filearea', 'arete'), $parameters['itemid']);
 
         //if file is created in plugin filearea
         if(getArlemByName($filename, $parameters['itemid']) !== null)
@@ -163,7 +164,8 @@ function upload_thumbnail($contextid,$itemid){
     
     if($response == true){
         //move it to the plugin filearea
-        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id , get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
+        move_file_from_draft_area_to_arete( $userid, $parameters['itemid'], context_system::instance()->id,
+                get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
         
         //delete file and the empty folder from user file area
         deleteUserArlem('thumbnail.jpg', $parameters['itemid'], true, $userid);

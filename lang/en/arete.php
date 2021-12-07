@@ -34,7 +34,7 @@ $string['notsetyet'] = 'Not set yet';
 $string['assignedarlem'] = 'This AR experience is assigned to this activity';
 $string['availabledarlem'] = 'The list of available AR experiences';
 $string['rolelabel'] = 'Your role in this activity: ';
-$string['roleundefined'] = 'Your role is nor defined!';
+$string['roleundefined'] = 'Your role is not defined!';
 $string['deletenotallow'] = '-';
 $string['notassignedyer'] = 'No AR experience is assigned yet! Ask your teacher to add an experience to this activity.';
 $string['editpagetitle'] = 'Edit ARLEM';
@@ -81,4 +81,5 @@ $string['playbuttonalt'] = 'Launch on device';
 $string['downloadbuttonalt'] = 'Download Activity';
 $string['editbuttonalt'] = 'Edit Activity';
 $string['qrcodebuttonalt'] = 'Use QR Code to load an activity';
-
+$string['unabletogetrating'] = 'Unable to get the rating record!';
+$string['unabletosetrating'] = 'Unable to set your rating record!';

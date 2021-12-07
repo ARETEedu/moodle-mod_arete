@@ -51,32 +51,61 @@ echo $OUTPUT->header();
 list($thumb_url, $css) = get_thumbnail($itemid);
         
 $html = html_writer::start_tag('div', array('id' => 'detailview'));
-$html .= '<span class="titles">' .get_string('detailviewtitle', 'arete').  ' "' . $filename . '"</span>';
+$html .= html_writer::start_tag('span', array('class' => 'titles'));
+$html .= get_string('detailviewtitle', 'arete').  ' "' . $filename . '"';
+$html .= html_writer::end_tag('span');
 $html .= html_writer::start_tag('div', array('id' => 'detailview-imgcontainer'));
 $html .= html_writer::empty_tag('img', array ('src' => $thumb_url , 'alt' => 'test', 'id' => 'detailview-img' ));
 $html .= html_writer::end_tag('div');
 $html .= html_writer::start_tag('div', array('id' => 'detailview-detail'));
 
-     $url = getArlemURL($activity->filename, $activity->itemid);
+$url = getArlemURL($activity->filename, $activity->itemid, true);
 
-    //filename
-    $html .= '<b>' . get_string('arlemtitle', 'arete') . ': </b>' . $filename;
-    //time created
-    $html .= '<br><b>' . get_string('datetitle', 'arete') . ': </b>' . date('m.d.Y H:i ', $activity->timecreated);
-    //time modified
-    $timeModified = $activity->timemodified == 0 ? get_string('neveredited', 'arete') : date('m.d.Y H:i ', $activity->timemodified);
-    $html .= '<br><b>' . get_string('modifieddatetitle', 'arete') . ': </b>' . $timeModified;
-    //size
-    $html .= '<br><b>' . get_string('sizetitle', 'arete') . ': </b>' . get_readable_filesize($activity->filesize);
-    //author
-    list($authoruser, $src) =  getARLEMOwner($activity, $PAGE);
-    $html .= '<br><b>' . get_string('authortitle', 'arete') . ': </b>' . $authoruser->firstname . ' ' . $authoruser->lastname ;
-    
-    //download button
-    $html .= '<br><br><input type="button" class="button dlbutton"  name="dlBtn' . $activity->fileid . '" onclick="location.href=\''. $url . '\'" value="'. get_string('downloadbutton' , 'arete') . '">';
-    
-    //qr code button
-    $html .= '&nbsp;&nbsp;<input type="button" class="button dlbutton"  name="dlBtn' . $activity->fileid . '" onclick="window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $url . '\')" value="'. get_string('qrtitle' , 'arete') . '"><br>';
+//filename
+$html .= '<b>' . get_string('arlemtitle', 'arete') . ': </b>' . $filename;
+//time created
+$html .= html_writer::empty_tag('br');
+$html .= '<b>' . get_string('datetitle', 'arete') . ': </b>' . date('m.d.Y H:i ', $activity->timecreated);
+//time modified
+$timeModified = $activity->timemodified == 0 ? get_string('neveredited', 'arete') : date('m.d.Y H:i ', $activity->timemodified);
+$html .= html_writer::empty_tag('br');
+$html .= '<b>' . get_string('modifieddatetitle', 'arete') . ': </b>' . $timeModified;
+//size
+$html .= html_writer::empty_tag('br');
+$html .= '<b>' . get_string('sizetitle', 'arete') . ': </b>' . get_readable_filesize($activity->filesize);
+//author
+list($authoruser, $src) =  getARLEMOwner($activity, $PAGE);
+$html .= html_writer::empty_tag('br');
+$html .= '<b>' . get_string('authortitle', 'arete') . ': </b>' . $authoruser->firstname . ' ' . $authoruser->lastname ;
+
+//download button
+$html .= html_writer::empty_tag('br');
+$html .= html_writer::empty_tag('br');
+$deleteButtonParams = array(
+   'type' => 'button',
+   'class' => 'button dlbutton',
+   'name' => 'dlBtn' . $activity->fileid,
+   'onclick' => 'javascript:location.href=\'' . $url . '\'',
+   'value' => get_string('downloadbutton' , 'arete')   
+);
+
+$html .= html_writer::empty_tag('input', $deleteButtonParams);
+
+$html .= '&nbsp;&nbsp;';
+
+//qr code button
+$wekitProtocolURL = getArlemURL($activity->filename, $activity->itemid);
+$qrButtonParams = array(
+   'type' => 'button',
+   'class' => 'button dlbutton',
+   'name' => 'dlBtn' . $activity->fileid,
+   'onclick' => 'javascript:window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl=' . $wekitProtocolURL . '\')',
+   'value' => get_string('qrtitle' , 'arete') 
+);
+
+$html .= html_writer::empty_tag('input', $qrButtonParams);
+
+$html .= html_writer::empty_tag('br');
 $html .= html_writer::end_tag('div');
 $html .= html_writer::end_tag('div');
 

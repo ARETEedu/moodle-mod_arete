@@ -30,7 +30,7 @@ $itemid = filter_input(INPUT_POST, 'itemid');
 
 
 if(!isset($itemid)){
-    echo 'Unable to get the rating record!';
+    echo get_string('unabletogetrating', 'arete');
     exit;
 }
 

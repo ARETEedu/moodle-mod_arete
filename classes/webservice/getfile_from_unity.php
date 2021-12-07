@@ -94,34 +94,43 @@ function process(){
             $public_upload_privacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'title' =>$title ,  'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
-             'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
+        $data = array(
+            'base64' => $file_base64,
+            'token' => $token,
+            'title' =>$title,
+            'userid' => $userid,
+            'sessionid' => $sessionid,
+            'thumbnail' => $thumb_base64,
+            'public' => $public_upload_privacy,
+            'updatefile' => $updatefile,
+            'activity' => $activityJson,
+            'workplace' => $workplaceJson
+            );
 
-         $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
-         curl_setopt($ch, CURLOPT_POST, true);
-         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
 
-         $response = curl_exec($ch);
+        $response = curl_exec($ch);
 
-         if($response == true){
-
-             echo $response;
+        if($response == true){
+            echo $response;
 
             //OR move the actual file to the destination
             //    move_uploaded_file($tmpimg, $destination . $img );    
 
-         }else{
-             echo 'Error: ' . curl_error($ch);
-         }
+        }else{
+            echo 'Error: ' . curl_error($ch);
+        }
 
         curl_close($ch);
 
     }
     else{
-            echo "[error] there is no data with name [myfile]";
-            exit();
+        echo "[error] there is no data with name [myfile]";
+        exit();
     }
 
 

@@ -78,7 +78,14 @@ function draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid){
 
     
     ///print the arlem table for the teachers
-    $table_form = new teacher_top_buttons('classes/save_assignment.php', array('splitet_list'=>$splitet_list, 'page_number'=> $page_number , 'moduleid' => $moduleid, 'course_module_id' => $id , 'searchquery' => $searchquery) );
+    $params = array(
+        'splitet_list'=>$splitet_list,
+        'page_number'=> $page_number,
+        'moduleid' => $moduleid,
+        'course_module_id' => $id,
+        'searchquery' => $searchquery
+    );
+    $table_form = new teacher_top_buttons('classes/save_assignment.php', $params );
     
     //Form processing and displaying is done here
     if ($table_form->is_cancelled()) {
@@ -179,47 +186,91 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
     //sortable headers for teachers
     if($teacherView){
         $sortMode = filter_input(INPUT_GET, 'sort');
-        $timecreated_orderIcon = $sortMode === 'timecreated' || !isset($sortMode) ? filter_input(INPUT_GET, 'order') === 'ASC' ? ' ↑' : ' ↓' : '';
-        $date_title = '<div class="headers" id="timecreated">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'timecreated' . '");')) . get_string('datetitle' , 'arete') . $timecreated_orderIcon . html_writer::end_tag('a') . '</div>';
+        $timecreated_orderIcon = ($sortMode === 'timecreated' || !isset($sortMode)) ? filter_input(INPUT_GET, 'order') === 'ASC' ? ' ↑' : ' ↓' : '';
+        $timeCreatedOnClickParam = array('onclick' => 'reverse_sorting("' . 'timecreated' . '");');
+        $date_title = '<div class="headers" id="timecreated">' . html_writer::start_tag('a', $timeCreatedOnClickParam);
+        $date_title .= get_string('datetitle' , 'arete') . $timecreated_orderIcon . html_writer::end_tag('a') . '</div>';
         
         $timemodified_orderIcon = filter_input(INPUT_GET, 'sort') === 'timemodified' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $modified_date_title = '<div class="headers" id="timemodified">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("'  . 'timemodified' . '");')) . get_string('modifieddatetitle' , 'arete') . $timemodified_orderIcon . html_writer::end_tag('a'). '</div>';
+        $timeModifiedOnClickParam = array('onclick' => 'reverse_sorting("'  . 'timemodified' . '");');
+        $modified_date_title = '<div class="headers" id="timemodified">' . html_writer::start_tag('a', $timeModifiedOnClickParam);
+        $modified_date_title .= get_string('modifieddatetitle' , 'arete') . $timemodified_orderIcon . html_writer::end_tag('a'). '</div>';
         
         $filename_orderIcon = filter_input(INPUT_GET, 'sort') === 'filename' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $arlem_title = '<div class="headers" id="filename">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filename' . '");')) . get_string('arlemtitle' , 'arete') . $filename_orderIcon . html_writer::end_tag('a'). '</div>';
+        $filenameOnCLickParam = array('onclick' => 'reverse_sorting("' . 'filename' . '");');
+        $arlem_title = '<div class="headers" id="filename">' . html_writer::start_tag('a', $filenameOnCLickParam);
+        $arlem_title .= get_string('arlemtitle' , 'arete') . $filename_orderIcon . html_writer::end_tag('a'). '</div>';
         
         $views_orderIcon = filter_input(INPUT_GET, 'sort') === 'views' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $viewsTitle = '<div class="headers" id="views">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'views' . '");')) . get_string('viewstitle' , 'arete') . $views_orderIcon . html_writer::end_tag('a'). '</div>';
+        $viewOnClickParam = array('onclick' => 'reverse_sorting("' . 'views' . '");');
+        $viewsTitle = '<div class="headers" id="views">' . html_writer::start_tag('a', $viewOnClickParam);
+        $viewsTitle .=  get_string('viewstitle' , 'arete') . $views_orderIcon . html_writer::end_tag('a'). '</div>';
         
         $filesize_orderIcon = filter_input(INPUT_GET, 'sort') === 'filesize' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';
-        $size_title = '<div class="headers" id="filesize">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'filesize' . '");')) . get_string('sizetitle' , 'arete') . $filesize_orderIcon . html_writer::end_tag('a'). '</div>'; 
-
+        $filesizeOnClickParam = array('onclick' => 'reverse_sorting("' . 'filesize' . '");');
+        $size_title = '<div class="headers" id="filesize">' . html_writer::start_tag('a', $filesizeOnClickParam) . get_string('sizetitle' , 'arete'); 
+        $size_title .=$filesize_orderIcon . html_writer::end_tag('a'). '</div>';
+        
         $author_orderIcon = filter_input(INPUT_GET, 'sort') === 'author' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
-        $author_title = '<div class="headers" id="author">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'author' . '");')) . get_string('authortitle' , 'arete') . $author_orderIcon . html_writer::end_tag('a'). '</div>'; 
+        $authorOnClickParam = array('onclick' => 'reverse_sorting("' . 'author' . '");');
+        $author_title = '<div class="headers" id="author">' . html_writer::start_tag('a', $authorOnClickParam); 
+        $author_title .= get_string('authortitle' , 'arete') . $author_orderIcon . html_writer::end_tag('a'). '</div>';
         
         $rate_orderIcon = filter_input(INPUT_GET, 'sort') === 'rate' ? filter_input(INPUT_GET, 'order') === 'DESC' ? ' ↑' : ' ↓' : '';  
-        $rating_title = '<div class="headers" id="rate">' . html_writer::start_tag('a', array('onclick' => 'reverse_sorting("' . 'rate' . '");')) . get_string('ratingtitle' , 'arete') . $rate_orderIcon . html_writer::end_tag('a'). '</div>'; 
+        $rateOnClickParam = array('onclick' => 'reverse_sorting("' . 'rate' . '");');
+        $rating_title = '<div class="headers" id="rate">' . html_writer::start_tag('a', $rateOnClickParam); 
+        $rating_title .= get_string('ratingtitle' , 'arete') . $rate_orderIcon . html_writer::end_tag('a'). '</div>';
     }
 
 
     //show the assign button only to teachers
     if($teacherView){
-        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail, $viewsTitle,  $size_title , $author_title,  $playtitle, $downloadtitle, $edit_title,  $qr_title, $public_title,  $delete_title , $assign_title, $rating_title);
+        $headerParams = array(
+            $date_title,
+            $modified_date_title,
+            $arlem_title,
+            $arlem_thumbnail,
+            $viewsTitle,
+            $size_title,
+            $author_title,
+            $playtitle,
+            $downloadtitle,
+            $edit_title,
+            $qr_title,
+            $public_title,
+            $delete_title,
+            $assign_title,
+            $rating_title
+        );
     }else{
-        $table_headers = array($date_title, $modified_date_title, $arlem_title, $arlem_thumbnail,  $size_title , $author_title, $assignedby_title,  $playtitle, $downloadtitle,  $qr_title, $rating_title);
+        
+        $headerParams = array(
+            $date_title,
+            $modified_date_title,
+            $arlem_title,
+            $arlem_thumbnail,
+            $size_title,
+            $author_title,
+            $assignedby_title,
+            $playtitle,
+            $downloadtitle,
+            $qr_title,
+            $rating_title
+        );
     }
+    $table_headers = $headerParams;
+    
     //remove radio buttons and delete button for the students
-
     foreach ($arlemslist as $arlem) {
 
-        //date
+        ///date
         $date =  date('d.m.Y H:i ', $arlem->timecreated);
 
-        //modified date
-        $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') :  date('d.m.Y H:i ',  $arlem->timemodified);
+        ///modified date
+        $modified_date = $arlem->timemodified == 0 ? get_string('neveredited', 'arete') : date('d.m.Y H:i ', $arlem->timemodified);
         
 
-        //arlem title
+        ///arlem title
         if(!empty($arlem->title)){
             $title = $arlem->title;
         }else{
@@ -227,59 +278,161 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
             $title = json_decode($arlem->activity_json)->name;
         }
         
-        //thumbnail
+        ///thumbnail
         list($thumb_url, $css) = get_thumbnail($arlem->itemid);
         $thumbnail_img  = html_writer::empty_tag('img', array('class' => $css, 'src' => $thumb_url, 'alt' => $title));
 
         
-        //number of views on app
+        ///number of views on app
         $views = get_views($arlem->itemid);
         
-        //file size
+        ///file size
         $size = get_readable_filesize($arlem->filesize);
         
         
-        //author (photo, firstname, lastname
+        ///author (photo, firstname, lastname
+        $profileImageSize = 40;
         list($authoruser, $src) = getARLEMOwner($arlem, $PAGE);
-        $photo = '<span class="author"><img  class="profileImg" src="'. $src . '" alt="'. get_string('profileimagealt', 'arete') . '" width="40" height="40">&nbsp;'; 
-        $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . '</span>';
+        $profileImageParams = array(
+            'class' => 'profileImg',
+            'src' => $src,
+            'alt' => get_string('profileimagealt', 'arete'),
+            'width' => $profileImageSize,
+            'height' => $profileImageSize
+        );
+        $authorImage = html_writer::empty_tag('img', $profileImageParams);
+        $photo = html_writer::start_tag('span', array('class' => 'author')) . $authorImage . '&nbsp';
+        ///
+        
+        
+        ///Author name
+        $author = $photo. $authoruser->firstname . ' ' . $authoruser->lastname . html_writer::end_tag('span');
 
         
-        //play button
+        ///play button
         $play_url = getArlemURL($arlem->filename, $arlem->itemid);
-        $play_button = '<a name="playBtn" href ="'. $play_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/playicon.png" alt="'. get_string('playbuttonalt', 'arete') .'"></a>';
-      
-        //download button
+        $playButtonImageParams = array(
+            'class' => 'tableicons',
+            'src' => $CFG->wwwroot .'/mod/arete/pix/playicon.png',
+            'alt' => get_string('playbuttonalt', 'arete')
+        );
+        $playButtonImg = html_writer::start_tag('img', $playButtonImageParams);
+        
+        $playButtonParams = array(
+            'name' => 'playBtn',
+            'href' => $play_url
+        );
+        $play_button = html_writer::start_tag('a' , $playButtonParams) . $playButtonImg . html_writer::end_tag('a');
+        ///
+        
+        ///download button
         $download_url = getArlemURL($arlem->filename, $arlem->itemid, true);
-        $dl_button = '<a name="dlBtn" href ="'. $download_url . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/downloadicon.png" alt="' . get_string('downloadbuttonalt', 'arete') . '"></a>';
+        $downloadButtonImageParams = array(
+            'class' => 'tableicons',
+            'src' => $CFG->wwwroot .'/mod/arete/pix/downloadicon.png',
+            'alt' => get_string('downloadbuttonalt', 'arete'),
+        );
+        $downloadButtonImg = html_writer::start_tag('img', $downloadButtonImageParams);
         
+        $downloadButtonParams = array(
+          'name' => 'dlBtn',
+          'href' => $download_url
+        );
+        $dl_button = html_writer::start_tag('a' , $downloadButtonParams) . $downloadButtonImg . html_writer::end_tag('a');
+        ///
         
-        //edit button
+        ///edit button
         $queries = get_queries();
+        $editButtonImageParams = array(
+            'class' => 'tableicons',
+            'src' => $CFG->wwwroot .'/mod/arete/pix/editicon.png',
+            'alt' => get_string('editbuttonalt', 'arete')
+        );
         
-        $edit_button = '<a name="dlBtn'. $arlem->fileid .'" href ="'. $CFG->wwwroot .'/mod/arete/view.php?'. $queries['id'] . $queries['pnum'] . $queries['sort'] . $queries['order'] .
-               '&mode=edit&itemid='. $arlem->itemid . '&author=' . $arlem->userid . '&sesskey=' . sesskey() . '"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/editicon.png" alt="' . get_string('editbuttonalt', 'arete') . '"></a>';
-
+        $editButtonImage = html_writer::start_tag('img', $editButtonImageParams);
         
-        //qr code button
-        $qr_button = '<a name="dlBtn' . $arlem->fileid . '" href ="https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $play_url . '" target="_blank"><img class="tableicons" src="' . $CFG->wwwroot .'/mod/arete/pix/qricon.png" alt="' . get_string('qrcodebuttonalt', 'arete') . '"></a>';
-
-        //send filename and itemid as value with (,) between
-        if($arlem->upublic == 1){ $checked = 'checked';} else {$checked = '';}
-        $public_button = '<input type="checkbox" id="'. $arlem->fileid . '" class="publicCheckbox" name="publicarlemchecked['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']" '. $checked . '></input>'; 
-        $public_hidden = '<input   type="hidden"  name="publicarlem['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']"  value="1"></input>'; 
+        $editPageURLParams = array(
+            $CFG->wwwroot .'/mod/arete/view.php?',
+            $queries['id'],
+            $queries['pnum'],
+            $queries['sort'],
+            $queries['order'],
+            '&mode=edit',
+            '&itemid='. $arlem->itemid ,
+            '&author=' . $arlem->userid,
+            '&sesskey=' . sesskey()
+        );
+        $editButtonParams = array(
+            'name' => 'dlBtn' . $arlem->fileid,
+            'href' => implode('' , $editPageURLParams)
+        );
+        $edit_button = html_writer::start_tag('a' , $editButtonParams) . $editButtonImage . html_writer::end_tag('a');
+        ///
         
-        //send id, filename and itemid as value with (,) between
-        $delete_button = '<input type="checkbox" class="deleteCheckbox" name="deletearlem[]" value="'. $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid . '"></input>'; 
-
         
-        //assign radio button
-        $checked = '';
-        if($teacherView == true){
-            if(is_arlem_assigned($moduleid, $arlem->fileid)){ $checked = ' checked';}
+        ///qr code button
+        $qrButtonImageParams = array(
+            'class' => 'tableicons',
+            'src' => $CFG->wwwroot .'/mod/arete/pix/qricon.png',
+            'alt' => get_string('qrcodebuttonalt', 'arete')
+        );
+        $qrButtonImage = html_writer::start_tag('img', $qrButtonImageParams);
+        
+        $qrButtonParams = array(
+           'name' => 'dlBtn' . $arlem->fileid,
+           'href' => 'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl='. $play_url,
+           'target' => '_blank'
+        );
+        $qr_button = html_writer::start_tag('a' , $qrButtonParams) . $qrButtonImage . html_writer::end_tag('a');
+        ///
+        
+        
+        ///public checkbox
+        //send filename and itemid as value with (,) in between
+        $publicCheckboxParams = array(
+            'type' => 'checkbox',
+            'id' => $arlem->fileid,
+            'class' => 'publicCheckbox',
+            'name' => 'publicarlemchecked['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']',
+        );
+        if($arlem->upublic == 1){ 
+            $publicCheckboxParams['checked'] = '';
         }
-        $assign_radio_btn = '<input type="radio" id="' . $arlem->itemid . '" name="arlem" value="' . $arlem->fileid .' " '. $checked . ' >';
-
+        
+        $publicHiddenParams = array(
+            'type' => 'hidden',
+            'name' => 'publicarlem['. $arlem->fileid . '(,)'  . $arlem->filename . '(,)' . $arlem->itemid . ']',
+            'value' => '1'
+        );
+        $public_button = html_writer::empty_tag('input', $publicCheckboxParams);
+        $public_hidden = html_writer::empty_tag('input', $publicHiddenParams);
+        ///
+        
+        
+        ///Delete checkbox
+        //send id, filename and itemid as value with (,) in between
+        $deleteCheckboxParams = array(
+            'type' =>   'checkbox',
+            'class' =>  'deleteCheckbox',
+            'name' => 'deletearlem[]',
+            'value' => $arlem->fileid . '(,)' . $arlem->filename . '(,)' . $arlem->itemid
+        );
+        $delete_button = html_writer::empty_tag('input', $deleteCheckboxParams);
+        ///
+        
+        
+        ///assign radio button
+        $assignRadioButtonParams = array(
+            'type' => 'radio',
+            'id' => $arlem->itemid,
+            'name' => 'arlem',
+            'value' => $arlem->fileid
+        );
+        if($teacherView == true && is_arlem_assigned($moduleid, $arlem->fileid)){
+            $assignRadioButtonParams['checked'] = '';
+        }
+        $assign_radio_btn = html_writer::empty_tag('input', $assignRadioButtonParams);
+        ///
         
         
         //assigned by in student table
@@ -294,18 +447,44 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
                 
         //Now fill the row
         if($teacherView){
-            $table_row = array($date, $modified_date,  $title, $thumbnail_img, $views  , $size,  $author ,  $play_button , $dl_button, $edit_button,  $qr_button, $public_button . $public_hidden,   $delete_button  , $assign_radio_btn, $rating);
+            $table_row = array(
+                $date,
+                $modified_date,
+                $title,
+                $thumbnail_img,
+                $views,
+                $size,
+                $author,
+                $play_button,
+                $dl_button,
+                $edit_button,
+                $qr_button,
+                $public_button . $public_hidden,
+                $delete_button,
+                $assign_radio_btn,
+                $rating
+            );
         }else{
-            $table_row = array($date, $modified_date,  $title, $thumbnail_img  , $size,  $author , $assignedby,  $play_button, $dl_button,  $qr_button, $rating);
+            $table_row = array(
+                $date,
+                $modified_date,
+                $title,
+                $thumbnail_img,
+                $size,
+                $author,
+                $assignedby,
+                $play_button,
+                $dl_button,
+                $qr_button,
+                $rating
+            );
         }
-
-
-
+        
         //apply privacy system for teachers
         //only the owner and the manager can delete, chage privacy and edit files
         if($teacherView)
         {
-            // for the non author users in the teacher view
+            // for the non author users in the teacher view (except admin)
             if($USER->username != $authoruser->username && !has_capability('mod/arete:manageall', $context))
             {
                 //delete delete checkbox
@@ -319,7 +498,10 @@ function draw_table($arlemslist, $tableid ,  $teacherView = false, $moduleid = n
                 if(isset($index_of_edit_button)){
                     $table_row[$index_of_edit_button] = get_string('deletenotallow', 'arete');
                 }
-                
+            }
+            
+            //Only the owner of file can make the file public
+            if($USER->username != $authoruser->username){
                 //delete public button
                 $index_of_public_button = array_search( $public_button.$public_hidden , $table_row);
                 if(isset($index_of_public_button)){
@@ -386,8 +568,20 @@ function searchbox(){
         $searchbox .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $key , 'value' => $value )); 
     }
     
-    $searchbox .= html_writer::empty_tag('input', array('type' => 'text' , 'placeholder' => get_string('search', 'arete') , 'name' => 'qword' , 'value' => isset($searchfield) ? $searchfield : '')); 
-    $searchbox .= html_writer::empty_tag('input', array('type' => 'submit', 'class' => 'btn right' , 'value' =>  get_string('search', 'arete') )); 
+    $searchTextInputParams = array(
+        'type' => 'text',
+        'placeholder' => get_string('search', 'arete'),
+        'name' => 'qword',
+        'value' => isset($searchfield) ? $searchfield : ''
+    );
+    $searchbox .= html_writer::empty_tag('input', $searchTextInputParams); 
+    
+    $searchSubmitButtonParams = array(
+        'type' => 'submit',
+        'class' => 'btn right',
+        'value' =>  get_string('search', 'arete')
+    );
+    $searchbox .= html_writer::empty_tag('input', $searchSubmitButtonParams); 
     $searchbox .= html_writer::end_tag('form');
     $searchbox .= html_writer::end_div();
     
@@ -397,7 +591,7 @@ function searchbox(){
 
 
 /**
- * Create student menu bar
+ * Create top menu
  */
 function Create_student_menu(){
     global $CFG;
@@ -405,23 +599,64 @@ function Create_student_menu(){
     $menu = html_writer::start_div('', array('id' => 'studentmenu'));
 
     //Terms Of use Button
-    $onclick = 'window.open ("'. $CFG->wwwroot.'/mod/arete/termsofuse.html' . '","'. get_string('termsofuse', 'arete') .'","menubar=1,resizable=1,width=600,height=400");';
-    $menu .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'menuitem' , 'value' => get_string('termsofuse', 'arete') , 'onclick' => $onclick )); 
+    $termOfUsesWindowParams = array(
+        'menubar' => '1',
+        'resizable' => '1',
+        'width' => '600',
+        'height' => '400'
+    );
+    
+    $termOfUseURL = array(
+        //url
+        $CFG->wwwroot.'/mod/arete/termsofuse.html',
+        
+        //window title
+        get_string('termsofuse', 'arete'),
+        
+        //window settings
+        http_build_query($termOfUsesWindowParams, '', ',')
+    );
+    
+    $termOfUseButtonParams = array
+        (
+        'type' => 'button',
+        'class' => 'menuitem',
+        'value' => get_string('termsofuse', 'arete'),
+        'onclick' => 'window.open ("' . implode('","', $termOfUseURL) . '");'
+        );
+    $menu .= html_writer::empty_tag('input', $termOfUseButtonParams); 
     
     //Calibration Marker button
-    $menu .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'menuitem' ,'value' => get_string('calibrationmarker', 'arete') , 'onclick' => 'forceDownload("'. $CFG->wwwroot.'/mod/arete/pix/CalibrationMarker.png");' )); 
+    $calibrationImageParams = array(
+        'type' => 'button',
+        'class' => 'menuitem',
+        'value' => get_string('calibrationmarker', 'arete'),
+        'onclick' => 'forceDownload("'. $CFG->wwwroot.'/mod/arete/pix/CalibrationMarker.png");'
+    );
+    $menu .= html_writer::empty_tag('input', $calibrationImageParams); 
     
     //download MirageXR app
-    $menu .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'menuitem' ,'value' => get_string('downloadmiragexr', 'arete') , 'onclick' => 'window.open ("https://wekit-ecs.com/community/notes");' )); 
+    $mirageXRDownloadButtonParams = array(
+        'type' => 'button',
+        'class' => 'menuitem',
+        'value' => get_string('downloadmiragexr', 'arete'),
+        'onclick' => 'window.open ("https://wekit-ecs.com/community/notes");' 
+    );
+    $menu .= html_writer::empty_tag('input', $mirageXRDownloadButtonParams); 
     
     
     //new activity button
-    $menu .= html_writer::empty_tag('input', array('type' => 'button' , 'class' => 'menuitem' ,'value' => get_string('newactivity', 'arete') , 'onclick' => 'window.open ("wekit://new" , "_self");' )); 
-    
+    $newActivityLuanchParams = array(
+        'type' => 'button',
+        'class' => 'menuitem',
+        'value' => get_string('newactivity', 'arete'),
+        'onclick' => 'window.open ("wekit://new" , "_self");' 
+    );
+    $menu .= html_writer::empty_tag('input', $newActivityLuanchParams); 
     
     $menu .= html_writer::end_div();
 
-    $menu .= '<br>';
+    $menu .= html_writer::empty_tag('br'); 
     
     return $menu;
 }
@@ -432,10 +667,31 @@ function Create_student_menu(){
  */
 function init($userViewMode){
     
-    echo '<script>$(document).ready(function() { init(' . $userViewMode . ', "' . get_string('editmodeenabledbutton', 'arete') . '" , "' 
-    . get_string('editmodedisabledbutton', 'arete'). '" , "'. get_string('viewstitle', 'arete') . '" , "'. get_string('playtitle', 'arete') . '" , "'. get_string('downloadtitle', 'arete') . '" , "'. get_string('editbutton', 'arete'). '" , "' . get_string('qrtitle', 'arete') .
-    '","'  . get_string('publictitle', 'arete') . '","' . get_string('deletetitle', 'arete') . '","' . get_string('assigntitle', 'arete') . '","' . get_string('ratingtitle', 'arete') . '","' . get_string('scoretitle', 'arete') .
-            '","' . get_string('votetitle', 'arete') . '","' . get_string('voteregistered', 'arete') . '" ); });</script>';
+    //The order of elements on this array is important
+    $initFunctionParams = array(
+        get_string('editmodeenabledbutton', 'arete'),
+        get_string('editmodedisabledbutton', 'arete'),
+        get_string('viewstitle', 'arete'),
+        get_string('playtitle', 'arete'),
+        get_string('downloadtitle', 'arete'),
+        get_string('editbutton', 'arete'),
+        get_string('qrtitle', 'arete'),
+        get_string('publictitle', 'arete'),
+        get_string('deletetitle', 'arete'),
+        get_string('assigntitle', 'arete'),
+        get_string('ratingtitle', 'arete'),
+        get_string('scoretitle', 'arete'),
+        get_string('votetitle', 'arete'),
+        get_string('voteregistered', 'arete')
+    );
+    
+    $script = html_writer::start_tag('script');
+    
+    //init function exist in table.js
+    $script .= '$(document).ready(function() { init(' . $userViewMode . ',"' . implode('","', $initFunctionParams) . '"); });';
+    
+    $script .= html_writer::end_tag('script');
+    echo $script;
 }
 
 
@@ -449,14 +705,20 @@ function generate_rating_stars($itemid, $teacherView){
     
     $ratingSystem = html_writer::start_div('ratingcontainer');    
         $ratingSystem .= html_writer::start_tag('select', array('class' => 'star-rating', 'id' => 'star_rating_' . $itemid . $idSuffix  ));
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '')); $ratingSystem .= '' . html_writer::end_tag('option');
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '1')); $ratingSystem .= '1' . html_writer::end_tag('option');
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '2')); $ratingSystem .= '2' . html_writer::end_tag('option');
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '3')); $ratingSystem .= '3' . html_writer::end_tag('option');
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '4')); $ratingSystem .= '4' . html_writer::end_tag('option');
-            $ratingSystem .= html_writer::start_tag('option ', array('value' => '5')); $ratingSystem .= '5' . html_writer::end_tag('option');
+            $ratingSystem .= html_writer::start_tag('option ', array('value' => '')); 
+            $ratingSystem .= '' . html_writer::end_tag('option');
+            
+            //add five stars
+            for($i = 1; $i <= 5; $i++){
+                $iString = strval($i);
+                $ratingSystem .= html_writer::start_tag('option ', array('value' => $iString)); 
+                $ratingSystem .= $iString . html_writer::end_tag('option');
+            }
+            
         $ratingSystem .= html_writer::end_tag('select');
-        $ratingSystem .= html_writer::start_div('ratingtext', array('id' => 'ratingtext_'. $itemid . $idSuffix)); $ratingSystem .= html_writer::end_div(); //rating text
+        //rating text
+        $ratingSystem .= html_writer::start_div('ratingtext', array('id' => 'ratingtext_'. $itemid . $idSuffix));
+        $ratingSystem .= html_writer::end_div(); 
     $ratingSystem .= html_writer::end_div();
    
     return $ratingSystem;
