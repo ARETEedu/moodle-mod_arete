@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,24 +22,21 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
+require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
+require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 
-function arete_add_instance($data, $mform)
-{
+function arete_add_instance($data, $mform) {
     global $DB;
-   
-    $data-> timecreated = time();
-    $data-> timemodified = $data-> timecreated;
+
+    $data->timecreated = time();
+    $data->timemodified = $data->timecreated;
 
     $data->id = $DB->insert_record('arete', $data);
 
     return $data->id;
 }
-
 
 /**
  * Given an object containing all the necessary data,
@@ -50,28 +48,26 @@ function arete_add_instance($data, $mform)
  * @return bool
  */
 function arete_update_instance($data, $mform) {
-    global $DB ;
+    global $DB;
 
-    
+
     $data->id = $data->instance;
     $data->timemodified = time();
 
     $DB->update_record("arete", $data);
-        
+
     return $data->id;
 }
 
-
-
 function arete_supports($feature) {
-    switch($feature) {
-        case FEATURE_MOD_INTRO:               
+    switch ($feature) {
+        case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
-            
+
         default: return null;
     }
 }
@@ -88,8 +84,8 @@ function arete_supports($feature) {
 function arete_delete_instance($id) {
     global $DB;
 
-    
-    if (! $arete = $DB->get_record('arete', array('id' => $id))) {
+
+    if (!$arete = $DB->get_record('arete', array('id' => $id))) {
         return false;
     }
 
@@ -97,14 +93,14 @@ function arete_delete_instance($id) {
 
     // Delete any dependent records here.
 
-    if (! $DB->delete_records('arete', array('id' => $arete->id))) {
+    if (!$DB->delete_records('arete', array('id' => $arete->id))) {
         $result = false;
     }
-    
 
-    
+
+
     //delete records from arete_arlem table
-    if (! $DB->delete_records("arete_arlem", array("areteid"=>$arete->id))) {
+    if (!$DB->delete_records("arete_arlem", array("areteid" => $arete->id))) {
         $result = false;
     }
 
@@ -123,37 +119,33 @@ function arete_delete_instance($id) {
  * @param array $options additional options affecting the file serving
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
-function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_SYSTEM) {
-        return false; 
+        return false;
     }
 
     // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
 //    require_login($course, true, $cm);
- 
- 
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
     $itemid = array_shift($args); // The first item in the $args array.
- 
     // Use the itemid to retrieve any relevant data records and perform any security checks to see if the
     // user really does have access to the file in question.
- 
     // Extract the filename / filepath from the $args array.
     $filename = array_pop($args); // The last item in the $args array.
     if (!$args) {
         $filepath = '/'; // $args is empty => the path is '/'
     } else {
-        $filepath = '/'.implode('/', $args).'/'; // $args contains elements of the filepath
+        $filepath = '/' . implode('/', $args) . '/'; // $args contains elements of the filepath
     }
- 
+
     // Retrieve the file from the Files API.
     $fs = get_file_storage();
     $file = $fs->get_file($context->id, 'mod_arete', $filearea, $itemid, $filepath, $filename);
     if (!$file) {
         return false; // The file does not exist.
     }
- 
-    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering. 
+
+    // We can now send the file back to the browser - in this case with a cache lifetime of 1 day and no filtering.
     send_stored_file($file, 86400, 0, $forcedownload, $options);
 }

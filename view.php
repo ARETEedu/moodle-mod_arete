@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,13 +23,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../config.php');
-require_once($CFG->dirroot.'/mod/arete/locallib.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot.'/mod/arete/classes/output/outputs.php');
+use function \mod_arete\init as init;
+use function \mod_arete\Create_student_menu as Create_student_menu;
+use function \mod_arete\draw_table_for_students as draw_table_for_students;
+use function \mod_arete\searchbox as searchbox;
+use function \mod_arete\draw_table_for_teachers as draw_table_for_teachers;
+use \mod_arete\pagination as pagination;
+use \mod_arete\edit_arlem as edit_arlem;
+
+require_once(dirname(__FILE__) . '/../../config.php');
+require_once($CFG->dirroot . '/mod/arete/locallib.php');
+require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
+require_once($CFG->dirroot . '/mod/arete/classes/output/outputs.php');
 
 defined('MOODLE_INTERNAL') || die;
-
 
 //current user
 global $USER;
@@ -38,7 +46,7 @@ echo '<script>window.userid =' . $USER->id . '</script>';
 
 //Get module id, course and moudle infos
 // Course Module ID.
-$id = required_param('id', PARAM_INT); 
+$id = required_param('id', PARAM_INT);
 $urlparams = array('id' => $id);
 $url = new moodle_url('/mod/arete/view.php', $urlparams);
 list ($course, $cm) = get_course_and_cm_from_cmid($id, 'arete');
@@ -49,23 +57,23 @@ require_course_login($course, false, $cm);
 
 
 //check if we are in edit mode
-$pagemode = optional_param('mode', '', PARAM_TEXT); 
+$pagemode = optional_param('mode', '', PARAM_TEXT);
 
 //page configuration
 $PAGE->set_url($url);
-if($pagemode == 'edit'){
+if ($pagemode == 'edit') {
     $PAGE->set_title(get_string('editpagetitle', 'arete'));
-}else{
+} else {
     $PAGE->set_title(get_string('modulename', 'arete'));
 }
 
 //custom css file
-$PAGE->requires->css('/mod/arete/css/styles.css');  
+$PAGE->requires->css('/mod/arete/css/styles.css');
 //rating css file
-$PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');  
+$PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');
 
 //for rating stars
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js')); 
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/assets/star-rating/dist/star-rating.js'));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/arete/js/table.js'));
 
 
@@ -79,45 +87,40 @@ $moduleid = $cm->instance;
 $context = context_course::instance($course->id);
 
 //every body view
-if(has_capability('mod/arete:view', $context)){
+if (has_capability('mod/arete:view', $context)) {
 
     //edit mode
-    if( $pagemode == "edit"){
-        $editpageTitle = html_writer::start_tag('span' , ['class' => 'titles']);
+    if ($pagemode == "edit") {
+        $editpageTitle = html_writer::start_tag('span', ['class' => 'titles']);
         $editpageTitle .= get_string('editpagetitle', 'arete');
         $editpageTitle .= html_writer::end_tag('span');
         $editpageTitle .= html_writer::empty_tag('br');
         $editpageTitle .= html_writer::empty_tag('br');
         echo $editpageTitle;
-        
-    }else{
+    } else {
         //Print the description
-        $descriptionLabel = html_writer::start_tag('span' , ['class' => 'titles']);
+        $descriptionLabel = html_writer::start_tag('span', ['class' => 'titles']);
         $descriptionLabel .= get_string('description', 'arete');
         $descriptionLabel .= html_writer::end_tag('span');
         echo $descriptionLabel;
         $description = $DB->get_field('arete', 'intro', array('id' => $moduleid));
-        echo '<h5>'.$description.'</h5>';  
+        echo '<h5>' . $description . '</h5>';
         echo html_writer::empty_tag('br');
     }
-
 }
 
 ///////Students view and teacher view
-if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mod/arete:arlemfulllist', $context))
-{
+if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mod/arete:arlemfulllist', $context)) {
     //initiated ata for using in javascript
     init(0);
-    
+
     //create the top menu(not on edit/structure page)
-    if($pagemode != "edit")
-    {
-        echo Create_student_menu();    
+    if ($pagemode != "edit") {
+        echo Create_student_menu();
     }
 
     //dont show on edit mode and when on user page
-    if($pagemode != "edit" && $pagemode != "user")
-    {
+    if ($pagemode != "edit" && $pagemode != "user") {
         //add the role to the top of the advtivity
         $roles = get_user_roles($context, $USER->id);
         foreach ($roles as $role) {
@@ -126,137 +129,125 @@ if(has_capability('mod/arete:assignedarlemfile', $context) || has_capability('mo
         $rolestr = implode(', ', $rolestr);
 
         //Print the role of the user
-        if(isset($rolestr)){
-            $role = html_writer::start_tag('div' , ['class' => 'right']);
+        if (isset($rolestr)) {
+            $role = html_writer::start_tag('div', ['class' => 'right']);
             $role .= get_string('rolelabel', 'arete');
-            $role .= html_writer::start_tag('span' , ['id' => 'role']);
+            $role .= html_writer::start_tag('span', ['id' => 'role']);
             $role .= $rolestr;
             $role .= html_writer::end_tag('span');
             $role .= html_writer::end_tag('div');
             echo $role;
-        }else{
+        } else {
             //undefined
-            $role = html_writer::start_tag('div' , ['class' => 'right']);
+            $role = html_writer::start_tag('div', ['class' => 'right']);
             $role .= get_string('roleundefined', 'arete');
             $role .= html_writer::end_tag('div');
             echo $role;
         }
 
         //The label of assinged ARLEM
-        $assignedLabel .= html_writer::start_tag('span' , ['class' => 'titles']);
+        $assignedLabel = html_writer::start_tag('span', ['class' => 'titles']);
         $assignedLabel .= get_string('assignedarlem', 'arete');
         $assignedLabel .= html_writer::end_tag('span');
         echo $assignedLabel;
-
+        
         //print assigned table
         $result = draw_table_for_students($moduleid);
 
-         //show notification if no arlem is assigned
-        if($result == false){
-            echo $OUTPUT->notification(get_string('notassignedyer' , 'arete'));
+        //show notification if no arlem is assigned
+        if ($result == false) {
+            echo $OUTPUT->notification(get_string('notassignedyer', 'arete'));
         }
     }
 }
 
 //create edit page
-if($pagemode == "edit")
-{
+if ($pagemode == "edit") {
 
-    $editArlem = new EditArlem();
-}
-else if($pagemode == "user")
-{
+    $editArlem = new edit_arlem();
+} else if ($pagemode == "user") {
     //show only User arlems
     $arlems_list = search_result(true);
     generate_arlem_table($arlems_list, 1);
-}
-else{
-    
+} else {
+
     ///////////Teachers View
-    if(has_capability('mod/arete:arlemfulllist', $context)){
+    if (has_capability('mod/arete:arlemfulllist', $context)) {
         $arlems_list = search_result(false);
         generate_arlem_table($arlems_list);
-
     }
-   
 }
 
 //Create an array of needed ARLEMS
 //if search word not findign then find all user arlems if $is_user_table is true otherwise return all arlems for manager
-function search_result($is_user_table){
-   
-   $searchword = optional_param('qword', null, PARAM_TEXT);
-   $sortingMode = optional_param('sort', 'timecreated', PARAM_TEXT);
-   
-    if(isset($searchword) && $searchword !== '')
-    {
+function search_result($is_user_table) {
+
+    $searchword = optional_param('qword', null, PARAM_TEXT);
+    $sortingMode = optional_param('sort', 'timecreated', PARAM_TEXT);
+
+    if (isset($searchword) && $searchword !== '') {
         require_sesskey();
-        
+
         //remove invalid characters
         $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
         //search the jsons and return files if exists
-        $arlems_list = search_arlems($searchword, $is_user_table, $sortingMode); 
-    }else if($is_user_table){
-        $arlems_list = getAllUserArlems($sortingMode);
-    }else{
-        $arlems_list = getAllArlems($sortingMode);
+        $arlems_list = mod_arete_search_arlems($searchword, $is_user_table, $sortingMode);
+    } else if ($is_user_table) {
+        $arlems_list = mod_arete_getAllUserArlems($sortingMode);
+    } else {
+        $arlems_list = mod_arete_getAllArlems($sortingMode);
     }
-    
+
     return $arlems_list;
 }
 
+function generate_arlem_table($arlems_list, $userViewMode = 0) {
 
-function generate_arlem_table($arlems_list, $userViewMode = 0){
-    
     global $id, $moduleid;
-    
+
     //initiated ata for using in javascript
     init($userViewMode);
 
     //maximum item on each page
-    $max_number_on_page = 10; 
+    $max_number_on_page = 10;
 
     //get the active page id from GET
     $page_number = optional_param('pnum', 1, PARAM_INT);
-    
+
     // split ARLEMs list to small lists
-    $splitet_list = array_chunk($arlems_list, $max_number_on_page); 
-    
+    $splitet_list = array_chunk($arlems_list, $max_number_on_page);
+
     //start at first page if pnum is not exist in the page url
-    if($page_number < 1)
-    {
+    if ($page_number < 1) {
         $page_number = 1;
-    }else if($page_number > count($splitet_list)){
-        $page_number =  count($splitet_list);
+    } else if ($page_number > count($splitet_list)) {
+        $page_number = count($splitet_list);
     }
-    
+
 
     //need to add a single line between assigned table and arlem table
-    echo '<br>'; 
+    echo '<br>';
 
     //Do not display the table tile if there are no ARLEM
-    if(!empty($arlems_list)){
-          //label that show the list of all arlems which  are available
-        $availableArlemLabel = html_writer::start_tag('span' , ['class' => 'titles']);
+    if (!empty($arlems_list)) {
+        //label that show the list of all arlems which  are available
+        $availableArlemLabel = html_writer::start_tag('span', ['class' => 'titles']);
         $availableArlemLabel .= get_string('availabledarlem', 'arete');
         $availableArlemLabel .= html_writer::end_tag('span');
-        echo $availableArlemLabel;        
-     }
+        echo $availableArlemLabel;
+    }
 
     //Draw the searchbox
     echo searchbox();
 
     //create the ARLEMs tables
     draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
-    
+
     // create the pagination if arlemlist was not empty
-    if(!empty($arlems_list)){
+    if (!empty($arlems_list)) {
         $pagination = new pagination();
         echo html_writer::empty_tag('br') . $pagination->getPagination($splitet_list, $page_number, $id);
     }
-
 }
-    
+
 echo $OUTPUT->footer();
-
-

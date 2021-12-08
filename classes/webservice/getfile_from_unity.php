@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,9 +22,8 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once('../../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 
 //the variables which  are passed from Unity application
 $token = filter_input(INPUT_POST, 'token');
@@ -37,67 +37,58 @@ $workplaceJson = filter_input(INPUT_POST, 'workplace');
 
 
 //if file exist and still user not confirmed updating of the file
-if(is_sessionid_exist($sessionid)){
-    if($updatefile == '0'){
-        
+if (mod_arete_is_sessionid_exist($sessionid)) {
+    if ($updatefile == '0') {
+
         //if the user is owner of the file update otherwise clone
-        if(is_user_owner_of_file($userid,$sessionid)){
+        if (mod_arete_is_user_owner_of_file($userid, $sessionid)) {
             echo 'Error: File exist, update';
-        }else{
+        } else {
             echo 'Error: File exist, clone';
         }
+    } else { //update or clone
+        process();
     }
-    else //update or clone
-    {
-        process(); 
-    }
-
-}else // file not exsit at all
-{
+} else { // file not exsit at all
     process();
 }
-
 
 /**
  * After checking the file existancy and ownership do the uploading
  */
-function process(){
-    
+function process() {
+
     global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson, $title;
-    
+
     //if the file is received from Unity application
-    if (isset($_FILES['myfile'])){
+    if (isset($_FILES['myfile'])) {
 
         $file = $_FILES['myfile']['tmp_name'];
 
         //convert the file to base64 string
-        $file_base64 = base64_encode(file_get_contents($file)); 
+        $file_base64 = base64_encode(file_get_contents($file));
 
         //To get file extension
         //$fileExt = pathinfo($img, PATHINFO_EXTENSION) ;
-
-
         //Get the thumbnail
         $thumb_base64 = '';
-        if(isset($_FILES['thumbnail'])){
+        if (isset($_FILES['thumbnail'])) {
             $thumbnail = $_FILES['thumbnail']['tmp_name'];
             //convert the thumbnail  to base64 string
-            $thumb_base64 = base64_encode(file_get_contents($thumbnail)); 
+            $thumb_base64 = base64_encode(file_get_contents($thumbnail));
         }
 
         //check public key if exist and is true
-        if(isset($public) && $public == 1){
-            $public_upload_privacy = 1;  
-        }
-        else
-        {
+        if (isset($public) && $public == 1) {
+            $public_upload_privacy = 1;
+        } else {
             $public_upload_privacy = 0;
         }
 
         $data = array(
             'base64' => $file_base64,
             'token' => $token,
-            'title' =>$title,
+            'title' => $title,
             'userid' => $userid,
             'sessionid' => $sessionid,
             'thumbnail' => $thumb_base64,
@@ -105,7 +96,7 @@ function process(){
             'updatefile' => $updatefile,
             'activity' => $activityJson,
             'workplace' => $workplaceJson
-            );
+        );
 
         $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
         curl_setopt($ch, CURLOPT_POST, true);
@@ -115,23 +106,19 @@ function process(){
 
         $response = curl_exec($ch);
 
-        if($response == true){
+        if ($response == true) {
             echo $response;
 
             //OR move the actual file to the destination
-            //    move_uploaded_file($tmpimg, $destination . $img );    
-
-        }else{
+            //    move_uploaded_file($tmpimg, $destination . $img );
+        } else {
             echo 'Error: ' . curl_error($ch);
         }
 
         curl_close($ch);
-
-    }
-    else{
+    } else {
+        //The text will be used on the webservice app, therefore it is hardcoded
         echo "[error] there is no data with name [myfile]";
         exit();
     }
-
-
 }

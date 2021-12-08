@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,8 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-namespace mod_arete\search;
+namespace mod_arete;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,4 +44,5 @@ class activity extends \core_search\base_activity {
     public function uses_file_indexing() {
         return true;
     }
+
 }

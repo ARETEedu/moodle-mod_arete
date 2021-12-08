@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +22,6 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
@@ -30,12 +30,11 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
-        'editingteacher' => CAP_ALLOW,
-        'manager' => CAP_ALLOW
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
         ),
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
-    
     'mod/arete:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -47,8 +46,6 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    
-        
     'mod/arete:arlemfulllist' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -58,17 +55,14 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    
-        'mod/arete:assignedarlemfile' => array(
+    'mod/arete:assignedarlemfile' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'student' => CAP_ALLOW,
         )
     ),
-    
-    
-        'mod/arete:manageall' => array(
+    'mod/arete:manageall' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(

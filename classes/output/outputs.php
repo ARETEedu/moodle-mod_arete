@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,11 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_arete;
+
 defined('MOODLE_INTERNAL') || die;
 
 //include all ouput scripts
-
-require_once(dirname(__FILE__). '/../../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/output/arlemtable.php');
-require_once($CFG->dirroot.'/mod/arete/classes/output/pagination.php');
-require_once($CFG->dirroot.'/mod/arete/classes/output/EditArlem.php');
+require_once(dirname(__FILE__) . '/../../../../config.php');
+require_once($CFG->dirroot . '/mod/arete/classes/output/arlemtable.php');
+require_once($CFG->dirroot . '/mod/arete/classes/output/pagination.php');
+require_once($CFG->dirroot . '/mod/arete/classes/output/edit_arlem.php');

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,176 +23,149 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 
 defined('MOODLE_INTERNAL') || die;
 
-
 //get the list of arlem files which is assig
-function is_arlem_assigned($areteid, $arlemid)
-{
+function mod_arete_is_arlem_assigned($areteid, $arlemid) {
     global $DB;
 
     $arlems = $DB->get_records('arete_arlem', array('areteid' => $areteid, 'arlemid' => $arlemid));
 
-    if(empty($arlems)){
+    if (empty($arlems)) {
         return false;
     }
 
     return true;
 }
 
-
-
 //Returns true if arlem exist
-function is_arlem_exist($itemid){
+function mod_arete_is_arlem_exist($itemid) {
     global $DB;
-    
-    if(!empty($DB->get_record('arete_allarlems' , array ('itemid' => $itemid))))
-    {
+
+    if (!empty($DB->get_record('arete_allarlems', array('itemid' => $itemid)))) {
         return true;
     }
-    
+
     return false;
-
 }
-
 
 //Returns true if arlem exist
-function is_sessionid_exist($sessionid){
+function mod_arete_is_sessionid_exist($sessionid) {
     global $DB;
-    
-    if(!empty($DB->get_record('arete_allarlems' , array ('sessionid' => $sessionid))))
-    {
+
+    if (!empty($DB->get_record('arete_allarlems', array('sessionid' => $sessionid)))) {
         return true;
     }
-    
+
     return false;
-
 }
-
 
 /**
- * 
- * Get if this sessionid is created by this user 
- * 
+ *
+ * Get if this sessionid is created by this user
+ *
  * @param type $userid
  * @param type $sessionid
- * 
+ *
  * @return boolean
  */
-function is_user_owner_of_file($userid, $sessionid){
+function mod_arete_is_user_owner_of_file($userid, $sessionid) {
     global $DB;
-    
-    $file = $DB->get_record('arete_allarlems' , array ('sessionid' => $sessionid));
-    if(!empty($file))
-    {
-        if($file->userid == $userid ){
+
+    $file = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid));
+    if (!empty($file)) {
+        if ($file->userid == $userid) {
             return true;
         }
     }
-    
+
     return false;
 }
 
-
-function deleteDir($dir)
-{
+function mod_arete_deleteDir($dir) {
     //delete all files from temp filearea
-    delete_all_temp_file();
-    
-   if (substr($dir, strlen($dir)-1, 1) != '/'){
-         $dir .= '/';
-   }
+    mod_arete_delete_all_temp_file();
 
-   if ($handle = opendir($dir))
-   {
-       while ($obj = readdir($handle))
-       {
-           if ($obj != '.' && $obj != '..')
-           {
-               if (is_dir($dir.$obj))
-               {
-                   if (!deleteDir($dir.$obj)){
-                       return false;
-                   }
-                       
-               }
-               elseif (is_file($dir.$obj))
-               {
-                   if (!unlink($dir.$obj)){
+    if (substr($dir, strlen($dir) - 1, 1) != '/') {
+        $dir .= '/';
+    }
+
+    if ($handle = opendir($dir)) {
+        while ($obj = readdir($handle)) {
+            if ($obj != '.' && $obj != '..') {
+                if (is_dir($dir . $obj)) {
+                    if (!mod_arete_deleteDir($dir . $obj)) {
                         return false;
-                   }
-                      
-               }
-           }
-       }
+                    }
+                } elseif (is_file($dir . $obj)) {
+                    if (!unlink($dir . $obj)) {
+                        return false;
+                    }
+                }
+            }
+        }
 
-       closedir($handle);
+        closedir($handle);
 
-       if (!@rmdir($dir)){
-           return false;
-       }
+        if (!@rmdir($dir)) {
+            return false;
+        }
 
-       return true;
-   }
-   return false;
+        return true;
+    }
+    return false;
 }
 
+function mod_arete_create_temp_files($filepath, $filename) {
 
-function create_temp_files($filepath, $filename){
-    
     $context = context_system::instance();
     $fs = get_file_storage();
-         
+
     $fileinfo = array(
-             'contextid'=>$context->id, 
-             'component'=> get_string('component', 'arete') ,
-             'filearea'=> 'temp',
-             'itemid'=> random_int(0, 1000), 
-             'filepath'=>'/',
-             'filename'=>$filename,
-             'timecreated'=>time()
-           );
-         
-    
+        'contextid' => $context->id,
+        'component' => get_string('component', 'arete'),
+        'filearea' => 'temp',
+        'itemid' => random_int(0, 1000),
+        'filepath' => '/',
+        'filename' => $filename,
+        'timecreated' => time()
+    );
+
+
     //add the updated file to the file system
     $tempfile = $fs->create_file_from_pathname($fileinfo, $filepath);
-    
+
     return $tempfile;
-         
 }
 
+function mod_arete_get_temp_file($filename) {
 
-function get_temp_file($filename){
-    
     $context = context_system::instance();
     $fs = get_file_storage();
-         
+
     $fileinfo = array(
-             'contextid'=>$context->id, 
-             'component'=> get_string('component', 'arete') ,
-             'filearea'=> 'temp',
-             'filepath'=>'/',
-             'filename'=>$filename,
-             'timecreated'=>time()
-           );
-         
-    
+        'contextid' => $context->id,
+        'component' => get_string('component', 'arete'),
+        'filearea' => 'temp',
+        'filepath' => '/',
+        'filename' => $filename,
+        'timecreated' => time()
+    );
+
+
     //add the updated file to the file system
     $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'],
-            $fileinfo['filearea'], getItemID($fileinfo),
+            $fileinfo['filearea'], mod_arete_getItemID($fileinfo),
             $fileinfo['filepath'], $filename);
-    
+
     return $file;
-         
 }
 
+function mod_arete_delete_all_temp_file() {
 
-
-function delete_all_temp_file(){
-    
     global $DB;
 
     $fs = get_file_storage();
@@ -200,54 +174,48 @@ function delete_all_temp_file(){
     $params = array(
         'component' => get_string('component', 'arete'),
         'filearea' => 'temp'
-        );
+    );
     $temps = $DB->get_records('files', $params);
-    
+
     foreach ($temps as $temp) {
         $tempfile = $fs->get_file($temp->contextid, get_string('component', 'arete'), 'temp', $temp->itemid, '/', $temp->filename);
-        
-        if($tempfile){
+
+        if ($tempfile) {
             $tempfile->delete();
         }
     }
-
 }
 
+function mod_arete_get_readable_filesize($size) {
 
+    if ($size > 1000000000) {
+        $size /= pow(1024, 3);
+        $size = round($size, 2);
+        $size .= ' GB';
+    } else if ($size > 1000000) {
+        $size /= pow(1024, 2);
+        $size = round($size, 2);
+        $size .= ' MB';
+    } else if ($size > 1024) {
+        $size /= 1024;
+        $size = round($size, 2);
+        $size .= ' KB';
+    } else {
+        $size = $size / 1024;
+        $size = round($size, 2);
+        $size .= ' KB';
+    }
 
-function get_readable_filesize($size){
-    
-    if($size > 1000000000){
-            $size /= pow(1024 ,3);
-            $size = round($size,2);
-            $size .= ' GB';
-        }
-        else if($size > 1000000){
-            $size /= pow(1024 ,2);
-            $size = round($size,2);
-            $size .= ' MB';
-        }else if($size > 1024){
-            $size /= 1024;
-            $size = round($size,2);
-            $size .= ' KB';
-        }else{
-            $size = $size/1024;
-            $size = round($size,2);
-            $size .= ' KB';
-        }
-        
-        return $size;
+    return $size;
 }
-
-
 
 /// REST CALL
 //send a post request
-function httpPost($url, $data){
+function mod_arete_httpPost($url, $data) {
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_POST, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded')); 
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
     $response = curl_exec($curl);
@@ -255,14 +223,12 @@ function httpPost($url, $data){
     return $response;
 }
 
-
-
 /**
  * create an object with all existing get queries
  */
-function get_queries($onlyValue = false){
-   
-    
+function mod_arete_get_queries($onlyValue = false) {
+
+
     $id = required_param('id', PARAM_INT);
     $pnum = optional_param('pnum', 1, PARAM_INT);
     $itemid = optional_param('itemid', null, PARAM_INT);
@@ -272,60 +238,60 @@ function get_queries($onlyValue = false){
     $pagetype = optional_param('mode', null, PARAM_TEXT);
     $sorting = optional_param('sort', null, PARAM_TEXT);
     $order = optional_param('order', null, PARAM_TEXT);
-    
+
     //
     $idValue = '';
-    if(isset($id) && $id != ''){
+    if (isset($id) && $id != '') {
         $idValue = !$onlyValue ? '&id=' . $id : $id;
     }
-    
+
     //
     $pnumValue = '';
-    if(isset($pnum) && $pnum != ''){
-        $pnumValue = !$onlyValue ? '&pnum=' . $pnum: $pnum;
+    if (isset($pnum) && $pnum != '') {
+        $pnumValue = !$onlyValue ? '&pnum=' . $pnum : $pnum;
     }
-    
+
     //
     $itemidValue = '';
-    if(isset($itemid) && $itemid != ''){
-        $itemidValue = !$onlyValue ? '&itemid=' . $itemid: $itemid;
+    if (isset($itemid) && $itemid != '') {
+        $itemidValue = !$onlyValue ? '&itemid=' . $itemid : $itemid;
     }
-    
+
     //
     $arlemuseridValue = '';
-    if(isset($arlemuserid) && $arlemuserid != ''){
+    if (isset($arlemuserid) && $arlemuserid != '') {
         $arlemuseridValue = !$onlyValue ? '&author=' . $arlemuserid : $arlemuserid;
     }
-    
-    
+
+
     $editing_mode = '';
-    if(isset($editing) && $editing == "on"){
+    if (isset($editing) && $editing == "on") {
         $editing_mode = !$onlyValue ? '&editing=' . 'on' : 'on';
     }
 
     $pagemode = '';
-    if(isset($pagetype) && $pagetype != ""){
+    if (isset($pagetype) && $pagetype != "") {
         $pagemode = !$onlyValue ? '&mode=' . $pagetype : $pagetype;
-    }  
+    }
 
     $sortingMode = '';
-    if(isset($sorting) && $sorting != ""){
+    if (isset($sorting) && $sorting != "") {
         $sortingMode = !$onlyValue ? '&sort=' . $sorting : $sorting;
     }
 
 
     //pass the search word in url if exist
     $searchQuery = '';
-    if(isset($searchword) && $searchword != ''){
+    if (isset($searchword) && $searchword != '') {
         $searchQuery = !$onlyValue ? '&qword=' . $searchword : $searchword;
     }
-    
+
     //
     $orderMode = '';
-    if(isset($order) && $order != ''){
+    if (isset($order) && $order != '') {
         $orderMode = !$onlyValue ? '&order=' . $order : $order;
     }
-    
+
     $queries = array(
         'id' => $idValue,
         'pnum' => $pnumValue,
@@ -336,6 +302,6 @@ function get_queries($onlyValue = false){
         'sort' => $sortingMode,
         'qword' => $searchQuery,
         'order' => $orderMode);
-    
+
     return $queries;
 }

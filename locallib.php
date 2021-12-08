@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,30 +22,24 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die;
 
-require_once(dirname(__FILE__). '/../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 
-     
 /**
-* Delete an activity.
-*
-* @param $id id of arete from arete DB
-*/
-function arete_delete_activity($id){
-    
-    
-    global $DB;
-    if ($DB->get_record('arete', array('id' => $id)) !== null)
-    {
-        $DB->delete_records('arete', array('id' => $id));
-        
-        if ($DB->get_record('arete_arlem', array('areteid' => $id))!== null)
-        {
-            $DB->delete_records('arete_arlem', array('areteid'=> $id));
-        }
-        
-    }
+ * Delete an activity.
+ *
+ * @param $id id of arete from arete DB
+ */
+function arete_delete_activity($id) {
 
+
+    global $DB;
+    if ($DB->get_record('arete', array('id' => $id)) !== null) {
+        $DB->delete_records('arete', array('id' => $id));
+
+        if ($DB->get_record('arete_arlem', array('areteid' => $id)) !== null) {
+            $DB->delete_records('arete_arlem', array('areteid' => $id));
+        }
+    }
 }

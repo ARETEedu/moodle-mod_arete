@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,14 +23,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
+namespace mod_arete;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
 
 
-if(!isset($itemid)){
+if (!isset($itemid)) {
     echo get_string('unabletogetrating', 'arete');
     exit;
 }
@@ -37,23 +40,23 @@ if(!isset($itemid)){
 
 $rating = $DB->get_records('arete_rating', array('itemid' => $itemid));
 
-if(!empty($rating)){
+if (!empty($rating)) {
 
     $counter = 0;
     foreach ($rating as $r) {
         $counter += intval($r->rating);
     }
 
-    $arlemRating = $counter/ count($rating);
-    
+    $arlemRating = $counter / count($rating);
+
 
     $ratingObject->avrage = $arlemRating;
     $ratingObject->votes = count($rating);
-    
+
     print_r(json_encode($ratingObject));
-}else{
+} else {
     $ratingObject->avrage = 0;
     $ratingObject->votes = 0;
-    
+
     print_r(json_encode($ratingObject));
 }

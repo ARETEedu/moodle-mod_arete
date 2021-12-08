@@ -56,7 +56,7 @@ function On_Save_JSON_Pressed(){
 
 function Apply_New_JSON_To_Activity(activityJson, workplaceJSON){
     
-        $.ajax("classes/JSONValidatorFileManager.php" , { 
+        $.ajax("classes/json_validator_filemanager.php" , { 
         type: "POST", 
         data: {  activityJson: activityJson , workplaceJSON: workplaceJSON}, 
         dataType: "text",

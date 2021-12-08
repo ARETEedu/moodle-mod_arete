@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,7 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
+namespace mod_arete;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -31,32 +34,32 @@ $itemid = filter_input(INPUT_POST, 'itemid');
 $rating = filter_input(INPUT_POST, 'rating');
 $onstart = filter_input(INPUT_POST, 'onstart');
 
-if($onstart == 1){
+if ($onstart == 1) {
     echo getVotes();
     die;
 }
 
 
-if(!isset($userid) || !isset($itemid) || !isset($rating)){
-    echo get_string('unabletosetrating', 'arete');;
+if (!isset($userid) || !isset($itemid) || !isset($rating)) {
+    echo get_string('unabletosetrating', 'arete');
+    ;
     exit;
 }
 
 
 
-$currentRating = $DB->get_record('arete_rating', array('userid' => $userid , 'itemid' => $itemid));
+$currentRating = $DB->get_record('arete_rating', array('userid' => $userid, 'itemid' => $itemid));
 
-if($currentRating != null){
+if ($currentRating != null) {
     $currentRating->rating = $rating;
     $DB->update_record('arete_rating', $currentRating);
-
-}else{
+} else {
     $ratingData = new stdClass();
     $ratingData->userid = $userid;
     $ratingData->itemid = $itemid;
     $ratingData->rating = $rating;
     $ratingData->timecreated = time();
-    $DB->insert_record('arete_rating', $ratingData); 
+    $DB->insert_record('arete_rating', $ratingData);
 }
 
 
@@ -67,20 +70,18 @@ $counter = 0;
 foreach ($ratings as $r) {
     $counter += intval($r->rating);
 }
-$avragerate = floor($counter/ count($ratings));
+$avragerate = floor($counter / count($ratings));
 $arlem_to_update = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
 $arlem_to_update->rate = intval($avragerate);
 $DB->update_record('arete_allarlems', $arlem_to_update);
 
-
 //return the number of votes of the activity
-function getVotes(){
+function getVotes() {
     global $DB, $itemid;
     $params = [$itemid, 0];
     $sql = 'itemid = ? AND rating <> ?';
-    $votes = $DB->get_records_select('arete_rating', $sql, $params, 'timecreated DESC'); 
+    $votes = $DB->get_records_select('arete_rating', $sql, $params, 'timecreated DESC');
     return strval(count($votes));
 }
-
 
 echo getVotes();

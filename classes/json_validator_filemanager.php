@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,18 +23,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
+namespace mod_arete;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
 
 $activityString = filter_input(INPUT_POST, 'activityJson');
-$workplaceString= filter_input(INPUT_POST, 'workplaceJSON');
+$workplaceString = filter_input(INPUT_POST, 'workplaceJSON');
 
 
 $activityJsonObj = json_decode($activityString);
 
-$activityJSONPath = $CFG->dirroot.'/mod/arete/temp/'. strval($USER->id) . '/' . $activityJsonObj->id . '-activity.json';
-file_put_contents($activityJSONPath , $activityString);
+$activityJSONPath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityJsonObj->id . '-activity.json';
+file_put_contents($activityJSONPath, $activityString);
 
-$workplaceJSONPath = $CFG->dirroot.'/mod/arete/temp/'. strval($USER->id) . '/' . $activityJsonObj->id . '-workplace.json';
-file_put_contents($workplaceJSONPath , $workplaceString);
+$workplaceJSONPath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityJsonObj->id . '-workplace.json';
+file_put_contents($workplaceJSONPath, $workplaceString);
 
 echo get_string('validatorsavemsg', 'arete');
