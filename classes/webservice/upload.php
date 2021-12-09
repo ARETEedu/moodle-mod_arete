@@ -39,8 +39,8 @@ $userid = filter_input(INPUT_POST, 'userid');
 $thumbnail = filter_input(INPUT_POST, 'thumbnail');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
-$activityJson = filter_input(INPUT_POST, 'activity');
-$workplaceJson = filter_input(INPUT_POST, 'workplace');
+$activityjson = filter_input(INPUT_POST, 'activity');
+$workplacejson = filter_input(INPUT_POST, 'workplace');
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
@@ -61,12 +61,12 @@ if (isset($base64file)) {
         $itemid = $arlem->itemid;
         $fileid = $arlem->fileid;
         $filename = $arlem->sessionid . '.zip';
-        $oldfile_delete = mod_arete_delete_arlem_by_sessionid($sessionid);
+        $oldfiledelete = mod_arete_delete_arlem_by_sessionid($sessionid);
         $timemodifeid = time();
         $timecreated = $arlem->timecreated;
 
         //if unable to delete the old file
-        if ($oldfile_delete != true) {
+        if ($oldfiledelete != true) {
             echo "Cannot delete old file";
             die;
         }
@@ -99,22 +99,22 @@ if (isset($base64file)) {
                 get_string('component', 'arete'), get_string('filearea', 'arete'), $parameters['itemid']);
 
         //if file is created in plugin filearea
-        if (mod_arete_getArlemByName($filename, $parameters['itemid']) !== null) {
+        if (mod_arete_get_arlem_by_name($filename, $parameters['itemid']) !== null) {
 
             //delete file and the empty folder from user file area
-            mod_arete_deleteUserArlem($filename, $parameters['itemid'], true, $userid);
-            mod_arete_deleteUserArlem('.', $parameters['itemid'], true, $userid);
+            mod_arete_delete_user_arlem($filename, $parameters['itemid'], true, $userid);
+            mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
             echo $filename . ' Saved.';
 
             //add thumbnail to DB
             if (isset($thumbnail) && $thumbnail != '') {
-                upload_thumbnail($contextid, $parameters['itemid']);
+                mod_arete_upload_thumbnail($contextid, $parameters['itemid']);
             }
 
 
             ///insert data to arete_allarlems table
             $arlemdata = new stdClass();
-            $arlemdata->fileid = isset($fileid) ? $fileid : mod_arete_getArlemByName($filename, $parameters['itemid'])->get_id();
+            $arlemdata->fileid = isset($fileid) ? $fileid : mod_arete_get_arlem_by_name($filename, $parameters['itemid'])->get_id();
             $arlemdata->contextid = context_system::instance()->id;
             $arlemdata->userid = $userid;
             $arlemdata->itemid = $parameters['itemid'];
@@ -123,8 +123,8 @@ if (isset($base64file)) {
             $arlemdata->title = $title;
             $arlemdata->filesize = (int) (strlen(rtrim($base64file, '=')) * 3 / 4);
             $arlemdata->upublic = (int) $public;
-            $arlemdata->activity_json = $activityJson;
-            $arlemdata->workplace_json = $workplaceJson;
+            $arlemdata->activity_json = $activityjson;
+            $arlemdata->workplace_json = $workplacejson;
             $arlemdata->timecreated = $timecreated;
             $arlemdata->timemodified = $timemodifeid;
             $DB->insert_record('arete_allarlems', $arlemdata);
@@ -132,13 +132,16 @@ if (isset($base64file)) {
     }
 }
 
-
-/*
- *
+/**
  * Add thumbnail to the thumbnail filearea
+ * @global type $token
+ * @global type $CFG
+ * @global type $thumbnail
+ * @global type $userid
+ * @param type $contextid
+ * @param type $itemid
  */
-
-function upload_thumbnail($contextid, $itemid) {
+function mod_arete_upload_thumbnail($contextid, $itemid) {
 
     global $token, $CFG, $thumbnail, $userid;
 
@@ -165,7 +168,7 @@ function upload_thumbnail($contextid, $itemid) {
                 get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
 
         //delete file and the empty folder from user file area
-        mod_arete_deleteUserArlem('thumbnail.jpg', $parameters['itemid'], true, $userid);
-        mod_arete_deleteUserArlem('.', $parameters['itemid'], true, $userid);
+        mod_arete_delete_user_arlem('thumbnail.jpg', $parameters['itemid'], true, $userid);
+        mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
     }
 }

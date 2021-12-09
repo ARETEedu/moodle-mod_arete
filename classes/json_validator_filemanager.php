@@ -27,16 +27,16 @@ namespace mod_arete;
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 
-$activityString = filter_input(INPUT_POST, 'activityJson');
-$workplaceString = filter_input(INPUT_POST, 'workplaceJSON');
+$activitystring = filter_input(INPUT_POST, 'activityJson');
+$workplacestring = filter_input(INPUT_POST, 'workplaceJSON');
 
 
-$activityJsonObj = json_decode($activityString);
+$activityjsonobject = json_decode($activitystring);
 
-$activityJSONPath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityJsonObj->id . '-activity.json';
-file_put_contents($activityJSONPath, $activityString);
+$activityjsonpath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityjsonobject->id . '-activity.json';
+file_put_contents($activityjsonpath, $activitystring);
 
-$workplaceJSONPath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityJsonObj->id . '-workplace.json';
-file_put_contents($workplaceJSONPath, $workplaceString);
+$workplacejsonpath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityjsonobject->id . '-workplace.json';
+file_put_contents($workplacejsonpath, $workplacestring);
 
 echo get_string('validatorsavemsg', 'arete');

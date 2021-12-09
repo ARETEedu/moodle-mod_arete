@@ -22,9 +22,6 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../../../config.php');
@@ -35,38 +32,38 @@ if (!isset($order)) {
     $order = "DESC";
 }
 
-$system_context = context_system::instance()->id;
+$systemcontext = context_system::instance()->id;
 
 /**
  * Delete a file from user draft
  *
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea
- * @param $WITH_USER_CONTEXT If pass true the user id whome is already logged into Moodle will be used
+ * @param $withusercontext If pass true the user id whome is already logged into Moodle will be used
  * @param $userid Get the contextid of this user
  *
  */
-function mod_arete_deleteUserArlem($filename, $itemid = null, $WITH_USER_CONTEXT = false, $userid = null) {
-    $fs = get_file_storage();
+function mod_arete_delete_user_arlem($filename, $itemid = null, $withusercontext = false, $userid = null) {
+    $filestorage = get_file_storage();
 
     // Prepare file record object
     $fileinfo = array(
         'component' => 'user',
         'filearea' => 'draft',
-        'contextid' => mod_arete_getUserContextid($WITH_USER_CONTEXT, $userid),
+        'contextid' => mod_arete_get_user_contextid($withusercontext, $userid),
         'filepath' => '/', // any path beginning and ending in /
         'filename' => $filename);
 
     //use itemid too if it is provided
     if (isset($itemid)) {
-        $fileItemId = $itemid;
+        $fileitemid = $itemid;
     } else {
-        $fileItemId = mod_arete_getItemID($fileinfo);
+        $fileitemid = mod_arete_get_itemid($fileinfo);
     }
 
     // Get file
-    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-            $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
+    $file = $filestorage->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+            $fileitemid, $fileinfo['filepath'], $fileinfo['filename']);
 
     // Delete it if it exists
     if ($file) {
@@ -82,22 +79,22 @@ function mod_arete_deleteUserArlem($filename, $itemid = null, $WITH_USER_CONTEXT
  *
  * @return The file from file system
  */
-function mod_arete_getArlemByName($filename, $itemid) {
+function mod_arete_get_arlem_by_name($filename, $itemid) {
 
-    global $system_context;
+    global $systemcontext;
 
-    $fs = get_file_storage();
+    $filestorage = get_file_storage();
 
     // Prepare file record object
     $fileinfo = array(
         'component' => get_string('component', 'arete'),
         'filearea' => get_string('filearea', 'arete'),
-        'contextid' => $system_context,
+        'contextid' => $systemcontext,
         'filepath' => '/',
     );
 
     // Get file
-    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+    $file = $filestorage->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
             $itemid, $fileinfo['filepath'], $filename);
 
 
@@ -115,13 +112,13 @@ function mod_arete_getArlemByName($filename, $itemid) {
  *
  * @return an array with all info of the ARLEM file in file system
  */
-function mod_arete_getItemID($fileinfo) {
+function mod_arete_get_itemid($fileinfo) {
     global $DB;
 
     $row = $DB->get_records('files', $fileinfo);
     if (!empty($row)) {
-        $firstRowFound = current($row)->itemid;
-        return $firstRowFound;
+        $firstrowfound = current($row)->itemid;
+        return $firstrowfound;
     }
 
     return null;
@@ -131,15 +128,15 @@ function mod_arete_getItemID($fileinfo) {
  *
  * return current user contextid
  *
- * @param $WITH_USER_CONTEXT If pass true the user id whome is already logged into Moodle will be used
+ * @param $withusercontext If pass true the user id whome is already logged into Moodle will be used
  * @param $userid Get the contextid of this user
  *
  * @return Contextid of the user
  */
-function mod_arete_getUserContextid($WITH_USER_CONTEXT = false, $userid = null) {
+function mod_arete_get_user_contextid($withusercontext = false, $userid = null) {
     global $USER;
 
-    if (!isset($userid) && $WITH_USER_CONTEXT == false) {
+    if (!isset($userid) && $withusercontext == false) {
         $context = context_user::instance($USER->id);
     } else {
         $context = context_user::instance($userid);
@@ -158,27 +155,27 @@ function mod_arete_getUserContextid($WITH_USER_CONTEXT = false, $userid = null) 
  *
  * @return The file from user draft area by API if it is exists
  */
-function mod_arete_getUserArlem($filename, $itemid = null) {
+function mod_arete_get_user_arlem($filename, $itemid = null) {
 
-    $fs = get_file_storage();
+    $filestorage = get_file_storage();
 
     // Prepare file record object
     $fileinfo = array(
         'component' => 'user', // usually = table name
         'filearea' => 'draft', // usually = table name
-        'contextid' => mod_arete_getUserContextid(), // ID of context
+        'contextid' => mod_arete_get_user_contextid(), // ID of context
         'filepath' => '/', // any path beginning and ending in /
         'filename' => $filename); // any filename
     //use itemid too if it is provided
     if (isset($itemid)) {
-        $fileItemId = $itemid;
+        $fileitemid = $itemid;
     } else {
-        $fileItemId = getItemID($fileinfo);
+        $fileitemid = getItemID($fileinfo);
     }
 
     // Get file
-    $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
-            $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
+    $file = $filestorage->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+            $fileitemid, $fileinfo['filepath'], $fileinfo['filename']);
 
     // Read contents
     if ($file) {
@@ -194,11 +191,11 @@ function mod_arete_getUserArlem($filename, $itemid = null) {
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea
  */
-function mod_arete_copyArlemToTemp($filename, $itemid) {
+function mod_arete_copy_arlem_to_temp($filename, $itemid) {
 
     global $USER;
     // Get file
-    $file = mod_arete_getArlemByName($filename, $itemid);
+    $file = mod_arete_get_arlem_by_name($filename, $itemid);
 
     // Read contents
     if ($file) {
@@ -213,10 +210,10 @@ function mod_arete_copyArlemToTemp($filename, $itemid) {
  *
  * @return an array with all ARLEMs for manager, and public and user own files for other users
  */
-function mod_arete_getAllArlems($sorting) {
+function mod_arete_get_allarlems($sorting) {
     global $DB, $USER, $COURSE, $order;
 
-    $sortingMode = mod_arete_validate_sorting($sorting);
+    $sortingmode = mod_arete_validate_sorting($sorting);
 
     //course context
     $context = context_course::instance($COURSE->id);
@@ -224,7 +221,7 @@ function mod_arete_getAllArlems($sorting) {
     //manager
     if (has_capability('mod/arete:manageall', $context)) {
 
-        switch ($sortingMode) {
+        switch ($sortingmode) {
             //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
             case "author":
                 $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
@@ -235,12 +232,12 @@ function mod_arete_getAllArlems($sorting) {
                 break;
             default:
                 //all arlems
-                $files = $DB->get_records('arete_allarlems', null, $sortingMode . ' ' . $order);
+                $files = $DB->get_records('arete_allarlems', null, $sortingmode . ' ' . $order);
                 break;
         }
     } else { //others
         $params = [1, $USER->id];
-        switch ($sortingMode) {
+        switch ($sortingmode) {
             //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
             case "author":
                 $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
@@ -253,7 +250,7 @@ function mod_arete_getAllArlems($sorting) {
                 break;
             default:
                 $sql = 'upublic = ? OR userid = ? ';
-                $files = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingMode . ' ' . $order);
+                $files = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingmode . ' ' . $order);
                 break;
         }
     }
@@ -266,12 +263,12 @@ function mod_arete_getAllArlems($sorting) {
  *
  * @return an array with all ARLEMs for user
  */
-function mod_arete_getAllUserArlems($sorting) {
+function mod_arete_get_user_arlems($sorting) {
     global $DB, $USER, $order;
 
-    $sortingMode = mod_arete_validate_sorting($sorting);
+    $sortingmode = mod_arete_validate_sorting($sorting);
 
-    switch ($sortingMode) {
+    switch ($sortingmode) {
         //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
         case "author":
             $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
@@ -283,7 +280,7 @@ function mod_arete_getAllUserArlems($sorting) {
             $files = $DB->get_records_sql($sql . $order, $params);
             break;
         default:
-            $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id), $sortingMode . ' ' . $order);
+            $files = $DB->get_records('arete_allarlems', array('userid' => $USER->id), $sortingmode . ' ' . $order);
             break;
     }
 
@@ -296,15 +293,15 @@ function mod_arete_getAllUserArlems($sorting) {
  * @return A list of ArLEm files in allalrem table
  *
  */
-function mod_arete_search_arlems($searchWord, $userSearch, $sorting) {
+function mod_arete_search_arlems($searchword, $userSearch, $sorting) {
     global $DB, $USER, $order, $COURSE;
 
-    $sortingMode = mod_arete_validate_sorting($sorting);
+    $sortingmode = mod_arete_validate_sorting($sorting);
 
     //if it is student activityies table seach only between his/her files
-    $userid_if_available = $userSearch ? $USER->id : '';
+    $useridexist = $userSearch ? $USER->id : '';
 
-    $searchQuerty = '%' . $searchWord . '%';
+    $searchquerty = '%' . $searchword . '%';
 
     //course context
     $context = context_course::instance($COURSE->id);
@@ -312,11 +309,11 @@ function mod_arete_search_arlems($searchWord, $userSearch, $sorting) {
     //All result for the managers
     if (has_capability('mod/arete:manageall', $context)) {
         $sql = '(filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)';
-        $params = [$searchQuerty, $searchQuerty, $searchQuerty];
-        $results = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingMode . ' ' . $order);
+        $params = [$searchquerty, $searchquerty, $searchquerty];
+        $results = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingmode . ' ' . $order);
     } else {
-        $params = [1, $userid_if_available, $searchQuerty, $searchQuerty, $searchQuerty];
-        switch ($sortingMode) {
+        $params = [1, $useridexist, $searchquerty, $searchquerty, $searchquerty];
+        switch ($sortingmode) {
             //author on allalrems is a user id while we need sort the column by username, therefore we join the table with user table
             case "author":
                 $sql = 'SELECT a.* FROM {arete_allarlems} AS a '
@@ -331,7 +328,7 @@ function mod_arete_search_arlems($searchWord, $userSearch, $sorting) {
             default:
                 $sql = '(upublic = ? OR userid = ?) '
                         . 'AND (filename LIKE ? OR activity_json LIKE ? OR workplace_json LIKE ?)';
-                $results = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingMode . ' ' . $order);
+                $results = $DB->get_records_select('arete_allarlems', $sql, $params, $sortingmode . ' ' . $order);
                 break;
         }
     }
@@ -344,11 +341,11 @@ function mod_arete_search_arlems($searchWord, $userSearch, $sorting) {
  * Get the ARLEM URL or play link for oopening in WEKIT protocol
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea
- * @param $downloadMode if true the link with http protocol will be return for direct download
+ * @param $downloadmode if true the link with http protocol will be return for direct download
  */
-function mod_arete_getArlemURL($filename, $itemid, $downloadMode = null) {
+function mod_arete_get_arlem_url($filename, $itemid, $downloadmode = null) {
     global $DB;
-    $file = mod_arete_getArlemByName($filename, $itemid);
+    $file = mod_arete_get_arlem_by_name($filename, $itemid);
 
     $url = '#';
     if ($file) {
@@ -357,14 +354,14 @@ function mod_arete_getArlemURL($filename, $itemid, $downloadMode = null) {
                         $file->get_filepath(), $file->get_filename(), false);
     }
 
-    $file_in_allarlem = $DB->get_record('arete_allarlems', array('filename' => $filename, 'itemid' => $itemid));
+    $allarlemfiles = $DB->get_record('arete_allarlems', array('filename' => $filename, 'itemid' => $itemid));
 
     $path = explode("/", parse_url($url, PHP_URL_PATH));
 
-    if ($downloadMode != null) {
+    if ($downloadmode != null) {
         return $url;
     } else {
-        return 'wekit://load?download=' . implode("/", array_slice($path, 2)) . '&id=' . $file_in_allarlem->sessionid;
+        return 'wekit://load?download=' . implode("/", array_slice($path, 2)) . '&id=' . $allarlemfiles->sessionid;
     }
 }
 
@@ -372,7 +369,7 @@ function mod_arete_getArlemURL($filename, $itemid, $downloadMode = null) {
  * Get the URL of any file in mod_arete file system
  * @param $file the file from file API system
  */
-function mod_arete_GetURL($file) {
+function mod_arete_get_url($file) {
     $url = '#';
     if ($file) {
         $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
@@ -389,35 +386,35 @@ function mod_arete_GetURL($file) {
  * @param $filename name of ARLEM in filearea
  * @param $itemid the itemid of ARLEM in filearea
  */
-function mod_arete_deletePluginArlem($filename, $itemid = null) {
-    global $DB, $system_context;
+function mod_arete_delete_arlem_from_plugin($filename, $itemid = null) {
+    global $DB, $systemcontext;
     ;
 
-    $fs = get_file_storage();
+    $filestorage = get_file_storage();
 
     // Prepare file record object
     $fileinfo = array(
         'component' => get_string('component', 'arete'),
         'filearea' => get_string('filearea', 'arete'),
-        'contextid' => $system_context,
+        'contextid' => $systemcontext,
         'filepath' => '/', // any path beginning and ending in /
         'filename' => $filename);
 
 
     //use itemid too if it is provided
     if (isset($itemid)) {
-        $fileItemId = $itemid;
+        $fileitemid = $itemid;
     } else {
-        $fileItemId = mod_arete_getItemID($fileinfo);
+        $fileitemid = mod_arete_get_itemid($fileinfo);
     }
 
     // Get file
-    $file = $fs->get_file($system_context, $fileinfo['component'], $fileinfo['filearea'],
-            $fileItemId, $fileinfo['filepath'], $fileinfo['filename']);
+    $file = $filestorage->get_file($systemcontext, $fileinfo['component'], $fileinfo['filearea'],
+            $fileitemid, $fileinfo['filepath'], $fileinfo['filename']);
 
 
-    $thumbnail = $fs->get_file($system_context, $fileinfo['component'], 'thumbnail',
-            $fileItemId, $fileinfo['filepath'], 'thumbnail.jpg');
+    $thumbnail = $filestorage->get_file($systemcontext, $fileinfo['component'], 'thumbnail',
+            $fileitemid, $fileinfo['filepath'], 'thumbnail.jpg');
 
     // Delete it if it exists
     if ($file) {
@@ -428,14 +425,14 @@ function mod_arete_deletePluginArlem($filename, $itemid = null) {
         }
 
         //delete it from arete_allarlems table
-        if (!empty($DB->get_records('arete_allarlems', array('itemid' => $fileItemId)))) {
-            $DB->delete_records('arete_allarlems', array('itemid' => $fileItemId));
+        if (!empty($DB->get_records('arete_allarlems', array('itemid' => $fileitemid)))) {
+            $DB->delete_records('arete_allarlems', array('itemid' => $fileitemid));
         }
 
 
         //delete rating of this arlem
-        if (!empty($DB->get_records('arete_rating', array('itemid' => $fileItemId)))) {
-            $DB->delete_records('arete_rating', array('itemid' => $fileItemId));
+        if (!empty($DB->get_records('arete_rating', array('itemid' => $fileitemid)))) {
+            $DB->delete_records('arete_rating', array('itemid' => $fileitemid));
         }
 
         //delete zip file
@@ -451,7 +448,7 @@ function mod_arete_deletePluginArlem($filename, $itemid = null) {
  * @param $itemid itemid of the ARLEM
  * @param $params an array with the key,value of the columns need to be updated
  */
-function mod_arete_updateArlemObject($filename, $itemid, $params) {
+function mod_arete_update_arlem_object($filename, $itemid, $params) {
 
     global $DB;
     $alrem = $DB->get_record('arete_allarlems', array('itemid' => $itemid, 'filename' => $filename));
@@ -475,8 +472,8 @@ function mod_arete_get_thumbnail($itemid) {
 
     global $CFG;
 
-    $fs = get_file_storage();
-    $thumbnail = $fs->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $itemid, '/', 'thumbnail.jpg');
+    $filestorage = get_file_storage();
+    $thumbnail = $filestorage->get_file(context_system::instance()->id, get_string('component', 'arete'), 'thumbnail', $itemid, '/', 'thumbnail.jpg');
     //if the thumbnail file exists
     if ($thumbnail) {
         $thumb_url = moodle_url::make_pluginfile_url($thumbnail->get_contextid(), $thumbnail->get_component(),
@@ -499,15 +496,15 @@ function mod_arete_get_thumbnail($itemid) {
  * @param @PAGE the page you are going to use this user info on
  * return the user object and his/her profile photo
  */
-function mod_arete_getARLEMOwner($arlem, $PAGE) {
+function mod_arete_get_arlem_owner($arlem, $PAGE) {
 
     global $DB;
 
     if (isset($arlem->userid)) {
         $authoruser = $DB->get_record('user', array('id' => $arlem->userid));
     }
-    $user_picture = new user_picture($authoruser);
-    $src = $user_picture->get_url($PAGE);
+    $userpicture = new user_picture($authoruser);
+    $src = $userpicture->get_url($PAGE);
 
     return array($authoruser, $src);
 }
@@ -519,16 +516,16 @@ function mod_arete_getARLEMOwner($arlem, $PAGE) {
  *
  * return the first and last name of the teacher/manager who assigned this ARLEM to this course module
  */
-function mod_arete_get_who_assigned_ARLEM($arlem, $moduleid) {
+function mod_arete_get_who_assigned_arlem($arlem, $moduleid) {
 
     global $DB;
-    $teacherId = $DB->get_record('arete_arlem', array('areteid' => $moduleid, 'arlemid' => $arlem->fileid));
-    $assignedbyUser = $DB->get_record('user', array('id' => $teacherId->teacherid));
+    $teacherid = $DB->get_record('arete_arlem', array('areteid' => $moduleid, 'arlemid' => $arlem->fileid));
+    $assignedbyuser = $DB->get_record('user', array('id' => $teacherid->teacherid));
 
 
 
-    if (!empty($assignedbyUser)) {
-        $assignedby = $assignedbyUser->firstname . ' ' . $assignedbyUser->lastname;
+    if (!empty($assignedbyuser)) {
+        $assignedby = $assignedbyuser->firstname . ' ' . $assignedbyuser->lastname;
     } else {
         $assignedby = get_string('notsetyet', 'arete');
     }
@@ -547,7 +544,7 @@ function mod_arete_get_who_assigned_ARLEM($arlem, $moduleid) {
  */
 function mod_arete_upload_custom_file($filepath, $filename, $itemid = null, $date = null) {
 
-    $fs = get_file_storage();
+    $filestorage = get_file_storage();
 
     $context = context_system::instance();
 
@@ -570,9 +567,9 @@ function mod_arete_upload_custom_file($filepath, $filename, $itemid = null, $dat
         'timecreated' => $date
     );
 
-    $newFile = $fs->create_file_from_pathname($fileinfo, $filepath);
+    $newfile = $filestorage->create_file_from_pathname($fileinfo, $filepath);
 
-    return $newFile;
+    return $newfile;
 }
 
 /**
@@ -587,7 +584,7 @@ function mod_arete_delete_arlem_by_sessionid($sessionid) {
 
     $file = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid));
     if (!empty($file)) {
-        mod_arete_deletePluginArlem($file->filename, $file->itemid);
+        mod_arete_delete_arlem_from_plugin($file->filename, $file->itemid);
         $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
         return true;
     }
@@ -613,9 +610,9 @@ function mod_arete_get_views($itemid) {
 /**
  * validate sorting query
  */
-function mod_arete_validate_sorting($sortingMode) {
+function mod_arete_validate_sorting($sortingmode) {
 
-    switch ($sortingMode) {
+    switch ($sortingmode) {
         case "filename":
         case "views":
         case "filesize":
@@ -623,7 +620,7 @@ function mod_arete_validate_sorting($sortingMode) {
         case "timemodified":
         case "rate":
         case "author":
-            return $sortingMode;
+            return $sortingmode;
         default :
             return "timecreated";
     }

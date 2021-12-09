@@ -22,7 +22,6 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 
@@ -158,7 +157,7 @@ function mod_arete_get_temp_file($filename) {
 
     //add the updated file to the file system
     $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'],
-            $fileinfo['filearea'], mod_arete_getItemID($fileinfo),
+            $fileinfo['filearea'], mod_arete_get_itemid($fileinfo),
             $fileinfo['filepath'], $filename);
 
     return $file;
@@ -226,7 +225,7 @@ function mod_arete_httpPost($url, $data) {
 /**
  * create an object with all existing get queries
  */
-function mod_arete_get_queries($onlyValue = false) {
+function mod_arete_get_queries($onlyvalue = false) {
 
 
     $id = required_param('id', PARAM_INT);
@@ -240,68 +239,68 @@ function mod_arete_get_queries($onlyValue = false) {
     $order = optional_param('order', null, PARAM_TEXT);
 
     //
-    $idValue = '';
+    $idvalue = '';
     if (isset($id) && $id != '') {
-        $idValue = !$onlyValue ? '&id=' . $id : $id;
+        $idvalue = !$onlyvalue ? '&id=' . $id : $id;
     }
 
     //
-    $pnumValue = '';
+    $pnumvalue = '';
     if (isset($pnum) && $pnum != '') {
-        $pnumValue = !$onlyValue ? '&pnum=' . $pnum : $pnum;
+        $pnumvalue = !$onlyvalue ? '&pnum=' . $pnum : $pnum;
     }
 
     //
-    $itemidValue = '';
+    $itemidvalue = '';
     if (isset($itemid) && $itemid != '') {
-        $itemidValue = !$onlyValue ? '&itemid=' . $itemid : $itemid;
+        $itemidvalue = !$onlyvalue ? '&itemid=' . $itemid : $itemid;
     }
 
     //
-    $arlemuseridValue = '';
+    $arlemuseridvalue = '';
     if (isset($arlemuserid) && $arlemuserid != '') {
-        $arlemuseridValue = !$onlyValue ? '&author=' . $arlemuserid : $arlemuserid;
+        $arlemuseridvalue = !$onlyvalue ? '&author=' . $arlemuserid : $arlemuserid;
     }
 
 
-    $editing_mode = '';
+    $editingmode = '';
     if (isset($editing) && $editing == "on") {
-        $editing_mode = !$onlyValue ? '&editing=' . 'on' : 'on';
+        $editingmode = !$onlyvalue ? '&editing=' . 'on' : 'on';
     }
 
     $pagemode = '';
     if (isset($pagetype) && $pagetype != "") {
-        $pagemode = !$onlyValue ? '&mode=' . $pagetype : $pagetype;
+        $pagemode = !$onlyvalue ? '&mode=' . $pagetype : $pagetype;
     }
 
-    $sortingMode = '';
+    $sortingmode = '';
     if (isset($sorting) && $sorting != "") {
-        $sortingMode = !$onlyValue ? '&sort=' . $sorting : $sorting;
+        $sortingmode = !$onlyvalue ? '&sort=' . $sorting : $sorting;
     }
 
 
     //pass the search word in url if exist
-    $searchQuery = '';
+    $searchquery = '';
     if (isset($searchword) && $searchword != '') {
-        $searchQuery = !$onlyValue ? '&qword=' . $searchword : $searchword;
+        $searchquery = !$onlyvalue ? '&qword=' . $searchword : $searchword;
     }
 
     //
-    $orderMode = '';
+    $ordermode = '';
     if (isset($order) && $order != '') {
-        $orderMode = !$onlyValue ? '&order=' . $order : $order;
+        $ordermode = !$onlyvalue ? '&order=' . $order : $order;
     }
 
     $queries = array(
-        'id' => $idValue,
-        'pnum' => $pnumValue,
-        'itemid' => $itemidValue,
-        'author' => $arlemuseridValue,
+        'id' => $idvalue,
+        'pnum' => $pnumvalue,
+        'itemid' => $itemidvalue,
+        'author' => $arlemuseridvalue,
         'mode' => $pagemode,
-        'editing' => $editing_mode,
-        'sort' => $sortingMode,
-        'qword' => $searchQuery,
-        'order' => $orderMode);
+        'editing' => $editingmode,
+        'sort' => $sortingmode,
+        'qword' => $searchquery,
+        'order' => $ordermode);
 
     return $queries;
 }

@@ -22,6 +22,7 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once('../../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 
@@ -32,8 +33,8 @@ $sessionid = filter_input(INPUT_POST, 'sessionid');
 $title = filter_input(INPUT_POST, 'title');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
-$activityJson = filter_input(INPUT_POST, 'activity');
-$workplaceJson = filter_input(INPUT_POST, 'workplace');
+$activityjson = filter_input(INPUT_POST, 'activity');
+$workplacejson = filter_input(INPUT_POST, 'workplace');
 
 
 //if file exist and still user not confirmed updating of the file
@@ -47,18 +48,27 @@ if (mod_arete_is_sessionid_exist($sessionid)) {
             echo 'Error: File exist, clone';
         }
     } else { //update or clone
-        process();
+        mod_arete_process();
     }
 } else { // file not exsit at all
-    process();
+    mod_arete_process();
 }
 
 /**
  * After checking the file existancy and ownership do the uploading
+ * @global type $CFG
+ * @global type $token
+ * @global type $userid
+ * @global type $sessionid
+ * @global type $public
+ * @global type $updatefile
+ * @global type $activityjson
+ * @global type $workplacejson
+ * @global type $title
  */
-function process() {
+function mod_arete_process() {
 
-    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson, $title;
+    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityjson, $workplacejson, $title;
 
     //if the file is received from Unity application
     if (isset($_FILES['myfile'])) {
@@ -66,45 +76,45 @@ function process() {
         $file = $_FILES['myfile']['tmp_name'];
 
         //convert the file to base64 string
-        $file_base64 = base64_encode(file_get_contents($file));
+        $filebase64 = base64_encode(file_get_contents($file));
 
         //To get file extension
         //$fileExt = pathinfo($img, PATHINFO_EXTENSION) ;
         //Get the thumbnail
-        $thumb_base64 = '';
+        $thumbbase64 = '';
         if (isset($_FILES['thumbnail'])) {
             $thumbnail = $_FILES['thumbnail']['tmp_name'];
             //convert the thumbnail  to base64 string
-            $thumb_base64 = base64_encode(file_get_contents($thumbnail));
+            $thumbbase64 = base64_encode(file_get_contents($thumbnail));
         }
 
         //check public key if exist and is true
         if (isset($public) && $public == 1) {
-            $public_upload_privacy = 1;
+            $publicuploadprivacy = 1;
         } else {
-            $public_upload_privacy = 0;
+            $publicuploadprivacy = 0;
         }
 
         $data = array(
-            'base64' => $file_base64,
+            'base64' => $filebase64,
             'token' => $token,
             'title' => $title,
             'userid' => $userid,
             'sessionid' => $sessionid,
-            'thumbnail' => $thumb_base64,
-            'public' => $public_upload_privacy,
+            'thumbnail' => $thumbbase64,
+            'public' => $publicuploadprivacy,
             'updatefile' => $updatefile,
-            'activity' => $activityJson,
-            'workplace' => $workplaceJson
+            'activity' => $activityjson,
+            'workplace' => $workplacejson
         );
 
-        $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curlhandle = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
+        curl_setopt($curlhandle, CURLOPT_POST, true);
+        curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curlhandle, CURLOPT_RETURNTRANSFER, true);
 
 
-        $response = curl_exec($ch);
+        $response = curl_exec($curlhandle);
 
         if ($response == true) {
             echo $response;
@@ -112,10 +122,10 @@ function process() {
             //OR move the actual file to the destination
             //    move_uploaded_file($tmpimg, $destination . $img );
         } else {
-            echo 'Error: ' . curl_error($ch);
+            echo 'Error: ' . curl_error($curlhandle);
         }
 
-        curl_close($ch);
+        curl_close($curlhandle);
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
         echo "[error] there is no data with name [myfile]";

@@ -47,16 +47,16 @@ if (!empty($rating)) {
         $counter += intval($r->rating);
     }
 
-    $arlemRating = $counter / count($rating);
+    $arlemrating = $counter / count($rating);
 
 
-    $ratingObject->avrage = $arlemRating;
-    $ratingObject->votes = count($rating);
+    $ratingobject->avrage = $arlemrating;
+    $ratingobject->votes = count($rating);
 
-    print_r(json_encode($ratingObject));
+    print_r(json_encode($ratingobject));
 } else {
-    $ratingObject->avrage = 0;
-    $ratingObject->votes = 0;
+    $ratingobject->avrage = 0;
+    $ratingobject->votes = 0;
 
-    print_r(json_encode($ratingObject));
+    print_r(json_encode($ratingobject));
 }

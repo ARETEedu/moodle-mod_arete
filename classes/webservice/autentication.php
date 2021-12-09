@@ -22,6 +22,9 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_arete\webservices;
+
 require_once('../../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 
@@ -40,20 +43,20 @@ class autentication {
     //request token for the user and return token if is availble
     function requestToken($username, $password) {
 
-        $loginParams = array(
+        $loginparams = array(
             'username' => $username,
             'password' => $password,
             'service' => $this->service
         );
-        $response = mod_arete_httpPost($this->domain . '/login/token.php', $loginParams);
+        $response = mod_arete_httpPost($this->domain . '/login/token.php', $loginparams);
 
         $this->token = json_decode($response)->{'token'};
 
-        return $this->getToken();
+        return $this->get_token();
     }
 
     //return the token of the user
-    function getToken() {
+    function get_token() {
         if (isset($this->token) && $this->token != '') {
             return $this->token;
         } else {

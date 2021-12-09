@@ -59,7 +59,7 @@ $html .= html_writer::empty_tag('img', array('src' => $thumb_url, 'alt' => 'test
 $html .= html_writer::end_tag('div');
 $html .= html_writer::start_tag('div', array('id' => 'detailview-detail'));
 
-$url = mod_arete_getArlemURL($activity->filename, $activity->itemid, true);
+$url = mod_arete_get_arlem_url($activity->filename, $activity->itemid, true);
 
 //filename
 $html .= '<b>' . get_string('arlemtitle', 'arete') . ': </b>' . $filename;
@@ -74,14 +74,14 @@ $html .= '<b>' . get_string('modifieddatetitle', 'arete') . ': </b>' . $timeModi
 $html .= html_writer::empty_tag('br');
 $html .= '<b>' . get_string('sizetitle', 'arete') . ': </b>' . mod_arete_get_readable_filesize($activity->filesize);
 //author
-list($authoruser, $src) = mod_arete_getARLEMOwner($activity, $PAGE);
+list($authoruser, $src) = mod_arete_get_arlem_owner($activity, $PAGE);
 $html .= html_writer::empty_tag('br');
 $html .= '<b>' . get_string('authortitle', 'arete') . ': </b>' . $authoruser->firstname . ' ' . $authoruser->lastname;
 
 //download button
 $html .= html_writer::empty_tag('br');
 $html .= html_writer::empty_tag('br');
-$deleteButtonParams = array(
+$downloadbuttonparams = array(
     'type' => 'button',
     'class' => 'button dlbutton',
     'name' => 'dlBtn' . $activity->fileid,
@@ -89,21 +89,21 @@ $deleteButtonParams = array(
     'value' => get_string('downloadbutton', 'arete')
 );
 
-$html .= html_writer::empty_tag('input', $deleteButtonParams);
+$html .= html_writer::empty_tag('input', $downloadbuttonparams);
 
 $html .= '&nbsp;&nbsp;';
 
 //qr code button
-$wekitProtocolURL = mod_arete_getArlemURL($activity->filename, $activity->itemid);
-$qrButtonParams = array(
+$wekitprotocolurl = mod_arete_get_arlem_url($activity->filename, $activity->itemid);
+$qrbuttonparams = array(
     'type' => 'button',
     'class' => 'button dlbutton',
     'name' => 'dlBtn' . $activity->fileid,
-    'onclick' => 'javascript:window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl=' . $wekitProtocolURL . '\')',
+    'onclick' => 'javascript:window.open(\'https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl=' . $wekitprotocolurl . '\')',
     'value' => get_string('qrtitle', 'arete')
 );
 
-$html .= html_writer::empty_tag('input', $qrButtonParams);
+$html .= html_writer::empty_tag('input', $qrbuttonparams);
 
 $html .= html_writer::empty_tag('br');
 $html .= html_writer::end_tag('div');

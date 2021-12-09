@@ -23,13 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use function \mod_arete\init as init;
-use function \mod_arete\Create_student_menu as Create_student_menu;
-use function \mod_arete\draw_table_for_students as draw_table_for_students;
-use function \mod_arete\searchbox as searchbox;
-use function \mod_arete\draw_table_for_teachers as draw_table_for_teachers;
-use \mod_arete\pagination as pagination;
-use \mod_arete\edit_arlem as edit_arlem;
+use function \mod_arete\output\init as init;
+use function \mod_arete\output\create_student_menu as create_student_menu;
+use function \mod_arete\output\draw_table_for_students as draw_table_for_students;
+use function \mod_arete\output\searchbox as searchbox;
+use function \mod_arete\output\draw_table_for_teachers as draw_table_for_teachers;
+use \mod_arete\output\pagination as pagination;
+use \mod_arete\output\edit_arlem as edit_arlem;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/arete/locallib.php');
@@ -116,7 +116,7 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
 
     //create the top menu(not on edit/structure page)
     if ($pagemode != "edit") {
-        echo Create_student_menu();
+        echo create_student_menu();
     }
 
     //dont show on edit mode and when on user page
@@ -146,10 +146,10 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
         }
 
         //The label of assinged ARLEM
-        $assignedLabel = html_writer::start_tag('span', ['class' => 'titles']);
-        $assignedLabel .= get_string('assignedarlem', 'arete');
-        $assignedLabel .= html_writer::end_tag('span');
-        echo $assignedLabel;
+        $assignedlabel = html_writer::start_tag('span', ['class' => 'titles']);
+        $assignedlabel .= get_string('assignedarlem', 'arete');
+        $assignedlabel .= html_writer::end_tag('span');
+        echo $assignedlabel;
         
         //print assigned table
         $result = draw_table_for_students($moduleid);
@@ -164,17 +164,17 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
 //create edit page
 if ($pagemode == "edit") {
 
-    $editArlem = new edit_arlem();
+    $editarlem = new edit_arlem();
 } else if ($pagemode == "user") {
     //show only User arlems
-    $arlems_list = search_result(true);
-    generate_arlem_table($arlems_list, 1);
+    $arlemslist = search_result(true);
+    generate_arlem_table($arlemslist, 1);
 } else {
 
     ///////////Teachers View
     if (has_capability('mod/arete:arlemfulllist', $context)) {
-        $arlems_list = search_result(false);
-        generate_arlem_table($arlems_list);
+        $arlemslist = search_result(false);
+        generate_arlem_table($arlemslist);
     }
 }
 
@@ -183,7 +183,7 @@ if ($pagemode == "edit") {
 function search_result($is_user_table) {
 
     $searchword = optional_param('qword', null, PARAM_TEXT);
-    $sortingMode = optional_param('sort', 'timecreated', PARAM_TEXT);
+    $sortingmode = optional_param('sort', 'timecreated', PARAM_TEXT);
 
     if (isset($searchword) && $searchword !== '') {
         require_sesskey();
@@ -191,62 +191,64 @@ function search_result($is_user_table) {
         //remove invalid characters
         $searchword = str_replace(array("'", '"', ';', '{', '}', '[', ']', ':'), '', $searchword);
         //search the jsons and return files if exists
-        $arlems_list = mod_arete_search_arlems($searchword, $is_user_table, $sortingMode);
+        $arlemslist = mod_arete_search_arlems($searchword, $is_user_table, $sortingmode);
     } else if ($is_user_table) {
-        $arlems_list = mod_arete_getAllUserArlems($sortingMode);
+        $arlemslist = mod_arete_get_user_arlems($sortingmode);
     } else {
-        $arlems_list = mod_arete_getAllArlems($sortingMode);
+        $arlemslist = mod_arete_get_allarlems($sortingmode);
     }
 
-    return $arlems_list;
+    return $arlemslist;
 }
 
-function generate_arlem_table($arlems_list, $userViewMode = 0) {
+function generate_arlem_table($arlemslist, $userviewmode = 0) {
 
     global $id, $moduleid;
 
     //initiated ata for using in javascript
-    init($userViewMode);
+    init($userviewmode);
 
     //maximum item on each page
-    $max_number_on_page = 10;
+    $maxnumberonpage = 10;
 
     //get the active page id from GET
-    $page_number = optional_param('pnum', 1, PARAM_INT);
+    $pagenumber = optional_param('pnum', 1, PARAM_INT);
 
     // split ARLEMs list to small lists
-    $splitet_list = array_chunk($arlems_list, $max_number_on_page);
+    $splitetlist = array_chunk($arlemslist, $maxnumberonpage);
 
     //start at first page if pnum is not exist in the page url
-    if ($page_number < 1) {
-        $page_number = 1;
-    } else if ($page_number > count($splitet_list)) {
-        $page_number = count($splitet_list);
+    if ($pagenumber < 1) {
+        $pagenumber = 1;
+    } else if ($pagenumber > count($splitetlist)) {
+        $pagenumber = count($splitetlist);
     }
 
 
     //need to add a single line between assigned table and arlem table
-    echo '<br>';
+    echo html_writer::empty_tag('br');
 
     //Do not display the table tile if there are no ARLEM
-    if (!empty($arlems_list)) {
+    if (!empty($arlemslist)) {
         //label that show the list of all arlems which  are available
-        $availableArlemLabel = html_writer::start_tag('span', ['class' => 'titles']);
-        $availableArlemLabel .= get_string('availabledarlem', 'arete');
-        $availableArlemLabel .= html_writer::end_tag('span');
-        echo $availableArlemLabel;
+        $availablearlemlabel = html_writer::start_tag('span', ['class' => 'titles']);
+        $availablearlemlabel .= get_string('availabledarlem', 'arete');
+        $availablearlemlabel .= html_writer::end_tag('span');
+        echo $availablearlemlabel;
     }
 
     //Draw the searchbox
     echo searchbox();
 
     //create the ARLEMs tables
-    draw_table_for_teachers($splitet_list, $page_number, $id, $moduleid);
+    draw_table_for_teachers($splitetlist, $pagenumber, $id, $moduleid);
 
     // create the pagination if arlemlist was not empty
-    if (!empty($arlems_list)) {
+    if (!empty($arlemslist)) {
+        echo html_writer::empty_tag('br');
+        
         $pagination = new pagination();
-        echo html_writer::empty_tag('br') . $pagination->getPagination($splitet_list, $page_number, $id);
+        echo $pagination->getPagination($splitetlist, $pagenumber, $id);
     }
 }
 

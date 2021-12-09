@@ -23,6 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_arete\webservices;
+
 require_once 'autentication.php';
 
 $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
@@ -40,5 +42,3 @@ if (isset($token) && $token != '') {
 } else {
     echo ("User login faild");
 }
-
-exit();

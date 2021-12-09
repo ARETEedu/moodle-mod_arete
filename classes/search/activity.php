@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_arete;
+namespace mod_arete\search;
 
 defined('MOODLE_INTERNAL') || die();
 

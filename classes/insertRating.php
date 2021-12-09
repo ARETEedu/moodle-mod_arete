@@ -35,31 +35,30 @@ $rating = filter_input(INPUT_POST, 'rating');
 $onstart = filter_input(INPUT_POST, 'onstart');
 
 if ($onstart == 1) {
-    echo getVotes();
+    echo get_votes();
     die;
 }
 
 
 if (!isset($userid) || !isset($itemid) || !isset($rating)) {
     echo get_string('unabletosetrating', 'arete');
-    ;
     exit;
 }
 
 
 
-$currentRating = $DB->get_record('arete_rating', array('userid' => $userid, 'itemid' => $itemid));
+$currentrating = $DB->get_record('arete_rating', array('userid' => $userid, 'itemid' => $itemid));
 
-if ($currentRating != null) {
-    $currentRating->rating = $rating;
-    $DB->update_record('arete_rating', $currentRating);
+if ($currentrating != null) {
+    $currentrating->rating = $rating;
+    $DB->update_record('arete_rating', $currentrating);
 } else {
-    $ratingData = new stdClass();
-    $ratingData->userid = $userid;
-    $ratingData->itemid = $itemid;
-    $ratingData->rating = $rating;
-    $ratingData->timecreated = time();
-    $DB->insert_record('arete_rating', $ratingData);
+    $ratingdata = new stdClass();
+    $ratingdata->userid = $userid;
+    $ratingdata->itemid = $itemid;
+    $ratingdata->rating = $rating;
+    $ratingdata->timecreated = time();
+    $DB->insert_record('arete_rating', $ratingdata);
 }
 
 
@@ -71,12 +70,12 @@ foreach ($ratings as $r) {
     $counter += intval($r->rating);
 }
 $avragerate = floor($counter / count($ratings));
-$arlem_to_update = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
-$arlem_to_update->rate = intval($avragerate);
-$DB->update_record('arete_allarlems', $arlem_to_update);
+$arlemtoupdate = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+$arlemtoupdate->rate = intval($avragerate);
+$DB->update_record('arete_allarlems', $arlemtoupdate);
 
 //return the number of votes of the activity
-function getVotes() {
+function get_votes() {
     global $DB, $itemid;
     $params = [$itemid, 0];
     $sql = 'itemid = ? AND rating <> ?';
@@ -84,4 +83,4 @@ function getVotes() {
     return strval(count($votes));
 }
 
-echo getVotes();
+echo get_votes();

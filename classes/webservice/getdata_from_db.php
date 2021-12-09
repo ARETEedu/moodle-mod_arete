@@ -22,6 +22,9 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace mod_arete\webservices;
+
 require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
@@ -61,17 +64,17 @@ function get_arlem_list() {
 
         $params = [1, $userid];
         //All pulblic and user's ARLEMs
-        $unsorted_arlems = $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ', $params, 'timecreated DESC');
+        $unsortedarlems = $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ', $params, 'timecreated DESC');
 
         //the moudules that the user enrolled to their activitie
-        $USER_moduleIDs = get_user_arete_modules_ids();
+        $usermoduleids = get_user_arete_modules_ids();
 
         //if the user is enrolled atleast to one activity which contains arete module
-        if (!empty($USER_moduleIDs)) {
+        if (!empty($usermoduleids)) {
             //Sort the list by assigned courses
-            $arlems = sorted_arlemList_by_user_assigned($unsorted_arlems, $USER_moduleIDs);
+            $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
         } else {
-            $arlems = $unsorted_arlems;
+            $arlems = $unsortedarlems;
         }
 
         //add author name to ARLEM file
@@ -113,19 +116,19 @@ function user_courses_contains_arete($courseID) {
     );
     $response = mod_arete_httpPost($CFG->wwwroot . '/webservice/rest/server.php', $params);
 
-    $arete_modules = array();
+    $aretemodules = array();
     foreach (json_decode($response) as $items) {
 
         $modules = $items->modules;
 
         foreach ($modules as $mod) {
             if (strcmp($mod->modname, get_string('modname', 'arete')) === 0) {
-                $arete_modules[] = $mod;
+                $aretemodules[] = $mod;
             }
         }
     }
 
-    return $arete_modules;
+    return $aretemodules;
 }
 
 /**
@@ -145,16 +148,16 @@ function get_user_arete_modules_ids() {
     );
     $response = mod_arete_httpPost($CFG->wwwroot . '/webservice/rest/server.php', $params);
 
-    $USER_moduleIDs = array();
+    $usermoduleids = array();
 
     foreach (json_decode($response) as $course) {
-        $arete_modules = user_courses_contains_arete($course->id);
-        foreach ($arete_modules as $arete) {
-            $USER_moduleIDs[] = $arete->instance;
+        $aretemodules = user_courses_contains_arete($course->id);
+        foreach ($aretemodules as $arete) {
+            $usermoduleids[] = $arete->instance;
         }
     }
 
-    return $USER_moduleIDs;
+    return $usermoduleids;
 }
 
 /**
@@ -168,47 +171,46 @@ function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
     global $DB;
 
     //get arete_arlems which user is enrolled to its areteid
-    $arete_arlem_list = $DB->get_records_select('arete_arlem', 'areteid IN ( ? )', array(implode(',', $user_arete_list)));
+    $aretearlemlist = $DB->get_records_select('arete_arlem', 'areteid IN ( ? )', array(implode(',', $user_arete_list)));
 
-    $temp_arlemList = $arlemList;
-
+    $temparlemList = $arlemList;
 
     if (!empty($arlemList) && !empty($user_arete_list)) {
-        $newArray = array();
+        $newarray = array();
 
         foreach ($arlemList as $arlem) {
 
-            foreach ($arete_arlem_list as $arete_arlem) {
+            foreach ($aretearlemlist as $aretearlem) {
 
-                if ($arlem->fileid == $arete_arlem->arlemid) {
+                if ($arlem->fileid == $aretearlem->arlemid) {
 
                     //find and add the deadline
-                    $areteid_of_this_arlem = $arete_arlem->areteid;
+                    $areteid_of_this_arlem = $aretearlem->areteid;
                     $arlem->deadline = get_course_deadline_by_arete_id($areteid_of_this_arlem);
 
                     //add the user enrolled arete at the begging of the list
-                    $newArray[] = $arlem;
+                    $newarray[] = $arlem;
 
-                    if (in_array($arlem, $temp_arlemList)) {
+                    if (in_array($arlem, $temparlemList)) {
 
-                        $index = array_search($arlem, $temp_arlemList);
-                        unset($temp_arlemList[$index]); //remove this item from arlem list
+                        $index = array_search($arlem, $temparlemList);
+                        unset($temparlemList[$index]); //remove this item from arlem list
                     }
                 }
             }
         }
 
-        $final_list = array();
-        $merged_list = array_merge($newArray, $temp_arlemList);
+        $finallist = array();
+        $mergedlist = array_merge($newarray, $temparlemList);
 
 
-        foreach ($merged_list as $arlem) {
+        foreach ($mergedlist as $arlem) {
             //add author name to ARLEM file
             $arlem->author = find_author($arlem);
 
-            $final_list[$arlem->id] = $arlem;
+            $finallist[$arlem->id] = $arlem;
         }
-        return $final_list;
+        return $finallist;
     }
 }
 
@@ -276,7 +278,7 @@ function delete_arlem() {
     $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
     if (isset($itemid) && $filename !== null) {
-        mod_arete_deletePluginArlem($filename, $itemid);
+        delete_arlem_from_plugin($filename, $itemid);
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
         echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
@@ -288,10 +290,10 @@ function delete_arlem() {
  */
 function update_views() {
     global $DB, $itemid;
-    $currentViews = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+    $currentviews = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
 
-    if ($currentViews !== null) {
-        $currentViews->views += 1;
-        $DB->update_record('arete_allarlems', $currentViews);
+    if ($currentviews !== null) {
+        $currentviews->views += 1;
+        $DB->update_record('arete_allarlems', $currentviews);
     }
 }

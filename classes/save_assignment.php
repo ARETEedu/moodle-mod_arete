@@ -25,7 +25,8 @@
 
 namespace mod_arete;
 
-use stdClass, context_course;
+use stdClass,
+    context_course;
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
@@ -41,18 +42,18 @@ $arlemid = filter_input(INPUT_POST, 'arlem');
 
 
 //assign the activty
-$update_record = new stdClass();
-$update_record->id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
-$update_record->areteid = $areteid;
-$update_record->arlemid = $arlemid;
-$update_record->teacherid = $USER->id;
-$update_record->timecreated = time();
+$updaterecord = new stdClass();
+$updaterecord->id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
+$updaterecord->areteid = $areteid;
+$updaterecord->arlemid = $arlemid;
+$updaterecord->teacherid = $USER->id;
+$updaterecord->timecreated = time();
 
 if (isset($areteid) && isset($arlemid)) {
-    $DB->update_record('arete_arlem', $update_record);
+    $DB->update_record('arete_arlem', $updaterecord);
 
     //Get the assigned ARLEM
-    $ARLEM = $DB->get_record('arete_allarlems', array('fileid' => $arlemid));
+    $arlem = $DB->get_record('arete_allarlems', array('fileid' => $arlemid));
 }
 
 $moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
@@ -86,15 +87,15 @@ if (isset($_POST['publicarlem'])) {
         if (mod_arete_is_arlem_exist($itemid)) {
 
             if (isset($_POST['publicarlemchecked'][$value])) {
-                mod_arete_updateArlemObject($filename, $itemid, array('upublic' => 1));
+                mod_arete_update_arlem_object($filename, $itemid, array('upublic' => 1));
             } else {
 
-                mod_arete_updateArlemObject($filename, $itemid, array('upublic' => 0));
+                mod_arete_update_arlem_object($filename, $itemid, array('upublic' => 0));
             }
 
             //make the assigned ARLEM become public
-            if (isset($ARLEM)) {
-                mod_arete_updateArlemObject($ARLEM->filename, $ARLEM->itemid, array('upublic' => 1));
+            if (isset($arlem)) {
+                mod_arete_update_arlem_object($arlem->filename, $arlem->itemid, array('upublic' => 1));
             }
         }
     }
@@ -108,7 +109,7 @@ if (isset($_POST['deletearlem'])) {
         list($id, $filename, $itemid) = explode('(,)', $arlem);
 
         if (mod_arete_is_arlem_exist($itemid)) {
-            mod_arete_deletePluginArlem($filename, $itemid);
+            mod_arete_delete_arlem_from_plugin($filename, $itemid);
         }
     }
 }

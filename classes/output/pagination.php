@@ -23,13 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_arete;
+namespace mod_arete\output;
 
 use html_writer;
 
 defined('MOODLE_INTERNAL') || die;
 
-class pagination{
+class pagination {
 
     /**
      * creates a pagination for the ARLEMs list.
@@ -43,51 +43,51 @@ class pagination{
 
         $queries = mod_arete_get_queries();
         $pagemode = $queries['mode'];
-        $editingMode = $queries['editing'];
-        $sortingMode = $queries['sort'];
-        $orderMode = $queries['order'];
-        $searchQuery = $queries['qword'];
+        $editingmode = $queries['editing'];
+        $sortingmode = $queries['sort'];
+        $ordermode = $queries['order'];
+        $searchquery = $queries['qword'];
 
         $nav = html_writer::start_tag('div', array('class' => 'pagination'));
 
-        $prevButtonHrefParams = array(
+        $prevbuttonhrefparams = array(
             'id=' . $id,
             'pnum=' . strval($page_number - 1),
         );
 
         //Add page mode if exist (eg. =edit)
         if (!empty($pagemode)) {
-            $prevButtonHrefParams[] = $pagemode;
+            $prevbuttonhrefparams[] = $pagemode;
         }
         //Add editing mode if exist (eq. =on)
-        if (!empty($editingMode)) {
-            $prevButtonHrefParams[] = $editingMode;
+        if (!empty($editingmode)) {
+            $prevbuttonhrefparams[] = $editingmode;
         }
         //Add searched word if exist
-        if (!empty($searchQuery)) {
-            $prevButtonHrefParams[] = $searchQuery;
+        if (!empty($searchquery)) {
+            $prevbuttonhrefparams[] = $searchquery;
         }
         //Add sorting type if exist (eg. =views)
-        if (!empty($sortingMode)) {
-            $prevButtonHrefParams[] = $sortingMode;
+        if (!empty($sortingmode)) {
+            $prevbuttonhrefparams[] = $sortingmode;
         }
         //Add order type if exist (eg. =ASC)
-        if (!empty($orderMode)) {
-            $prevButtonHrefParams[] = $orderMode;
+        if (!empty($ordermode)) {
+            $prevbuttonhrefparams[] = $ordermode;
         }
 
         //back button
-        $backButtonHref = $page_number == 1 ? '#' : 'view.php?' . implode('&', $prevButtonHrefParams);
-        $nav .= html_writer::start_tag('a', array('href' => $backButtonHref));
+        $backbuttonhref = $page_number == 1 ? '#' : 'view.php?' . implode('&', $prevbuttonhrefparams);
+        $nav .= html_writer::start_tag('a', array('href' => $backbuttonhref));
         $nav .= get_string('paginationprev', 'arete');
         $nav .= html_writer::end_tag('a');
 
         for ($i = 1; $i < count($splitet_list) + 1; $i++) {
             //replace pnum at index 1 by the new page number
-            $prevButtonHrefParams[1] = 'pnum=' . $i;
+            $prevbuttonhrefparams[1] = 'pnum=' . $i;
 
             //the new page url
-            $pageAttr = array('href' => 'view.php?' . implode('&', $prevButtonHrefParams));
+            $pageAttr = array('href' => 'view.php?' . implode('&', $prevbuttonhrefparams));
 
             //make diffrent color for active page
             if ($i == $page_number) {
@@ -100,10 +100,10 @@ class pagination{
         }
 
         //replace pnum at index 1 by the new page number
-        $prevButtonHrefParams[1] = 'pnum=' . strval($page_number + 1);
+        $prevbuttonhrefparams[1] = 'pnum=' . strval($page_number + 1);
 
         //next button
-        $nextButtonHref = $page_number == count($splitet_list) ? '#' : 'view.php?' . implode('&', $prevButtonHrefParams);
+        $nextButtonHref = $page_number == count($splitet_list) ? '#' : 'view.php?' . implode('&', $prevbuttonhrefparams);
         $nav .= html_writer::start_tag('a', array('href' => $nextButtonHref));
         $nav .= get_string('paginationnext', 'arete');
         $nav .= html_writer::end_tag('a');

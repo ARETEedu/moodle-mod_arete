@@ -23,9 +23,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_arete;
+namespace mod_arete\output;
 
-use moodleform, html_writer;
+use moodleform,
+    html_writer;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -38,8 +39,8 @@ class teacher_top_buttons extends moodleform {
 
         $mform = $this->_form; // Don't forget the underscore!
 
-        $splitet_list = $this->_customdata['splitet_list'];
-        $page_number = $this->_customdata['page_number'];
+        $splitetlist = $this->_customdata['splitetlist'];
+        $pagenumber = $this->_customdata['pagenumber'];
         $moduleid = $this->_customdata['moduleid'];
 
         $buttonarray = array();
@@ -66,13 +67,13 @@ class teacher_top_buttons extends moodleform {
         }
 
         //table
-        $table = html_writer::table(draw_table($splitet_list[$page_number - 1], 'arlemTable', true, $moduleid)); //arlems table
+        $table = html_writer::table(draw_table($splitetlist[$pagenumber - 1], 'arlemTable', true, $moduleid)); //arlems table
         $mform->addElement('html', $table);
 
         //hiddens
-        $id = $this->_customdata['course_module_id'];
+        $id = $this->_customdata['coursemoduleid'];
         $searchquery = $this->_customdata['searchquery'];
-        $return_url = $CFG->wwwroot . '/mod/arete/view.php?id=' . $id . $searchquery . '&pnum=' . $page_number . '&editing=on';
+        $return_url = $CFG->wwwroot . '/mod/arete/view.php?id=' . $id . $searchquery . '&pnum=' . $pagenumber . '&editing=on';
         $mform->addElement('hidden', 'returnurl', $return_url);
         $mform->setType('returnurl', PARAM_URL);
         $mform->addElement('hidden', 'moduleid', $moduleid);
