@@ -16,18 +16,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * The Helper methods
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
+require_once( "$CFG->dirroot/mod/arete/classes/filemanager.php");
 
 defined('MOODLE_INTERNAL') || die;
 
-//get the list of arlem files which is assig
+/**
+ * Check if the file assigned to the activity module
+ * @global object $DB The Moodle database object
+ * @param int $areteid The activity module id
+ * @param int $arlemid The id of the ARLEM
+ * @return boolean Status of the assignment
+ */
 function mod_arete_is_arlem_assigned($areteid, $arlemid) {
     global $DB;
 
@@ -40,7 +46,12 @@ function mod_arete_is_arlem_assigned($areteid, $arlemid) {
     return true;
 }
 
-//Returns true if arlem exist
+/**
+ * Check for ARLEM existancy by using itemid
+ * @global object $DB The Moodle database object
+ * @param int $itemid The itemid of the ARLEM
+ * @return boolean Status of the ARLEM existancy
+ */
 function mod_arete_is_arlem_exist($itemid) {
     global $DB;
 
@@ -51,7 +62,12 @@ function mod_arete_is_arlem_exist($itemid) {
     return false;
 }
 
-//Returns true if arlem exist
+/**
+ * Check for ARLEM existancy by using sessionid
+ * @global object $DB The Moodle database object
+ * @param string $sessionid The sessionif of the ARLEM
+ * @return boolean Status of the ARLEM existancy
+ */
 function mod_arete_is_sessionid_exist($sessionid) {
     global $DB;
 
@@ -64,12 +80,12 @@ function mod_arete_is_sessionid_exist($sessionid) {
 
 /**
  *
- * Get if this sessionid is created by this user
+ * Check if the user is the owner of the ARLEM
+ * @global object $DB The Moodle database object
+ * @param string $userid The user id
+ * @param string $sessionid The sessionif of the ARLEM
  *
- * @param type $userid
- * @param type $sessionid
- *
- * @return boolean
+ * @return boolean The status of the the user ownership of this ARLEM
  */
 function mod_arete_is_user_owner_of_file($userid, $sessionid) {
     global $DB;
@@ -84,8 +100,14 @@ function mod_arete_is_user_owner_of_file($userid, $sessionid) {
     return false;
 }
 
+
+/**
+ * Delete a directory and all file and subdirectories
+ * @param string $dir The path of the directory
+ * @return boolean Status of the directory deletion
+ */
 function mod_arete_deleteDir($dir) {
-    //delete all files from temp filearea
+    //Delete all files from temp filearea
     mod_arete_delete_all_temp_file();
 
     if (substr($dir, strlen($dir) - 1, 1) != '/') {
@@ -118,6 +140,13 @@ function mod_arete_deleteDir($dir) {
     return false;
 }
 
+
+/**
+ * Creating temp files inside the file system
+ * @param string $filepath The file path
+ * @param string $filename The file name
+ * @return object The temp file in file system
+ */
 function mod_arete_create_temp_files($filepath, $filename) {
 
     $context = context_system::instance();
@@ -134,12 +163,18 @@ function mod_arete_create_temp_files($filepath, $filename) {
     );
 
 
-    //add the updated file to the file system
+    //Add the updated file to the file system
     $tempfile = $fs->create_file_from_pathname($fileinfo, $filepath);
 
     return $tempfile;
 }
 
+
+/**
+ * Getting the file from temp filearea
+ * @param string $filename The filename
+ * @return object The file from temp filearea
+ */
 function mod_arete_get_temp_file($filename) {
 
     $context = context_system::instance();
@@ -163,6 +198,11 @@ function mod_arete_get_temp_file($filename) {
     return $file;
 }
 
+
+/**
+ * Deleting all files in temp filearea after editing is done
+ * @global object $DB The Moodle database object
+ */
 function mod_arete_delete_all_temp_file() {
 
     global $DB;
@@ -185,6 +225,12 @@ function mod_arete_delete_all_temp_file() {
     }
 }
 
+/**
+ * File size convertor
+ * This will convert bytes to KB, MB and GB
+ * @param int $size The file size in bytes
+ * @return string The size of the files with the suffix
+ */
 function mod_arete_get_readable_filesize($size) {
 
     if ($size > 1000000000) {
@@ -208,8 +254,12 @@ function mod_arete_get_readable_filesize($size) {
     return $size;
 }
 
-/// REST CALL
-//send a post request
+/**
+ * Send a post request
+ * @param string $url The URL of the File request will be sent to
+ * @param array $data The query parameters
+ * @return object The response from the file
+ */
 function mod_arete_httpPost($url, $data) {
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_POST, true);
@@ -223,7 +273,9 @@ function mod_arete_httpPost($url, $data) {
 }
 
 /**
- * create an object with all existing get queries
+ * Create an object with all existing queries parameters in the URL
+ * @param bool $onlyvalue If true only the value of the parameters will be included
+ * @return array An array of all query parameters
  */
 function mod_arete_get_queries($onlyvalue = false) {
 
@@ -241,54 +293,54 @@ function mod_arete_get_queries($onlyvalue = false) {
     //
     $idvalue = '';
     if (isset($id) && $id != '') {
-        $idvalue = !$onlyvalue ? '&id=' . $id : $id;
+        $idvalue = !$onlyvalue ? "&id=$id" : $id;
     }
 
     //
     $pnumvalue = '';
     if (isset($pnum) && $pnum != '') {
-        $pnumvalue = !$onlyvalue ? '&pnum=' . $pnum : $pnum;
+        $pnumvalue = !$onlyvalue ? "&pnum=$pnum" : $pnum;
     }
 
     //
     $itemidvalue = '';
     if (isset($itemid) && $itemid != '') {
-        $itemidvalue = !$onlyvalue ? '&itemid=' . $itemid : $itemid;
+        $itemidvalue = !$onlyvalue ? "&itemid=$itemid" : $itemid;
     }
 
     //
     $arlemuseridvalue = '';
     if (isset($arlemuserid) && $arlemuserid != '') {
-        $arlemuseridvalue = !$onlyvalue ? '&author=' . $arlemuserid : $arlemuserid;
+        $arlemuseridvalue = !$onlyvalue ? "&author=$arlemuserid" : $arlemuserid;
     }
 
 
     $editingmode = '';
-    if (isset($editing) && $editing == "on") {
-        $editingmode = !$onlyvalue ? '&editing=' . 'on' : 'on';
+    if (isset($editing) && $editing == 'on') {
+        $editingmode = !$onlyvalue ? '&editing=on' : 'on';
     }
 
     $pagemode = '';
-    if (isset($pagetype) && $pagetype != "") {
-        $pagemode = !$onlyvalue ? '&mode=' . $pagetype : $pagetype;
+    if (isset($pagetype) && $pagetype != '') {
+        $pagemode = !$onlyvalue ? "&mode=$pagetype" : $pagetype;
     }
 
     $sortingmode = '';
-    if (isset($sorting) && $sorting != "") {
-        $sortingmode = !$onlyvalue ? '&sort=' . $sorting : $sorting;
+    if (isset($sorting) && $sorting != '') {
+        $sortingmode = !$onlyvalue ? "&sort=$sorting" : $sorting;
     }
 
 
-    //pass the search word in url if exist
+    //Pass the search word in url if exist
     $searchquery = '';
     if (isset($searchword) && $searchword != '') {
-        $searchquery = !$onlyvalue ? '&qword=' . $searchword : $searchword;
+        $searchquery = !$onlyvalue ? "&qword=$searchword" : $searchword;
     }
 
     //
     $ordermode = '';
     if (isset($order) && $order != '') {
-        $ordermode = !$onlyvalue ? '&order=' . $order : $order;
+        $ordermode = !$onlyvalue ? "&order=$order" : $order;
     }
 
     $queries = array(

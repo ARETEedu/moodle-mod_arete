@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * This contains functions and classes that will be used by scripts in arete module
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -29,7 +29,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 /**
  * Delete an activity.
  *
- * @param $id id of arete from arete DB
+ * @param int $id The id of arete from arete DB
  */
 function arete_delete_activity($id) {
 

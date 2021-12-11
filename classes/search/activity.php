@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Making more arete be included in the Moodle search
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -29,10 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Search area for mod_arete activities.
- *
- * @package    mod_arete
- * @copyright  2021 OU
- * @license    MIT
  */
 class activity extends \core_search\base_activity {
 

@@ -16,7 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * It contains the great majority of functions defined by Moodle
+ * that are mandatory to develop a module.
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -63,8 +64,10 @@ function arete_supports($feature) {
     switch ($feature) {
         case FEATURE_MOD_INTRO:
             return true;
+            
         case FEATURE_SHOW_DESCRIPTION:
             return true;
+            
         case FEATURE_BACKUP_MOODLE2:
             return true;
 

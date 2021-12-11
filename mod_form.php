@@ -16,17 +16,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * This file defines de main arete configuration form
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+defined('MOODLE_INTERNAL');
 
-require_once($CFG->dirroot . '/course/moodleform_mod.php');
-require_once($CFG->dirroot . '/mod/page/locallib.php');
-require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
+require_once("$CFG->dirroot/course/moodleform_mod.php");
+require_once("$CFG->dirroot/mod/page/locallib.php");
+require_once("$CFG->dirroot/mod/arete/classes/filemanager.php");
 
 $arlemsList = array();
 

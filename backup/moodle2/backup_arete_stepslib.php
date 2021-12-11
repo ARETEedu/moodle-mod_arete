@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Define the complete arete structure for backup, with file and id annotations
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -31,27 +30,25 @@ class backup_arete_activity_structure_step extends backup_activity_structure_ste
 
     protected function define_structure() {
 
-        // To know if we are including userinfo
-//        $userinfo = $this->get_setting_value('userinfo');
         // Define each element separated
         $arete = new backup_nested_element('arete', array('id'), array(
             'name', 'timecreated', 'intro', 'introformat', 'timemodified'));
 
-        //arete_arlem
+        //Include arete_arlem table
         $arete_arlems = new backup_nested_element('arlem');
 
         $areteinstance = new backup_nested_element('areteinstance', array('id'), array(
             'areteid', 'arlemid', 'teacherid', 'timecreated'));
 
 
-        //all_arlems
+        //Include all_arlems table
         $allarlems = new backup_nested_element('allarlems');
 
         $arlem = new backup_nested_element('arlemfile', array('id'), array(
             'contextid', 'fileid', 'userid', 'itemid', 'sessionid', 'filename', 'views', 'filesize', 'upublic',
             'activity_json', 'workplace_json', 'timecreated', 'timemodified'));
 
-        //rating
+        //Include rating table
         $ratings = new backup_nested_element('ratings');
         $rating = new backup_nested_element('rating', array('id'), array('userid', 'itemid', 'rating', 'timecreated'));
 

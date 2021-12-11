@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Create temporary ARLEM JSONs files for serving them to the validator
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -27,16 +27,17 @@ namespace mod_arete;
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 
+//Getting the JSONs strings
 $activitystring = filter_input(INPUT_POST, 'activityJson');
 $workplacestring = filter_input(INPUT_POST, 'workplaceJSON');
 
 
 $activityjsonobject = json_decode($activitystring);
 
-$activityjsonpath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityjsonobject->id . '-activity.json';
+$activityjsonpath = "$CFG->dirroot/mod/arete/temp/$USER->id/$activityjsonobject->id-activity.json";
 file_put_contents($activityjsonpath, $activitystring);
 
-$workplacejsonpath = $CFG->dirroot . '/mod/arete/temp/' . strval($USER->id) . '/' . $activityjsonobject->id . '-workplace.json';
+$workplacejsonpath = "$CFG->dirroot/mod/arete/temp/$USER->id/$activityjsonobject->id-workplace.json";
 file_put_contents($workplacejsonpath, $workplacestring);
 
 echo get_string('validatorsavemsg', 'arete');

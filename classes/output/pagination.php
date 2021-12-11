@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * The pagination of the main table.
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -25,19 +25,24 @@
 
 namespace mod_arete\output;
 
+require_once(dirname(__FILE__) . '/../../../../config.php');
+
 use html_writer;
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * The pagination for the ARLEM table
+ */
 class pagination {
 
     /**
-     * creates a pagination for the ARLEMs list.
+     * Creates a pagination for the ARLEMs list.
      *
-     * @param $splitet_list a list which contains arrays with arlems in each page
-     * @param $page_number id of the active page e.g. 1,2,3
-     * @param $id id of the current activity
-     * @return string HTML pagination
+     * @param array $splitet_list A list which contains arrays with ARLEMs in each page
+     * @param int $page_number Id of the active page e.g. 1,2,3
+     * @param int $id Id of the current activity
+     * @return string The HTML code of the table pagination
      */
     public function getPagination($splitet_list, $page_number, $id) {
 
@@ -76,20 +81,20 @@ class pagination {
             $prevbuttonhrefparams[] = $ordermode;
         }
 
-        //back button
+        //Adding the back button
         $backbuttonhref = $page_number == 1 ? '#' : 'view.php?' . implode('&', $prevbuttonhrefparams);
         $nav .= html_writer::start_tag('a', array('href' => $backbuttonhref));
         $nav .= get_string('paginationprev', 'arete');
         $nav .= html_writer::end_tag('a');
 
         for ($i = 1; $i < count($splitet_list) + 1; $i++) {
-            //replace pnum at index 1 by the new page number
+            //Replace pnum at index 1 by the new page number
             $prevbuttonhrefparams[1] = 'pnum=' . $i;
 
-            //the new page url
+            //The new page url
             $pageAttr = array('href' => 'view.php?' . implode('&', $prevbuttonhrefparams));
 
-            //make diffrent color for active page
+            //Make diffrent color for active page
             if ($i == $page_number) {
                 $pageAttr += array('class' => 'btn btn-primary');
             }
@@ -99,10 +104,10 @@ class pagination {
             $nav .= html_writer::end_tag('a');
         }
 
-        //replace pnum at index 1 by the new page number
+        //Replace pnum at index 1 by the new page number
         $prevbuttonhrefparams[1] = 'pnum=' . strval($page_number + 1);
 
-        //next button
+        //Adding the next button
         $nextButtonHref = $page_number == count($splitet_list) ? '#' : 'view.php?' . implode('&', $prevbuttonhrefparams);
         $nav .= html_writer::start_tag('a', array('href' => $nextButtonHref));
         $nav .= get_string('paginationnext', 'arete');

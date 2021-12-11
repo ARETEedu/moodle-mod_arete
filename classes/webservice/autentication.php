@@ -16,7 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * This classes will be called using webservice and will
+ * get the authentication information and check if the
+ * valid token is available for the user
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -26,36 +28,51 @@
 namespace mod_arete\webservices;
 
 require_once('../../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
+require_once("{$CFG->dirroot}/mod/arete/classes/utilities.php");
 
 defined('MOODLE_INTERNAL') || die;
 
+/**
+ * Get the authentication info from Rest and look for
+ * the valid token, if exist send it back
+ */
 class autentication {
 
     var $token;
     var $service = 'aretews';
     var $domain;
 
+    /**
+     * @param string $domain The Moodle server which is sent from MirageXR app
+     */
     function __construct($domain) {
         $this->domain = $domain;
     }
 
-    //request token for the user and return token if is availble
-    function requestToken($username, $password) {
+    /**
+     * Request token for the user and return token if is available
+     * @param string $username The username which is sent from MirageXR app
+     * @param string $password The password which is sent from MirageXR app
+     * @return string Token if exist
+     */
+    function request_token($username, $password) {
 
         $loginparams = array(
             'username' => $username,
             'password' => $password,
             'service' => $this->service
         );
-        $response = mod_arete_httpPost($this->domain . '/login/token.php', $loginparams);
+        $response = mod_arete_httpPost("{$this->domain}/login/token.php" , $loginparams);
 
         $this->token = json_decode($response)->{'token'};
 
         return $this->get_token();
     }
 
-    //return the token of the user
+    /**
+     * Return the token of the user
+     * @return string Token if exist
+     */
     function get_token() {
         if (isset($this->token) && $this->token != '') {
             return $this->token;

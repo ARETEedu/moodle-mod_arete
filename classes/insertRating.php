@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Insert the rate of a file
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -46,7 +46,6 @@ if (!isset($userid) || !isset($itemid) || !isset($rating)) {
 }
 
 
-
 $currentrating = $DB->get_record('arete_rating', array('userid' => $userid, 'itemid' => $itemid));
 
 if ($currentrating != null) {
@@ -62,8 +61,7 @@ if ($currentrating != null) {
 }
 
 
-
-//calculate the avrage and update/insert into the allarlem table
+//Calculate the avrage and update/insert into the allarlem table
 $ratings = $DB->get_records('arete_rating', array('itemid' => $itemid));
 $counter = 0;
 foreach ($ratings as $r) {
@@ -74,7 +72,12 @@ $arlemtoupdate = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
 $arlemtoupdate->rate = intval($avragerate);
 $DB->update_record('arete_allarlems', $arlemtoupdate);
 
-//return the number of votes of the activity
+/**
+ * Return the number of votes of the activity
+ * @global object $DB The Moodle database object
+ * @global string $itemid The item id
+ * @return string The total vote number of this file
+ */
 function get_votes() {
     global $DB, $itemid;
     $params = [$itemid, 0];

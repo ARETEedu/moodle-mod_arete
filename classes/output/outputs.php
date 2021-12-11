@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Include the needed scripts for the view script
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -27,8 +27,7 @@ namespace mod_arete\output;
 
 defined('MOODLE_INTERNAL') || die;
 
-//include all ouput scripts
 require_once(dirname(__FILE__) . '/../../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/output/arlemtable.php');
-require_once($CFG->dirroot . '/mod/arete/classes/output/pagination.php');
-require_once($CFG->dirroot . '/mod/arete/classes/output/edit_arlem.php');
+require_once("$CFG->dirroot/mod/arete/classes/output/arlemtable.php");
+require_once("$CFG->dirroot/mod/arete/classes/output/pagination.php");
+require_once("$CFG->dirroot/mod/arete/classes/output/edit_arlem.php");

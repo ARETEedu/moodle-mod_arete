@@ -16,7 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Getting the authentication information from Mirage-XR app
+ * and send a succeed message if the token is valid
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -31,14 +32,12 @@ $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING, FILTER_
 $password = filter_input(INPUT_POST, 'password');
 $domain = filter_input(INPUT_POST, 'domain');
 
-//$username = required_param('username', PARAM_USERNAME);
-//$password = required_param('password', PARAM_RAW);
-
 $autentication = new autentication($domain);
-$token = $autentication->requestToken($username, $password);
+$token = $autentication->request_token($username, $password);
 
 if (isset($token) && $token != '') {
-    echo "succeed" . ',' . $token;
+    echo "succeed,{$token}";
 } else {
-    echo ("User login faild");
+    //Will be check on the app, therefore needs to be hardcoded
+    echo ('User login faild');
 }

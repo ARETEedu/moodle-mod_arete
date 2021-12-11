@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Moving files from user filearea to the plugin filearea
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -27,6 +27,19 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 
+/**
+ * 
+ * @param string $userid The user id
+ * @param string $draftitemid The draft item id
+ * @param int $contextid The context id
+ * @param string $component The component name in files table
+ * @param string $filearea The file area
+ * @param int $itemid The item id
+ * @param array $options The other parameters
+ * @param string $text
+ * @param bool $forcehttps
+ * @return string The URL
+ */
 function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
             $component, $filearea, $itemid, array $options = null, $text = null, $forcehttps = false) {
     $usercontext = context_user::instance($userid);

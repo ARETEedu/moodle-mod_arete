@@ -16,8 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
- *
+ * The menu for the teacher and admins on top of the ARLEMS table
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,8 +29,14 @@ use moodleform,
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once("$CFG->libdir/formslib.php");
 
+/**
+ * Includes the button to enable/disable edit mode and allow to
+ * save the table changes
+ * The main table will be called from this class
+ */
 class teacher_top_buttons extends moodleform {
 
     public function definition() {
@@ -45,7 +50,7 @@ class teacher_top_buttons extends moodleform {
 
         $buttonarray = array();
 
-        //get the get queries from the URL
+        //Get the get queries from the URL
         $editmode = optional_param('editing', null, PARAM_TEXT);
 
         if ($editmode === 'on') {
@@ -61,19 +66,19 @@ class teacher_top_buttons extends moodleform {
         $mform->addGroup($buttonarray, 'buttonar', '', '', false);
 
 
-        //confirm delete
+        //The checkbox for confirming of the deletion of the files
         if ($editmode === 'on') {
             $mform->addElement('checkbox', 'deleteConfirm', get_string('confirmchanges', 'arete'), '', array('id' => 'confirmchk'));
         }
 
-        //table
+        //Calling the main table
         $table = html_writer::table(draw_table($splitetlist[$pagenumber - 1], 'arlemTable', true, $moduleid)); //arlems table
         $mform->addElement('html', $table);
 
-        //hiddens
+        //Adding all other elements
         $id = $this->_customdata['coursemoduleid'];
         $searchquery = $this->_customdata['searchquery'];
-        $return_url = $CFG->wwwroot . '/mod/arete/view.php?id=' . $id . $searchquery . '&pnum=' . $pagenumber . '&editing=on';
+        $return_url = "{$CFG->wwwroot}/mod/arete/view.php?id={$id}{$searchquery}&pnum={$pagenumber}&editing=on";
         $mform->addElement('hidden', 'returnurl', $return_url);
         $mform->setType('returnurl', PARAM_URL);
         $mform->addElement('hidden', 'moduleid', $moduleid);

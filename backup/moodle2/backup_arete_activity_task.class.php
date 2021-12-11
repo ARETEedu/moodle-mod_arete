@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Defines backup_arete_activity_task class
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -28,7 +27,7 @@ require_once($CFG->dirroot . '/mod/arete/backup/moodle2/backup_arete_stepslib.ph
 require_once($CFG->dirroot . '/mod/arete/backup/moodle2/backup_arete_settingslib.php');
 
 /**
- * choice backup task that provides all the settings and steps to perform one
+ * Arete backup task that provides all the settings and steps to perform one
  * complete backup of the activity
  */
 class backup_arete_activity_task extends backup_activity_task {

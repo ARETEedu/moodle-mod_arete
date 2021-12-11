@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Saving the changes on the main table (privacy, assignment and deleting of the ARLEMs)
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -29,8 +29,8 @@ use stdClass,
     context_course;
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
+require_once( "$CFG->dirroot/mod/arete/classes/filemanager.php");
+require_once( "$CFG->dirroot/mod/arete/classes/utilities.php");
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -58,7 +58,7 @@ if (isset($areteid) && isset($arlemid)) {
 
 $moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
 
-//if the record  of this activity was deleted on arete_arlem create it again
+//If the record  of this activity was deleted on arete_arlem create it again
 if ($moduleid == null && isset($areteid) && isset($arlemid)) {
     $item = new stdClass();
     $item->areteid = $areteid;
@@ -70,20 +70,20 @@ if ($moduleid == null && isset($areteid) && isset($arlemid)) {
 
 
 
-///update the public privacy
-//course context
+//Update the public privacy
+//Course context
 $context = context_course::instance($COURSE->id);
 
 if (isset($_POST['publicarlem'])) {
 
-    // the value (publicarlem) is passed in hidden input's key, therefore
-    // the value of the input itself is irrelevant ($dummy)
+    // The value (publicarlem) is passed in hidden input's key, therefore
+    // The value of the input itself is irrelevant ($dummy)
     foreach ($_POST['publicarlem'] as $value => $dummy) {
 
         list($id, $filename, $itemid) = explode('(,)', $value);
 
 
-        //check if it is not deleted at the same edit session
+        //Check if it is not deleted at the same edit session
         if (mod_arete_is_arlem_exist($itemid)) {
 
             if (isset($_POST['publicarlemchecked'][$value])) {
@@ -93,7 +93,7 @@ if (isset($_POST['publicarlem'])) {
                 mod_arete_update_arlem_object($filename, $itemid, array('upublic' => 0));
             }
 
-            //make the assigned ARLEM become public
+            //Make the assigned ARLEM become public
             if (isset($arlem)) {
                 mod_arete_update_arlem_object($arlem->filename, $arlem->itemid, array('upublic' => 1));
             }
@@ -102,7 +102,7 @@ if (isset($_POST['publicarlem'])) {
 }
 
 
-//deleted the arlems which has checkbox checked
+//Deleted the arlems which has checkbox checked
 if (isset($_POST['deletearlem'])) {
     foreach ($_POST['deletearlem'] as $arlem) {
 
@@ -115,5 +115,5 @@ if (isset($_POST['deletearlem'])) {
 }
 
 
-//redirect
+//Redirect
 redirect($returnurl, array());

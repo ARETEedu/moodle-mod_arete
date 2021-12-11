@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Structure step to restore one arete activity
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -24,10 +23,14 @@
  */
 
 /**
- * Structure step to restore one choice activity
+ * Structure step to restore one arete activity
  */
 class restore_arete_activity_structure_step extends restore_activity_structure_step {
 
+    /**
+     * Define the structure of the tables
+     * @return array The structure array
+     */
     protected function define_structure() {
         $paths = array();
 
@@ -46,6 +49,11 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         return $this->prepare_activity_structure($paths);
     }
 
+    /**
+     * Restore the arete table
+     * @global object $DB Moodle database API access
+     * @param object $data Data needs to be restored
+     */
     protected function process_arete($data) {
 
         global $DB;
@@ -60,6 +68,11 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         $this->apply_activity_instance($newitemid);
     }
 
+    /**
+     * Restore the data to arete_arlem table
+     * @global type $DB Moodle database API access
+     * @param type $data $data Data needs to be restored
+     */
     protected function process_arete_arlem($data) {
         global $DB;
         $data = (object) $data;
@@ -72,10 +85,13 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
 
         $data->timecreated = $this->apply_date_offset($data->timecreated);
         $newitemid = $DB->insert_record('arete_arlem', $data);
-
-//        $this->set_mapping('arete_areteinstance', $oldid, $newitemid);
     }
 
+    /**
+     * Restore the data to arete_allarlems table
+     * @global object $DB Moodle database API access
+     * @param object $data Data needs to be restored
+     */
     protected function process_arete_allarlems($data) {
         global $DB;
         $data = (object) $data;
@@ -90,10 +106,14 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         }
     }
 
+    /**
+     * Restore the data to the rating table
+     * @global object $DB Moodle database API access
+     * @param object $data Data needs to be restored
+     */
     protected function process_arete_rating($data) {
         global $DB;
         $data = (object) $data;
-
 
         $olduserid = $data->userid;
         $olditemid = $data->itemid;
@@ -105,6 +125,9 @@ class restore_arete_activity_structure_step extends restore_activity_structure_s
         }
     }
 
+    /**
+     * All need to be executed after restoring
+     */
     protected function after_execute() {
         $this->add_related_files('mod_arete', 'intro', null);
         $this->add_related_files('mod_arete', 'arlems', null, 1);

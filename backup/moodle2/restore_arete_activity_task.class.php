@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,14 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
- *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once($CFG->dirroot . '/mod/arete/backup/moodle2/restore_arete_stepslib.php');
 
+/**
+ * arete restore task that provides all the settings and steps to perform one
+ * complete restore of the activity
+ */
 class restore_arete_activity_task extends restore_activity_task {
 
     /**
