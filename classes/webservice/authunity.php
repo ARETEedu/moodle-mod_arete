@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,35 +16,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Getting the authentication information from Mirage-XR app
+ * and send a succeed message if the token is valid
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_arete\webservices;
+
 require_once 'autentication.php';
 
-$username = filter_input(INPUT_POST, 'username' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $password = filter_input(INPUT_POST, 'password');
 $domain = filter_input(INPUT_POST, 'domain');
 
-//$username = required_param('username', PARAM_USERNAME);
-//$password = required_param('password', PARAM_RAW);
+$autentication = new autentication($domain);
+$token = $autentication->request_token($username, $password);
 
-$Autentication = new Autentication($domain);
-$token = $Autentication->requestToken($username, $password);        
-
-if(isset($token) && $token != '')
-{
-   echo "succeed" . ',' . $token; 
+if (isset($token) && $token != '') {
+    echo "succeed,{$token}";
+} else {
+    //Will be check on the app, therefore needs to be hardcoded
+    echo ('User login faild');
 }
-else
-{
-    echo ("User login faild");
-}
-
-exit();
-
-
-

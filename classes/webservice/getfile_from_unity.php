@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,7 +16,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Gets the files from Unity to upload to the Moodle and
+ * creating database records
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
@@ -23,106 +25,108 @@
  */
 
 require_once('../../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+require_once("{$CFG->dirroot}/mod/arete/classes/utilities.php");
 
-//the variables which  are passed from Unity application
+//The variables which  are passed from Unity application
 $token = filter_input(INPUT_POST, 'token');
 $userid = filter_input(INPUT_POST, 'userid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
 $title = filter_input(INPUT_POST, 'title');
 $public = filter_input(INPUT_POST, 'public');
 $updatefile = filter_input(INPUT_POST, 'updatefile');
-$activityJson = filter_input(INPUT_POST, 'activity');
-$workplaceJson = filter_input(INPUT_POST, 'workplace');
+$activityjson = filter_input(INPUT_POST, 'activity');
+$workplacejson = filter_input(INPUT_POST, 'workplace');
 
 
-//if file exist and still user not confirmed updating of the file
-if(is_sessionid_exist($sessionid)){
-    if($updatefile == '0'){
-        
-        //if the user is owner of the file update otherwise clone
-        if(is_user_owner_of_file($userid,$sessionid)){
-            echo 'Error: File exist, update';
-        }else{
-            echo 'Error: File exist, clone';
+//If the file exist 
+if (mod_arete_is_sessionid_exist($sessionid)) {
+    if ($updatefile == '0') { // If the user still user not confirmed updating of the file (On MirageXR)
+
+        //If the user is owner of the file,
+        //the user needs to decide that the file should be updated or cloned
+        if (mod_arete_is_user_owner_of_file($userid, $sessionid)) {
+            echo 'Error: File exist, update'; //Will be checked on the app, therefore needs to be hardcoded
+        } else {
+            echo 'Error: File exist, clone'; //Will be checked on the app, therefore needs to be hardcoded
         }
+    } else { // the user confirmed what should be done on this file
+        mod_arete_process(); 
     }
-    else //update or clone
-    {
-        process(); 
-    }
-
-}else // file not exsit at all
-{
-    process();
+} else { // File not exsit on the server at all, then just save it as a new file
+    mod_arete_process();
 }
-
 
 /**
  * After checking the file existancy and ownership do the uploading
+ * It will send another request to upload.php
+ * @global object $CFG The Moodle config object
+ * @global string $token The user token
+ * @global int $userid The user id
+ * @global string $sessionid The activity id
+ * @global int $public The privacy status of the file
+ * @global int $updatefile The status of the user decision what should be done on the file
+ *          0: not decided yet, 1: update, any other number: clone
+ * @global string $activityjson The JSON string of the activity 
+ * @global string $workplacejson The JSON string of the workplace 
+ * @global string $title The title of the activity
  */
-function process(){
-    
-    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityJson, $workplaceJson, $title;
-    
-    //if the file is received from Unity application
-    if (isset($_FILES['myfile'])){
+function mod_arete_process() {
+
+    global $CFG, $token, $userid, $sessionid, $public, $updatefile, $activityjson, $workplacejson, $title;
+
+    //If the file is received from Unity application
+    if (isset($_FILES['myfile'])) {
 
         $file = $_FILES['myfile']['tmp_name'];
 
-        //convert the file to base64 string
-        $file_base64 = base64_encode(file_get_contents($file)); 
-
-        //To get file extension
-        //$fileExt = pathinfo($img, PATHINFO_EXTENSION) ;
-
+        //Convert the file to base64 string
+        $filebase64 = base64_encode(file_get_contents($file));
 
         //Get the thumbnail
-        $thumb_base64 = '';
-        if(isset($_FILES['thumbnail'])){
+        $thumbbase64 = '';
+        if (isset($_FILES['thumbnail'])) {
             $thumbnail = $_FILES['thumbnail']['tmp_name'];
-            //convert the thumbnail  to base64 string
-            $thumb_base64 = base64_encode(file_get_contents($thumbnail)); 
+
+            $thumbbase64 = base64_encode(file_get_contents($thumbnail)); //Convert the thumbnail  to base64 string
         }
 
-        //check public key if exist and is true
-        if(isset($public) && $public == 1){
-            $public_upload_privacy = 1;  
-        }
-        else
-        {
-            $public_upload_privacy = 0;
+        //Check public key if exist and is true
+        if (isset($public) && $public == 1) {
+            $publicuploadprivacy = 1;
+        } else {
+            $publicuploadprivacy = 0;
         }
 
-         $data = array('base64' => $file_base64, 'token' => $token, 'title' =>$title ,  'userid' => $userid, 'sessionid' => $sessionid, 'thumbnail' => $thumb_base64,
-             'public' => $public_upload_privacy, 'updatefile' => $updatefile , 'activity' => $activityJson, 'workplace' => $workplaceJson);
+        $data = array(
+            'base64' => $filebase64,
+            'token' => $token,
+            'title' => $title,
+            'userid' => $userid,
+            'sessionid' => $sessionid,
+            'thumbnail' => $thumbbase64,
+            'public' => $publicuploadprivacy,
+            'updatefile' => $updatefile,
+            'activity' => $activityjson,
+            'workplace' => $workplacejson
+        );
 
-         $ch = curl_init($CFG->wwwroot . '/mod/arete/classes/webservice/upload.php');
-         curl_setopt($ch, CURLOPT_POST, true);
-         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curlhandle = curl_init("{$CFG->wwwroot}/mod/arete/classes/webservice/upload.php");
+        curl_setopt($curlhandle, CURLOPT_POST, true);
+        curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curlhandle, CURLOPT_RETURNTRANSFER, true);
 
+        $response = curl_exec($curlhandle);
 
-         $response = curl_exec($ch);
+        if ($response == true) {
+            echo $response;
 
-         if($response == true){
+        } else {
+            echo 'Error: ' . curl_error($curlhandle);
+        }
 
-             echo $response;
-
-            //OR move the actual file to the destination
-            //    move_uploaded_file($tmpimg, $destination . $img );    
-
-         }else{
-             echo 'Error: ' . curl_error($ch);
-         }
-
-        curl_close($ch);
-
+        curl_close($curlhandle);
+    } else {
+        //The text will be used on the webservice app, therefore it is hardcoded
+        echo '[error] there is no data with name [myfile]';
     }
-    else{
-            echo "[error] there is no data with name [myfile]";
-            exit();
-    }
-
-
 }

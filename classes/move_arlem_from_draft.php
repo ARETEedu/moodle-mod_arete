@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,25 +16,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Moving files from user filearea to the plugin filearea
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__). '/../../../config.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
 
-
-function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $component, $filearea, $itemid, array $options=null, $text=null, $forcehttps=false)
-{
+/**
+ * 
+ * @param string $userid The user id
+ * @param string $draftitemid The draft item id
+ * @param int $contextid The context id
+ * @param string $component The component name in files table
+ * @param string $filearea The file area
+ * @param int $itemid The item id
+ * @param array $options The other parameters
+ * @param string $text
+ * @param bool $forcehttps
+ * @return string The URL
+ */
+function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
+            $component, $filearea, $itemid, array $options = null, $text = null, $forcehttps = false) {
     $usercontext = context_user::instance($userid);
     $fs = get_file_storage();
 
-    $options = (array)$options;
+    $options = (array) $options;
     if (!isset($options['subdirs'])) {
         $options['subdirs'] = false;
     }
@@ -66,7 +78,7 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $
     }
 
     $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
-    $oldfiles   = $fs->get_area_files($contextid, $component, $filearea, $itemid, 'id');
+    $oldfiles = $fs->get_area_files($contextid, $component, $filearea, $itemid, 'id');
 
     // One file in filearea means it is empty (it has only top-level directory '.').
     if (count($draftfiles) > 1 || count($oldfiles) > 1) {
@@ -86,8 +98,7 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $
             if (!$file->is_directory()) {
                 // Check to see if this file was uploaded by someone who can ignore the file size limits.
                 $fileusermaxbytes = get_user_max_upload_file_size($context, $options['maxbytes'], 0, 0, $file->get_userid());
-                if ($fileusermaxbytes != USER_CAN_IGNORE_FILE_SIZE_LIMITS
-                        && ($options['maxbytes'] and $options['maxbytes'] < $file->get_filesize())) {
+                if ($fileusermaxbytes != USER_CAN_IGNORE_FILE_SIZE_LIMITS && ($options['maxbytes'] and $options['maxbytes'] < $file->get_filesize())) {
                     // Oversized file.
                     continue;
                 }
@@ -185,7 +196,7 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $
         // Add fresh file or the file which has changed status
         // the size and subdirectory tests are extra safety only, the UI should prevent it
         foreach ($newhashes as $file) {
-            $file_record = array('contextid'=>$contextid, 'component'=>$component, 'filearea'=>$filearea, 'itemid'=>$itemid, 'timemodified'=>time());
+            $file_record = array('contextid' => $contextid, 'component' => $component, 'filearea' => $filearea, 'itemid' => $itemid, 'timemodified' => time());
             if ($source = @unserialize($file->get_source())) {
                 // Field files.source for draftarea files contains serialised object with source and original information.
                 // We only store the source part of it for non-draft file area.
@@ -220,5 +231,3 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid, $
         return file_rewrite_urls_to_pluginfile($text, $draftitemid, $forcehttps);
     }
 }
-
-

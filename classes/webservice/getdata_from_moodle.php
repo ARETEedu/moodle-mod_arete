@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,62 +16,61 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Sending information from Moodle to Unity
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../../../config.php');
-require_once($CFG->dirroot.'/lib/filelib.php');
+namespace mod_arete\webservices;
 
+require_once('../../../../config.php');
+require_once("{$CFG->dirroot}/lib/filelib.php");
 
 //the variables which  are passed from Unity application
-$token = filter_input(INPUT_POST, 'token' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$function = filter_input(INPUT_POST, 'function' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$parameters = filter_input(INPUT_POST, 'parameters' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$requestedInfo = filter_input(INPUT_POST, 'request' , FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$function = filter_input(INPUT_POST, 'function', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$parameters = filter_input(INPUT_POST, 'parameters', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$requestedinfo = filter_input(INPUT_POST, 'request', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
 
-//split the unity parameters for all user parameter
-//multiply parameter
-if( strpos($parameters , '&') !== false){
-    $params = explode('&' , $parameters );
+//Split the unity parameters for all user parameter
+if (strpos($parameters, '&') !== false) { //For multiply parameters
+    $params = explode('&', $parameters);
     foreach ($params as $param) {
-        if(strpos($param , '=') !== false){
-            $keyValues = list($key, $value) = explode( '=' , $param);
-            $parametersArray[$key] = $value ;
+        if (strpos($param, '=') !== false) {
+            $keyValues = list($key, $value) = explode('=', $param);
+            $parametersarray[$key] = $value;
         }
     }
-}else //single parameter
-{
-    if(strpos($parameters , '=') !== false){
-            $keyValues = list($key, $value) = explode( '=' , $parameters);
-            $parametersArray[$key] = $value ;
+} else { //For single parameter
+    if (strpos($parameters, '=') !== false) {
+        $keyValues = list($key, $value) = explode('=', $parameters);
+        $parametersarray[$key] = $value;
     }
 }
 
+
+// REST CALL
+$serverurl = "{$CFG->wwwroot}/webservice/rest/server.php?wstoken={$token}&moodlewsrestformat=json&wsfunction={$function}";
+
+$curl = new \curl;
+$response = $curl->post($serverurl, $parametersarray);
+$jsonresult = json_decode($response, true);
+
+
+//Check what unity needs and send it back to Unity
+switch ($requestedinfo) {
+    case 'userid':
+        print_r(current($jsonresult)[0]['id']);
+        break;
     
-/// REST CALL
-$serverurl = $CFG->wwwroot . '/webservice/rest/server.php'. '?wstoken=' . $token .  '&moodlewsrestformat=json' .  '&wsfunction='. $function;
-
-$curl = new curl;
-$response = $curl->post($serverurl , $parametersArray);
-$jsonResult = json_decode($response, true);
-
-
-//what we need to send back to Unity
-switch ($requestedInfo){
-    case "userid":
-        print_r(current($jsonResult)[0]['id']);
+    case 'mail':
+        print_r(current($jsonresult)[0]['email']);
         break;
-    case "mail":
-        print_r(current($jsonResult)[0]['email']);
-        break;
+    
     default:
-        print_r($jsonResult);
+        print_r($jsonresult);
         break;
 }
-
-

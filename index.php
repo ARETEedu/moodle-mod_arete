@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,18 +16,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
- *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once('../../config.php');
- 
-$id = required_param('id', PARAM_INT);           // Course ID
- 
+
+$id = required_param('id', PARAM_INT);  // Course ID
 // Ensure that the course specified is valid
-if (!$course = $DB->get_record('course', array('id'=> $id))) {
+if (!$course = $DB->get_record('course', array('id' => $id))) {
     print_error(get_string('incorrectcourseid', 'arete'));
 }

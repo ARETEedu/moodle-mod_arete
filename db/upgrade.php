@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,13 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * This file keeps track of upgrades to the arete module
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_arete_upgrade($oldversion) {
@@ -30,19 +30,15 @@ function xmldb_arete_upgrade($oldversion) {
     $dbman = $DB->get_manager();
     // Automatically generated Moodle v3.5.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.6.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.7.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.8.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.9.0 release upgrade line.
     // Put any upgrade step following this.
-    
+
     if ($oldversion < 2021112500) {
         // Define field title to be added to arete_allarlems.
         $table = new xmldb_table('arete_allarlems');
@@ -55,7 +51,7 @@ function xmldb_arete_upgrade($oldversion) {
         // arete_allarlems savepoint reached.
         upgrade_mod_savepoint(true, 2021112500, 'arete');
     }
-    
+
     // Automatically generated Moodle v3.10.0 release upgrade line.
     // Put any upgrade step following this.
     return true;

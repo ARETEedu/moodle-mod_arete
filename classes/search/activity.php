@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,13 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Making more arete be included in the Moodle search
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 namespace mod_arete\search;
 
@@ -29,10 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Search area for mod_arete activities.
- *
- * @package    mod_arete
- * @copyright  2021 OU
- * @license    MIT
  */
 class activity extends \core_search\base_activity {
 
@@ -44,4 +40,5 @@ class activity extends \core_search\base_activity {
     public function uses_file_indexing() {
         return true;
     }
+
 }

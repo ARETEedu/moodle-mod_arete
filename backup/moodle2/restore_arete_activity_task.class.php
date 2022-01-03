@@ -15,27 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
- *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once($CFG->dirroot . '/mod/arete/backup/moodle2/restore_arete_stepslib.php');
-class restore_arete_activity_task extends restore_activity_task {
-    
-    
-    
-    /**
- * wiki restore task that provides all the settings and steps to perform one
+
+/**
+ * arete restore task that provides all the settings and steps to perform one
  * complete restore of the activity
  */
+class restore_arete_activity_task extends restore_activity_task {
+
+    /**
+     * wiki restore task that provides all the settings and steps to perform one
+     * complete restore of the activity
+     */
     protected function define_my_settings() {
         // No particular settings for this activity
     }
-    
-    
+
     /**
      * Define (add) particular steps this activity can have
      */
@@ -43,9 +43,8 @@ class restore_arete_activity_task extends restore_activity_task {
         // Choice only has one structure step
         $this->add_step(new restore_arete_activity_structure_step('arete_structure', 'arete.xml'));
     }
-    
-    
-     /**
+
+    /**
      * Define the contents in the activity that must be
      * processed by the link decoder
      */
@@ -54,9 +53,8 @@ class restore_arete_activity_task extends restore_activity_task {
         $contents[] = new restore_decode_content('arete', array('intro'), 'arete');
         return $contents;
     }
-    
-    
-     /**
+
+    /**
      * Define the decoding rules for links belonging
      * to the activity to be executed by the link decoder
      */
@@ -65,4 +63,5 @@ class restore_arete_activity_task extends restore_activity_task {
         $rules[] = new restore_decode_rule('ARETEVIEWBYID', '/mod/arete/view.php?id=$1', 'course_module');
         return $rules;
     }
+
 }

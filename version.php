@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,15 +16,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Code fragment to define the version of arete
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021112600; // The current module version (Date: YYYYMMDDXX)
+$plugin->version = 2022010300; // The current module version (Date: YYYYMMDDXX)
 $plugin->requires = 2015111000; // Requires this Moodle version
 $plugin->component = 'mod_arete'; // Full name of the plugin (used for diagnostics)

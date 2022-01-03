@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,109 +16,104 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Saving the changes on the main table (privacy, assignment and deleting of the ARLEMs)
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+namespace mod_arete;
+
+use stdClass,
+    context_course;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once( "$CFG->dirroot/mod/arete/classes/filemanager.php");
+require_once( "$CFG->dirroot/mod/arete/classes/utilities.php");
 
 defined('MOODLE_INTERNAL') || die;
 
-global $DB, $USER,$COURSE;
+global $DB, $USER, $COURSE;
 
-$returnurl = filter_input(INPUT_POST, 'returnurl' );
-$areteid = filter_input(INPUT_POST, 'moduleid' );
-$arlemid = filter_input(INPUT_POST, 'arlem' );
+$returnurl = filter_input(INPUT_POST, 'returnurl');
+$areteid = filter_input(INPUT_POST, 'moduleid');
+$arlemid = filter_input(INPUT_POST, 'arlem');
 
 
 //assign the activty
-$update_record = new stdClass();
-$update_record-> id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));
-$update_record-> areteid = $areteid;
-$update_record-> arlemid =  $arlemid;
-$update_record-> teacherid =  $USER->id;
-$update_record->timecreated = time();
+$updaterecord = new stdClass();
+$updaterecord->id = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
+$updaterecord->areteid = $areteid;
+$updaterecord->arlemid = $arlemid;
+$updaterecord->teacherid = $USER->id;
+$updaterecord->timecreated = time();
 
-if(isset($areteid) && isset($arlemid)){
-    $DB->update_record('arete_arlem', $update_record);
-    
+if (isset($areteid) && isset($arlemid)) {
+    $DB->update_record('arete_arlem', $updaterecord);
+
     //Get the assigned ARLEM
-    $ARLEM = $DB->get_record('arete_allarlems', array('fileid' => $arlemid));
-
+    $arlem = $DB->get_record('arete_allarlems', array('fileid' => $arlemid));
 }
 
-$moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid ));
+$moduleid = $DB->get_field('arete_arlem', 'id', array('areteid' => $areteid));
 
-//if the record  of this activity was deleted on arete_arlem create it again
-if($moduleid == null && isset($areteid) && isset($arlemid))
-{
+//If the record  of this activity was deleted on arete_arlem create it again
+if ($moduleid == null && isset($areteid) && isset($arlemid)) {
     $item = new stdClass();
     $item->areteid = $areteid;
     $item->timecreated = time();
-    $item-> teacherid =  $USER->id;
+    $item->teacherid = $USER->id;
     $item->arlemid = $arlemid;
     $DB->insert_record("arete_arlem", $item);
 }
 
 
 
-///update the public privacy
-//course context
+//Update the public privacy
+//Course context
 $context = context_course::instance($COURSE->id);
 
-if(isset($_POST['publicarlem'])){    
+if (isset($_POST['publicarlem'])) {
 
-  // the value (publicarlem) is passed in hidden input's key, therefore
-  // the value of the input itself is irrelevant ($dummy)
-    foreach( $_POST['publicarlem'] as $value => $dummy){
+    // The value (publicarlem) is passed in hidden input's key, therefore
+    // The value of the input itself is irrelevant ($dummy)
+    foreach ($_POST['publicarlem'] as $value => $dummy) {
 
-        list($id ,$filename, $itemid) = explode('(,)', $value);
+        list($id, $filename, $itemid) = explode('(,)', $value);
 
 
-        //check if it is not deleted at the same edit session
-        if(is_arlem_exist($itemid)){
-            
-            if(isset($_POST['publicarlemchecked'][$value]))
-            {
-                updateArlemObject($filename,  $itemid, array('upublic' => 1));
-            }
-            else{
+        //Check if it is not deleted at the same edit session
+        if (mod_arete_is_arlem_exist($itemid)) {
 
-                updateArlemObject($filename, $itemid, array('upublic' => 0));
-            }
-         
-            
-            //make the assigned ARLEM become public
-            if(isset($ARLEM)){
-               updateArlemObject($ARLEM->filename,  $ARLEM->itemid, array('upublic' => 1));
+            if (isset($_POST['publicarlemchecked'][$value])) {
+                mod_arete_update_arlem_object($filename, $itemid, array('upublic' => 1));
+            } else {
+
+                mod_arete_update_arlem_object($filename, $itemid, array('upublic' => 0));
             }
 
+            //Make the assigned ARLEM become public
+            if (isset($arlem)) {
+                mod_arete_update_arlem_object($arlem->filename, $arlem->itemid, array('upublic' => 1));
+            }
         }
-
     }
-
 }
 
 
-//deleted the arlems which has checkbox checked
-if(isset($_POST['deletearlem'])){
-   foreach ($_POST['deletearlem'] as $arlem) {
-       
-        list($id ,$filename, $itemid) = explode('(,)', $arlem);
+//Deleted the arlems which has checkbox checked
+if (isset($_POST['deletearlem'])) {
+    foreach ($_POST['deletearlem'] as $arlem) {
 
-        if(is_arlem_exist($itemid)){
-                deletePluginArlem($filename, $itemid);
+        list($id, $filename, $itemid) = explode('(,)', $arlem);
+
+        if (mod_arete_is_arlem_exist($itemid)) {
+            mod_arete_delete_arlem_from_plugin($filename, $itemid);
         }
-
-    } 
+    }
 }
 
 
-
-//redirect
+//Redirect
 redirect($returnurl, array());

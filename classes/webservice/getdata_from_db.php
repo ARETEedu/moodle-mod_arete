@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,16 +16,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Get the data needed by MirageXR from database
+ * and send it to the app. This file can be
+ * used to to delete or update an ARLEM file too
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
+namespace mod_arete\webservices;
+
+require_once(dirname(__FILE__) . '/../../../../config.php');
+require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
+require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 
 $request = filter_input(INPUT_POST, 'request');
 $itemid = filter_input(INPUT_POST, 'itemid');
@@ -32,271 +37,279 @@ $sessionid = filter_input(INPUT_POST, 'sessionid');
 $userid = filter_input(INPUT_POST, 'userid');
 $token = filter_input(INPUT_POST, 'token');
 
-//what we need to send back to Unity
-switch ($request){
-    case "arlemlist":
+//Check the request and do what needs be done
+switch ($request) {
+    case 'arlemlist':
         get_arlem_list();
         break;
-    case "deleteArlem":
+    
+    case 'deleteArlem':
         delete_arlem();
         break;
-    case "updateViews":
+    
+    case 'updateViews':
         update_views();
         break;
+    
     default:
+        //Will be check on the app, therefore needs to be hardcoded
         print_r('Error: request is NULL');
         break;
 }
 
-
-
 /**
- * Get  ARLEMs from all_arlems table
- * 
+ * Get the ARLEMs list from all_arlems table
+ * @global object $DB Moodle database object
+ * @global int $userid The user id
+ * @global string $token The user token
+ * @return array A JSON array
  */
-function get_arlem_list(){
+function get_arlem_list() {
 
-    global $DB,$userid,$token;
+    global $DB, $userid, $token;
 
 
-    if(isset($userid) && isset($token)){
+    if (isset($userid) && isset($token)) {
 
         $params = [1, $userid];
         //All pulblic and user's ARLEMs
-        $unsorted_arlems =  $DB->get_records_select('arete_allarlems', ' upublic = ? OR userid = ? ' , $params, 'timecreated DESC');  //only public and for the user
+        $sql = ' upublic = ? OR userid = ? ';
+        $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
 
-        //the moudules that the user enrolled to their activitie
-        $USER_moduleIDs = get_user_arete_modules_ids();
+        //The moudules that the user enrolled to their activitie
+        $usermoduleids = get_user_arete_modules_ids();
 
-        //if the user is enrolled atleast to one activity which contains arete module
-        if(!empty($USER_moduleIDs)){
+        //If the user is enrolled atleast to one activity which contains arete module
+        if (!empty($usermoduleids)) {
             //Sort the list by assigned courses
-            $arlems = sorted_arlemList_by_user_assigned($unsorted_arlems, $USER_moduleIDs);
-        }else{
-            $arlems = $unsorted_arlems;
+            $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
+        } else {
+            $arlems = $unsortedarlems;
         }
 
-        //add author name to ARLEM file
+        //Add author name to ARLEM file
         foreach ($arlems as $arlem) {
             $arlem->author = find_author($arlem);
         }
 
-        print_r(json_encode($arlems));   
+        print_r(json_encode($arlems));
         return;
-
     }
 
-    $arlems =  $DB->get_records('arete_allarlems' , array('upublic' => 1 ), 'timecreated DESC');  //only public and for the user
+    //Get only the public ARLEMs
+    $arlems = $DB->get_records('arete_allarlems', array('upublic' => 1), 'timecreated DESC');
     //
-    //add author name to ARLEM file
+    //Adding author name to the ARLEM object
     foreach ($arlems as $arlem) {
         $arlem->author = find_author($arlem);
     }
 
-    print_r(json_encode($arlems));   
+    print_r(json_encode($arlems));
 }
 
-
-
 /**
- * parse arete modules of a single course
- * 
- * @param course id
- * 
- * @return An array with module instance id of the course
+ * Parse arete modules of a single course
+ * @global object $CFG The Moodle config object
+ * @global string $token The user token
+ * @param int $courseID The course id
+ * @return array An array with module instance id of the course
  */
-function user_courses_contains_arete($courseID){
+function user_courses_contains_arete($courseID) {
 
-global $CFG,$token;
+    global $CFG, $token;
 
-$response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_course_get_contents', 'courseid' => $courseID ) );
+    $params = array(
+        'wstoken' => $token,
+        'moodlewsrestformat' => 'json',
+        'wsfunction' => 'core_course_get_contents',
+        'courseid' => $courseID
+    );
+    $response = mod_arete_httpPost("{$CFG->wwwroot}/webservice/rest/server.php", $params);
 
-$arete_modules = array();
-foreach (json_decode($response) as $items) {
+    $aretemodules = array();
+    foreach (json_decode($response) as $items) {
 
-    $modules = $items->modules;
+        $modules = $items->modules;
 
-    foreach ($modules as $mod) {
-        if(strcmp($mod->modname , get_string('modname', 'arete')) === 0 ){
-            $arete_modules[] = $mod;
+        foreach ($modules as $mod) {
+            if (strcmp($mod->modname, get_string('modname', 'arete')) === 0) {
+                $aretemodules[] = $mod;
+            }
         }
     }
 
+    return $aretemodules;
 }
-
-return $arete_modules;
-
-}
-
 
 /**
  * Get the courses which the user is enrolled to
  * 
+ * @global object $CFG The Moodle config object
+ * @global string $token The user token
+ * @global int $userid The user id
  * @return An array with the arete modules ids of courses which the user is enrolled to
  */
-function get_user_arete_modules_ids(){
+function get_user_arete_modules_ids() {
 
-    global $CFG,$token,$userid;
+    global $CFG, $token, $userid;
 
-    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_enrol_get_users_courses', 'userid' => $userid ) );
+    $params = array(
+        'wstoken' => $token,
+        'moodlewsrestformat' => 'json',
+        'wsfunction' => 'core_enrol_get_users_courses',
+        'userid' => $userid
+    );
+    $response = mod_arete_httpPost("{$CFG->wwwroot}/webservice/rest/server.php" , $params);
 
-    $USER_moduleIDs = array();
+    $usermoduleids = array();
 
     foreach (json_decode($response) as $course) {
-        $arete_modules = user_courses_contains_arete($course->id);
-        foreach ($arete_modules as $arete) {
-            $USER_moduleIDs[] = $arete->instance;
+        $aretemodules = user_courses_contains_arete($course->id);
+        foreach ($aretemodules as $arete) {
+            $usermoduleids[] = $arete->instance;
         }
     }
 
-    return $USER_moduleIDs;
-
+    return $usermoduleids;
 }
-
-
 
 /**
  * Bring the ARLEMs which are assigned to logged in user on top of the list
  * 
- * @param $arlemList an unsorted ARLEM list
- * @param $user_arete_list list of arete ids which are assigned to the courses which user is enrolled to
- * @return Sorted ARLEM list with ARLEMS of user enrolled courses are on top
+ * @global object $DB Moodle database object
+ * @param array $arlemList an unsorted ARLEM list
+ * @param array $user_arete_list list of arete ids which are assigned to the courses which user is enrolled to
+ * @return array Sorted ARLEM list with ARLEMS of user enrolled courses are on top
  */
-function sorted_arlemList_by_user_assigned($arlemList,$user_arete_list)
-{
+function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
     global $DB;
 
-    //get arete_arlems which user is enrolled to its areteid
-    $arete_arlem_list = $DB->get_records_select('arete_arlem', 'areteid IN ( ? )'  , array(implode(',', $user_arete_list) ));
+    //Get arete_arlems which user is enrolled to its areteid
+    $sql = 'areteid IN ( ? )';
+    $aretearlemlist = $DB->get_records_select('arete_arlem', $sql, array(implode(',', $user_arete_list)));
 
-    $temp_arlemList = $arlemList;
-
+    $temparlemList = $arlemList;
 
     if (!empty($arlemList) && !empty($user_arete_list)) {
-        $newArray = array();
+        $newarray = array();
 
         foreach ($arlemList as $arlem) {
 
-            foreach ($arete_arlem_list as $arete_arlem) {
+            foreach ($aretearlemlist as $aretearlem) {
 
-                if($arlem->fileid == $arete_arlem->arlemid){
+                if ($arlem->fileid == $aretearlem->arlemid) {
 
-                    //find and add the deadline 
-                    $areteid_of_this_arlem = $arete_arlem->areteid;
+                    //Find and add the deadline
+                    $areteid_of_this_arlem = $aretearlem->areteid;
                     $arlem->deadline = get_course_deadline_by_arete_id($areteid_of_this_arlem);
 
-                    //add the user enrolled arete at the begging of the list
-                    $newArray[] = $arlem; 
+                    //Add the user enrolled arete at the begging of the list
+                    $newarray[] = $arlem;
 
-                    if(in_array($arlem, $temp_arlemList)){
+                    if (in_array($arlem, $temparlemList)) {
 
-                        $index = array_search($arlem, $temp_arlemList);
-                        unset($temp_arlemList[$index]); //remove this item from arlem list
+                        $index = array_search($arlem, $temparlemList);
+                        unset($temparlemList[$index]); //Remove this item from arlem list
                     }
-
                 }
             }
         }
 
-        $final_list = array();
-        $merged_list = array_merge($newArray, $temp_arlemList);
+        $finallist = array();
+        $mergedlist = array_merge($newarray, $temparlemList);
 
 
-        foreach ($merged_list as $arlem) {
-            //add author name to ARLEM file
+        foreach ($mergedlist as $arlem) {
+            //Add author name to ARLEM file
             $arlem->author = find_author($arlem);
 
-            $final_list[$arlem->id] = $arlem;
+            $finallist[$arlem->id] = $arlem;
         }
-        return $final_list;
+        return $finallist;
     }
 }
 
-
-
 /**
  * Get the deadline of a course which this module is a part of it
- * 
- * @global $areteid the arete module instance id
-
- * @return the deadline date in a specific format
+ * @global object $CFG The Moodle config object
+ * @global string $token The user token
+ * @global object $DB The Moodle database object
+ * @param int $areteid the arete module instance id
+ * @return string the deadline date in a specific format
  */
-function get_course_deadline_by_arete_id($areteid){
+function get_course_deadline_by_arete_id($areteid) {
 
-    global $CFG,$token,$DB;
+    global $CFG, $token, $DB;
 
-    $response = httpPost($CFG->wwwroot . '/webservice/rest/server.php' , array('wstoken' => $token , 'moodlewsrestformat' => 'json', 'wsfunction' => 'core_course_get_course_module_by_instance', 'module' => 'arete' , 'instance' =>  $areteid) );
+    $params = array(
+        'wstoken' => $token,
+        'moodlewsrestformat' => 'json',
+        'wsfunction' => 'core_course_get_course_module_by_instance',
+        'module' => 'arete',
+        'instance' => $areteid
+    );
+    $response = mod_arete_httpPost("{$CFG->wwwroot}/webservice/rest/server.php" , $params);
 
-    $info = json_decode( $response);
+    $info = json_decode($response);
 
     $deadline = $DB->get_field('course', 'enddate', array('id' => $info->cm->course));
 
     return date('d.m.Y H:i ', $deadline);
 }
 
-
-
 /**
- * Get the info of thee ARLEms author
- * 
- * @global $arlem Arlem from allarlem table
- * 
- * @return First name and last name of the author
+ * Get the info of the author of the ARLEM file
+ * @global object $DB The Moodle database object
+ * @param object $arlem An ARLEM object
+ * @return string A string which contains the first name and last name of the author
  */
-function find_author($arlem){
+function find_author($arlem) {
 
     global $DB;
-    //add author name to ARLEM file
+    //Add author name to ARLEM object
     $authoruser = $DB->get_record('user', array('id' => $arlem->userid));
-    return $authoruser->firstname . ' ' .$authoruser->lastname;
-
+    return "{$authoruser->firstname} {$authoruser->lastname}";
 }
 
-
 /**
-* 
-* Delete an arlem file
-* @global type $DB
-* @global string $itemid
-* @global string $sessionid
-*/
-function delete_arlem(){
+ * Delete an arlem file
+ * @global object $DB The Moodle database object
+ * @global int $itemid The id of the ARLEM in arete_allalrems table
+ * @global string $sessionid The activity id
+ */
+function delete_arlem() {
 
-    global $DB,$itemid,$sessionid;
+    global $DB, $itemid, $sessionid;
 
-    if(!isset($sessionid))
-    {
+    if (!isset($sessionid)) {
         $sessionid = '';
     }
 
-    if(!isset($itemid))
-    {
+    if (!isset($itemid)) {
         $itemid = '';
     }
 
-    $filename = $DB -> get_field('arete_allarlems', 'filename' , array('itemid'=> $itemid, 'sessionid' => $sessionid));
+    $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
-    if(isset($itemid) && $filename !== null){
-        deletePluginArlem($filename, $itemid);
-    }
-    else{
+    if (isset($itemid) && $filename !== null) {
+        delete_arlem_from_plugin($filename, $itemid);
+    } else {
+        //The text will be used on the webservice app, therefore it is hardcoded
         echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
     }
-
 }
 
-
-
 /**
- * update views of the arlem every time the activity opens on MirageXR
+ * Update views of the ARLEM every time the activity opens on MirageXR
+ * @global object $DB The Moodle database object
+ * @global int $itemid The id of the ARLEM in arete_allalrems table 
  */
-function update_views(){
+function update_views() {
     global $DB, $itemid;
-    $currentViews = $DB -> get_record('arete_allarlems' , array('itemid'=> $itemid));
+    $currentviews = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
 
-    if($currentViews !== null){
-        $currentViews->views += 1;
-        $DB->update_record('arete_allarlems', $currentViews);
+    if ($currentviews !== null) {
+        $currentviews->views += 1;
+        $DB->update_record('arete_allarlems', $currentviews);
     }
-
 }

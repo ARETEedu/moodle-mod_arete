@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,14 +16,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Insert the rate of a file
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
+namespace mod_arete;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -31,55 +34,56 @@ $itemid = filter_input(INPUT_POST, 'itemid');
 $rating = filter_input(INPUT_POST, 'rating');
 $onstart = filter_input(INPUT_POST, 'onstart');
 
-if($onstart == 1){
-    echo getVotes();
+if ($onstart == 1) {
+    echo get_votes();
     die;
 }
 
 
-if(!isset($userid) || !isset($itemid) || !isset($rating)){
-    echo 'Unable to set your rating record!';
+if (!isset($userid) || !isset($itemid) || !isset($rating)) {
+    echo get_string('unabletosetrating', 'arete');
     exit;
 }
 
 
+$currentrating = $DB->get_record('arete_rating', array('userid' => $userid, 'itemid' => $itemid));
 
-$currentRating = $DB->get_record('arete_rating', array('userid' => $userid , 'itemid' => $itemid));
-
-if($currentRating != null){
-    $currentRating->rating = $rating;
-    $DB->update_record('arete_rating', $currentRating);
-
-}else{
-    $ratingData = new stdClass();
-    $ratingData->userid = $userid;
-    $ratingData->itemid = $itemid;
-    $ratingData->rating = $rating;
-    $ratingData->timecreated = time();
-    $DB->insert_record('arete_rating', $ratingData); 
+if ($currentrating != null) {
+    $currentrating->rating = $rating;
+    $DB->update_record('arete_rating', $currentrating);
+} else {
+    $ratingdata = new stdClass();
+    $ratingdata->userid = $userid;
+    $ratingdata->itemid = $itemid;
+    $ratingdata->rating = $rating;
+    $ratingdata->timecreated = time();
+    $DB->insert_record('arete_rating', $ratingdata);
 }
 
 
-
-//calculate the avrage and update/insert into the allarlem table
+//Calculate the avrage and update/insert into the allarlem table
 $ratings = $DB->get_records('arete_rating', array('itemid' => $itemid));
 $counter = 0;
 foreach ($ratings as $r) {
     $counter += intval($r->rating);
 }
-$avragerate = floor($counter/ count($ratings));
-$arlem_to_update = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
-$arlem_to_update->rate = intval($avragerate);
-$DB->update_record('arete_allarlems', $arlem_to_update);
+$avragerate = floor($counter / count($ratings));
+$arlemtoupdate = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+$arlemtoupdate->rate = intval($avragerate);
+$DB->update_record('arete_allarlems', $arlemtoupdate);
 
-
-//return the number of votes of the activity
-function getVotes(){
+/**
+ * Return the number of votes of the activity
+ * @global object $DB The Moodle database object
+ * @global string $itemid The item id
+ * @return string The total vote number of this file
+ */
+function get_votes() {
     global $DB, $itemid;
     $params = [$itemid, 0];
-    $votes = $DB->get_records_select('arete_rating', 'itemid = ? AND rating <> ?'  , $params, 'timecreated DESC'); 
+    $sql = 'itemid = ? AND rating <> ?';
+    $votes = $DB->get_records_select('arete_rating', $sql, $params, 'timecreated DESC');
     return strval(count($votes));
 }
 
-
-echo getVotes();
+echo get_votes();

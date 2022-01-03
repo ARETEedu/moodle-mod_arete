@@ -15,347 +15,332 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Update the file with the changes which applied to the file on the edit page
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
-require_once($CFG->dirroot.'/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot.'/mod/arete/classes/utilities.php');
+namespace mod_arete;
+
+use context_system,
+    ZipArchive,
+    RecursiveIteratorIterator,
+    RecursiveDirectoryIterator;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once("$CFG->dirroot/mod/arete/classes/filemanager.php");
+require_once("$CFG->dirroot/mod/arete/classes/utilities.php");
 
 defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
-$sessionID = filter_input(INPUT_POST, 'sessionID');
-$pageId = filter_input(INPUT_POST, 'id');
+$sessionid = filter_input(INPUT_POST, 'sessionID');
+$pageid = filter_input(INPUT_POST, 'id');
 $pnum = filter_input(INPUT_POST, 'pnum');
 $sorting = filter_input(INPUT_POST, 'sort');
 $order = filter_input(INPUT_POST, 'order');
-$searchQuery = filter_input(INPUT_POST, 'qword');
-$userDirPath = filter_input(INPUT_POST, 'userDirPath');
+$searchquery = filter_input(INPUT_POST, 'qword');
+$userdirpath = filter_input(INPUT_POST, 'userDirPath');
 
 global $USER;
 
+$activityjson = '';
+$workplacejson = '';
+$numberofupdated = 0;
 
-$activityJSON = '';
-$workplaceJSON = '';
-$numberOfUpdatedFiles = 0;
+$qword = isset($searchquery) && $searchquery != '' ? "&qword=$searchquery" : '';
+$sortingmode = isset($sorting) && $sorting != '' ? "&sort=$sorting" : '';
+$ordermode = isset($order) && $order != '' ? "&order=$order" : '';
 
-$qword = isset($searchQuery) && $searchQuery != '' ? '&qword=' . $searchQuery : '';
-$sortingMode = isset($sorting) && $sorting != '' ? '&sort=' . $sorting : '';
-$orderMode = isset($order) && $order != '' ? '&order=' . $order : '';
-
-//if cancel button is pressed
+//If cancel button is pressed
 if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 
-          //remove temp dir which is used on editing
-          $tempDir = $userDirPath. '/';
-          if(is_dir($tempDir)){
-              deleteDir($tempDir);
-         }
-         
-         //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on' . $sortingMode . $orderMode . $qword);
-         
-         return;
-} 
+    //Remove temp dir which is used on editing
+    $tempdir = "$userdirpath/";
+    if (is_dir($tempdir)) {
+        mod_arete_deleteDir($tempdir);
+    }
 
-$uploaded_file = $_FILES['files']['tmp_name'];
-$lastfile = end($uploaded_file);
+    //Return to the first page
+    redirect("$CFG->wwwroot/mod/arete/view.php?id={$pageid}&pnum={$pnum}&editing=on{$sortingmode}{$ordermode}{$qword}");
 
-//replace user selected files
-if(!empty(array_filter($_FILES['files']['name']))) { 
+    return;
+}
+
+$uploadedfile = $_FILES['files']['tmp_name'];
+$lastfile = end($uploadedfile);
+
+//Replace user selected files
+if (!empty(array_filter($_FILES['files']['name']))) {
 
     $sesskey = filter_input(INPUT_POST, 'sesskey');
-    if(!isset($sesskey) || $sesskey !== sesskey()){
+    if (!isset($sesskey) || $sesskey !== sesskey()) {
         echo get_string('accessdenied', 'arete');
         die;
     }
-    
-    // Loop through each file in files[] array 
-    foreach ($uploaded_file as $key => $value) { 
 
-        $file_tmpname = $_FILES['files']['tmp_name'][$key]; 
-        $file_name = $_FILES['files']['name'][$key]; 
-        $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
+    // Loop through each file in files[] array
+    foreach ($uploadedfile as $key => $value) {
 
-        $result = replace_file($userDirPath, $file_name, $file_ext, $file_tmpname , $lastfile == $value);
+        $filetempname = $_FILES['files']['tmp_name'][$key];
+        $filename = $_FILES['files']['name'][$key];
+        $fileextention = pathinfo($filename, PATHINFO_EXTENSION);
+
+        $result = replace_file($userdirpath, $filename, $fileextention, $filetempname, $lastfile == $value);
     }
 }
 
 
-///replace the new json file after editing in json validator
-$activityJson_will_updated_by_user = in_array( $sessionID . '-activity.json' , array_filter($_FILES['files']['name']));
-$workplaceJson_will_updated_by_user = in_array( $sessionID . '-workplace.json' , array_filter($_FILES['files']['name']));
+//Replace the new json file after editing in json validator
+$userupdatesactivity = in_array($sessionid . '-activity.json', array_filter($_FILES['files']['name']));
+$userupdatesworkplace = in_array($sessionid . '-workplace.json', array_filter($_FILES['files']['name']));
 
-//replcace activity json if user does not select it manually to update
-if(!$activityJson_will_updated_by_user){
-    replace_file($userDirPath, $sessionID . '-activity' , 'json', $sessionID . '-activity.json' , $workplaceJson_will_updated_by_user ? false : true);
+//Replcace activity json if user does not select it manually to update
+if (!$userupdatesactivity) {
+    replace_file($userdirpath, "$sessionid-activity", 'json', "$sessionid-activity.json", $userupdatesworkplace ? false : true);
 }
-//replcace workplace json if user does not select it manually to update
-if( !$workplaceJson_will_updated_by_user){
-    replace_file($userDirPath, $sessionID . '-workplace' , 'json', $sessionID . '-workplace.json' , true);
+//Replcace workplace json if user does not select it manually to update
+if (!$userupdatesworkplace) {
+    replace_file($userdirpath, "$sessionid-workplace", 'json', "$sessionid-workplace.json", true);
 }
-
-///
-
 
 /**
- * replace old files with new files in temp folder before zipping them a
- * @global type $DB
- * @global type $itemid
- * @global type $activityJSON
- * @global type $workplaceJSON
- * @global int $numberOfUpdatedFiles
- * @param type $dir
- * @param type $file_name
- * @param type $file_ext
- * @param type $file_tmpname
- * @param type $mainDir
- * @return type
+ * Replace old files with new files in temp folder before zipping them a
+ * @global object $DB The Moodle database object
+ * @global int $itemid The item id
+ * @global string $activityjson The activity JSON string
+ * @global string $workplacejson The workplace JSON string
+ * @global int $numberofupdated How many files are modified
+ * @param string $dir The directory path which is created in temp folder
+ * @param string $filename The file name
+ * @param string $fileextention The file extension
+ * @param string $filetempname The file temp name
+ * @param string $mainDir The root folder path
  */
-function replace_file($dir, $file_name, $file_ext, $file_tmpname, $is_lastFile = false){
-        
-    global  $DB,$itemid, $numberOfUpdatedFiles,$userDirPath;
-    
-        $ffs = scandir($dir);
+function replace_file($dir, $filename, $fileextention, $filetempname, $is_lastFile = false) {
 
-            unset($ffs[array_search('.', $ffs, true)]);
-            unset($ffs[array_search('..', $ffs, true)]);
+    global $DB, $itemid, $numberofupdated, $userdirpath;
 
-            // prevent empty ordered elements
-            if (count($ffs) < 1){
-               return; 
-            }
-            
-            //replace files with same name and extension
-            foreach($ffs as $ff){
+    $ffs = scandir($dir);
 
-                //thumbnail file can be uploaded even if it not exist already
-                if(!in_array('thumbnail.jpg', $ffs) && $file_name == "thumbnail.jpg"){
-                    move_uploaded_file($file_tmpname, $userDirPath . '/thumbnail.jpg' );
-                    $numberOfUpdatedFiles ++;
-                
-                //other selected file need to have a similar file in the zip file to be replaced
-                }else if($file_name == $ff && pathinfo($ff, PATHINFO_EXTENSION) ==  $file_ext){
-                    move_uploaded_file($file_tmpname, $dir. '/' . $ff);
+    unset($ffs[array_search('.', $ffs, true)]);
+    unset($ffs[array_search('..', $ffs, true)]);
 
-                    $numberOfUpdatedFiles ++;
-                }
-
-                //include all files in subfolders
-                else if(is_dir($dir.'/'.$ff)){
-                    replace_file($dir.'/'.$ff, $file_name, $file_ext, $file_tmpname);
-                }
-            }
-            
-            //only once at the end. create zip file after all file are replaced
-            if($is_lastFile == true){
-               $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
-                zipFiles($file); 
-            }
-
+    // Prevent empty ordered elements
+    if (count($ffs) < 1) {
+        return;
     }
 
-    
+    //Replace files with same name and extension
+    foreach ($ffs as $ff) {
+
+        //Thumbnail file can be uploaded even if it not exist already
+        if (!in_array('thumbnail.jpg', $ffs) && $filename == "thumbnail.jpg") {
+            move_uploaded_file($filetempname, "$userdirpath/thumbnail.jpg");
+            $numberofupdated++;
+
+            //Other selected file need to have a similar file in the zip file to be replaced
+        } else if ($filename == $ff && pathinfo($ff, PATHINFO_EXTENSION) == $fileextention) {
+            move_uploaded_file($filetempname, "$dir/$ff");
+
+            $numberofupdated++;
+        }
+
+        //Include all files in subfolders
+        else if (is_dir("$dir/$ff")) {
+            replace_file("$dir/$ff", $filename, $fileextention, $filetempname);
+        }
+    }
+
+    //Only once at the end. create zip file after all file are replaced
+    if ($is_lastFile == true) {
+        $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+        zipFiles($file);
+    }
+}
+
 /**
  * Create the zip file for this ARLEM file and replace it in file system
- * @global type $userDirPath the user folder inside temp folder where all files including the new files are located there
- * @param type $arlem ARLEM object (from all_arlem table)
- */    
-    function zipFiles($arlem)
-    {
-        global $userDirPath,$sessionID ,$activityJSON, $workplaceJSON;
-        // Get real path for our folder
-        $rootPath = $userDirPath ;
+ * @global string $userdirpath The path of the user directory which is created in temp folder
+ * @global string $sessionid The activity id (sessionid in allalrems table)
+ * @global string $activityjson The activity JSON string
+ * @global string $workplacejson The workplace JSON string
+ * @param object $arlem The ARLEM object
+ */
+function zipFiles($arlem) {
+    global $userdirpath, $sessionid, $activityjson, $workplacejson;
+    // Get real path for our folder
+    $rootpath = $userdirpath;
 
+    //Get JSON data from files
+    $activityjson = file_get_contents("$userdirpath/$sessionid-activity.json", FILE_USE_INCLUDE_PATH);
+    $workplacejson = file_get_contents("$userdirpath/$sessionid-workplace.json", FILE_USE_INCLUDE_PATH);
 
-        //get JSON data from files
-        $activityJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-activity.json' , FILE_USE_INCLUDE_PATH);
-        $workplaceJSON = file_get_contents ($userDirPath . '/' . $sessionID . '-workplace.json', FILE_USE_INCLUDE_PATH);
-        
-        $newTitle = json_decode($activityJSON)->name;
-        
-        //Edit $sessionID if filename needs to be changed
-        $newFileName = $sessionID . '.zip';
-        
-        // Initialize archive object
-        $zip = new ZipArchive();
-        $zip->open($rootPath . '/' . $newFileName , ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    $newtitle = json_decode($activityjson)->name;
 
-        // Create recursive directory iterator
-        /** @var SplFileInfo[] $files */
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($rootPath),
+    //Edit $sessionid if filename needs to be changed
+    $newfilename = "$sessionid.zip";
+
+    // Initialize archive object
+    $zip = new ZipArchive();
+    $zip->open("$rootpath/$newfilename", ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    // Create recursive directory iterator
+    $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($rootpath),
             RecursiveIteratorIterator::LEAVES_ONLY
-        );
+    );
 
 
-        foreach ($files as $name => $file)
-        {
-            $path_parts = pathinfo($name);
-            $filename = $path_parts['basename'];
+    foreach ($files as $name => $file) {
+        $pathparts = pathinfo($name);
+        $filename = $pathparts['basename'];
 
-            // Skip directories (they would be added automatically) and the zipfile itself
-            if (!$file->isDir() && $filename != $newFileName)
-            {
-                // Get real and relative path for current file
-                $filePath = $file->getRealPath();
-                $relativePath = substr($filePath, strlen($rootPath) + 1);
+        // Skip directories (they would be added automatically) and the zipfile itself
+        if (!$file->isDir() && $filename != $newfilename) {
+            // Get real and relative path for current file
+            $filepath = $file->getRealPath();
+            $relativepath = substr($filepath, strlen($rootpath) + 1);
 
-                // Add current file to archive
-                $zip->addFile($filePath, $relativePath);
+            // Add current file to archive
+            $zip->addFile($filepath, $relativepath);
 
-                //update thumbnail
-                if($filename === 'thumbnail.jpg' ){
-                    updateThumbnail($filePath);  
-                }
+            //update thumbnail
+            if ($filename === 'thumbnail.jpg') {
+                update_thumbnail($filepath);
             }
         }
-        
-        //add JSON files to the new zip file
-        $zip->addFile($userDirPath . '/' . $sessionID . '-activity.json',  $sessionID . '-activity.json');
-        $zip->addFile($userDirPath . '/' . $sessionID . '-workplace.json', $sessionID . '-workplace.json');
-
-        // Zip archive will be created only after closing object
-        $zip->close();
-
-        upload_new_zip($rootPath .'/' . $newFileName, $arlem->filename , $newFileName, $newTitle);
     }
-    
-    
-    /**
-     * Upload the new zip file into the file system
-     * @global type $itemid
-     * @global type $DB
-     * @global type $pageId
-     * @global type $pnum
-     * @global type $CFG
-     * @global type $userDirPath
-     * @global string $activityJSON
-     * @global string $workplaceJSON
-     * @global int $numberOfUpdatedFiles
-     * @global type $sortingMode
-     * @global type $orderMode
-     * @global type $qword
-     * @param type $filepath
-     * @param type $filename
-     */
-    function upload_new_zip($filepath, $oldFileName, $newFileName, $newTitle){
 
-        global $itemid ,$DB,$pageId ,$pnum, $CFG, $userDirPath,$activityJSON,$workplaceJSON,$numberOfUpdatedFiles;
-      
-        
-         //get the file which need to be updated
-         $existingArlem = getArlemByName($oldFileName, $itemid);
-         $oldfileid = $existingArlem->get_id();
-         
-         //use the same date if file exist
-         if(isset($existingArlem)){
-             
-             $Date = $existingArlem->get_timecreated();
-             $existingArlem->delete(); //delete the old file
-         }else{
-             $Date = time();
-         }
+    //add JSON files to the new zip file
+    $zip->addFile("$userdirpath/$sessionid-activity.json", "$sessionid-activity.json");
+    $zip->addFile("$userdirpath/$sessionid-workplace.json", "$sessionid-workplace.json");
 
-         //add the updated file to the file system
-         $newArlem =  upload_custom_file($filepath, $newFileName, $itemid, $Date); 
-         
-         //the new file id
-         $newArlemID = $newArlem->get_id();
-                
+    // Zip archive will be created only after closing object
+    $zip->close();
 
-         ///update the record of the file in allarlems table
-         //the common records
-         $parameters = array(
-            'fileid' => $newArlemID,
-            'timecreated' => $Date,
-            'filesize' => $newArlem->get_filesize(),
-            'title' => $newTitle
-         );
-         
-         //update activity_json if updated
-         if($activityJSON !== '')
-         {
-             $parameters += array('activity_json' => $activityJSON);
-         }
-         
-         //update workplace_json if updated
-         if($workplaceJSON !== '')
-         {
-             $parameters += array('workplace_json' => $workplaceJSON);
-         }
-         
-         //get the 
-         $arlem_data = $DB->get_records('arete_allarlems', array('itemid' => $itemid ));
-                  
-         //update timemodified only if at least one file is updated or json files are edited
-         if(isset($arlem_data['activity_json']) && isset($arlem_data['workplace_json'])){
-            if($numberOfUpdatedFiles != 0 || $arlem_data['activity_json']  != $activityJSON ||  $arlem_data['workplace_json']  != $workplaceJSON){
-              $parameters += array('timemodified' => time());
-            }
-         }
+    upload_new_zip("$rootpath/$newfilename", $arlem->filename, $newfilename, $newtitle);
+}
 
-         //update the file name
-        $parameters += array('filename' => $newFileName);
-                       
-         //update the table now
-         updateArlemObject($oldFileName , $itemid, $parameters);
-         ///
+/**
+ * Upload the new zip file into the file system
+ * @global int $itemid The itemid
+ * @global object $DB The Moodle database object
+ * @global int $pageid The page id
+ * @global int $pnum The the page id in pagination
+ * @global object $CFG The Moodle config file
+ * @global string $userdirpath The user directory path in the temp folder
+ * @global string $activityjson The activity JSON string
+ * @global string $workplacejson The workplace JSON string
+ * @global int $numberofupdated The number of files which are modified
+ * @global string $sortingmode The sorting mode
+ * @global string $ordermode How the sorted column is ordered
+ * @global string $qword The word the user has searched for
+ * @param string $filepath The path of the file
+ * @param string $filename The file name
+ */
+function upload_new_zip($filepath, $oldFileName, $newfilename, $newtitle) {
 
-         //update the record of the file in arete_arlem table
-         $activities_that_use_this_arlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid) );
-         foreach ($activities_that_use_this_arlem as $activity) {
-            $activity->arlemid = $newArlemID; //this is the id of the new file
-            $activity->timecreated = $Date;
-            $DB->update_record('arete_arlem', $activity);
-         }
+    global $itemid, $DB, $pageid, $pnum, $CFG, $userdirpath, $activityjson, $workplacejson, $numberofupdated;
 
-         //remove temp dir which is used on editing
-          $tempDir = $userDirPath. '/';
-          if(is_dir($tempDir)){
-              deleteDir($tempDir);
-         }
-         
-         global $sortingMode, $orderMode, $qword;
-         //return to the first page
-         redirect($CFG->wwwroot .'/mod/arete/view.php?id='. $pageId . '&pnum=' . $pnum . '&editing=on' . $sortingMode . $orderMode . $qword);
+    //Get the file which need to be updated
+    $existingarlem = mod_arete_get_arlem_by_name($oldFileName, $itemid);
+    $oldfileid = $existingarlem->get_id();
 
+    //Use the same date if file exist
+    if (isset($existingarlem)) {
+
+        $date = $existingarlem->get_timecreated();
+        $existingarlem->delete(); //Delete the old file
+    } else {
+        $date = time();
     }
-    
-    
-    /*
-     * Delete the old thumbnail and create a new one
-     * 
-     * @param $filePath path to the new thumbnail
-     */
-    function updateThumbnail($filePath){
-        global $itemid;
-        
-       $context = context_system::instance()->id;
-       $fs = get_file_storage();
-       
-        $file_record = array('contextid'=>$context, 'component'=> get_string('component', 'arete'), 'filearea'=>'thumbnail',
-                'itemid'=> $itemid, 'filepath'=>'/', 'filename'=>'thumbnail.jpg',
-                'timecreated'=>time(), 'timemodified'=>time());
-        
-       $old_thumbnail = $fs->get_file( $context, $file_record['component'], 'thumbnail', $itemid, '/', 'thumbnail.jpg');
 
-        if($old_thumbnail){
-            $old_thumbnail->delete();
+    //Add the updated file to the file system
+    $newarlem = mod_arete_upload_custom_file($filepath, $newfilename, $itemid, $date);
+
+    //The new file id
+    $newarlemid = $newarlem->get_id();
+
+
+    //Update the record of the file in allarlems table
+    //The common records
+    $parameters = array(
+        'fileid' => $newarlemid,
+        'timecreated' => $date,
+        'filesize' => $newarlem->get_filesize(),
+        'title' => $newtitle
+    );
+
+    //Update activity_json if updated
+    if ($activityjson !== '') {
+        $parameters += array('activity_json' => $activityjson);
+    }
+
+    //Update workplace_json if updated
+    if ($workplacejson !== '') {
+        $parameters += array('workplace_json' => $workplacejson);
+    }
+
+    //Get the
+    $arlemdata = $DB->get_records('arete_allarlems', array('itemid' => $itemid));
+
+    //Update timemodified only if at least one file is updated or json files are edited
+    if (isset($arlemdata['activity_json']) && isset($arlemdata['workplace_json'])) {
+        if ($numberofupdated != 0 || $arlemdata['activity_json'] != $activityjson || $arlemdata['workplace_json'] != $workplacejson) {
+            $parameters += array('timemodified' => time());
         }
-        
+    }
 
-        $fs->create_file_from_pathname($file_record, $filePath);
-        
+    //Update the file name
+    $parameters += array('filename' => $newfilename);
+
+    //Update the table now
+    mod_arete_update_arlem_object($oldFileName, $itemid, $parameters);
+
+    //Update the record of the file in arete_arlem table
+    $activitiesusethisarlem = $DB->get_records('arete_arlem', array('arlemid' => $oldfileid));
+    foreach ($activitiesusethisarlem as $activity) {
+        $activity->arlemid = $newarlemid; //This is the id of the new file
+        $activity->timecreated = $date;
+        $DB->update_record('arete_arlem', $activity);
     }
-    
-    
-    
-    function copy_Activity_Workplace_JSON(){
-        
+
+    //Remove temp dir which is used on editing
+    $tempdir = $userdirpath . '/';
+    if (is_dir($tempdir)) {
+        mod_arete_deleteDir($tempdir);
     }
+
+    global $sortingmode, $ordermode, $qword;
+
+    //Return to the first page
+    redirect("$CFG->wwwroot/mod/arete/view.php?id={$pageid}&pnum={$pnum}&editing=on{$sortingmode}{$ordermode}{$qword}");
+}
+
+/*
+ * Delete the old thumbnail and create a new one
+ * @global int $itemid The item id
+ * @param string $filepath The path to the new thumbnail
+ */
+
+function update_thumbnail($filepath) {
+    global $itemid;
+
+    $context = context_system::instance()->id;
+    $fs = get_file_storage();
+
+    $filerecord = array('contextid' => $context, 'component' => get_string('component', 'arete'), 'filearea' => 'thumbnail',
+        'itemid' => $itemid, 'filepath' => '/', 'filename' => 'thumbnail.jpg',
+        'timecreated' => time(), 'timemodified' => time());
+
+    $oldthumbnail = $fs->get_file($context, $filerecord['component'], 'thumbnail', $itemid, '/', 'thumbnail.jpg');
+
+    if ($oldthumbnail) {
+        $oldthumbnail->delete();
+    }
+
+    $fs->create_file_from_pathname($filerecord, $filepath);
+}

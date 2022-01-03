@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of the Augmented Reality Experience plugin (mod_arete) for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,45 +16,47 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Prints a particular instance of Augmented Reality Experience plugin
+ * Getting the rating of a file
  *
  * @package    mod_arete
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__). '/../../../config.php');
+namespace mod_arete;
+
+require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
 $itemid = filter_input(INPUT_POST, 'itemid');
 
 
-if(!isset($itemid)){
-    echo 'Unable to get the rating record!';
+if (!isset($itemid)) {
+    echo get_string('unabletogetrating', 'arete');
     exit;
 }
 
 
 $rating = $DB->get_records('arete_rating', array('itemid' => $itemid));
 
-if(!empty($rating)){
+if (!empty($rating)) {
 
     $counter = 0;
     foreach ($rating as $r) {
         $counter += intval($r->rating);
     }
 
-    $arlemRating = $counter/ count($rating);
-    
+    $arlemrating = $counter / count($rating);
 
-    $ratingObject->avrage = $arlemRating;
-    $ratingObject->votes = count($rating);
-    
-    print_r(json_encode($ratingObject));
-}else{
-    $ratingObject->avrage = 0;
-    $ratingObject->votes = 0;
-    
-    print_r(json_encode($ratingObject));
+
+    $ratingobject->avrage = $arlemrating;
+    $ratingobject->votes = count($rating);
+
+    print_r(json_encode($ratingobject));
+} else {
+    $ratingobject->avrage = 0;
+    $ratingobject->votes = 0;
+
+    print_r(json_encode($ratingobject));
 }
