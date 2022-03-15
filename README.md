@@ -14,3 +14,9 @@ To activate the plugin in Moodle, you will need to:
 5. Increase post_max_size=1024M, memory_limit=-1, and upload_max_filesize=1024M in php.ini on your server. 
 
 If you are the manager of the Moodle site, you need to create your token manually. This is because Moodle for security purposes does not allow to create the manager tokens using web service.
+
+## Localisation Team
+
+* Chinese: Na Li, University College Dublin, Ireland
+* German: Fridolin Wild, Open University, UK
+* Spanish: Ana Domínguez Fanlo, Vicomtech, Spain
