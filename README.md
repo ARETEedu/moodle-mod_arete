@@ -21,3 +21,4 @@ If you are the manager of the Moodle site, you need to create your token manuall
 * German: Fridolin Wild, Open University, UK
 * Spanish: Ana Domínguez Fanlo, Vicomtech, Spain
 * Greek: Georgia Psyrra, University College Dublin, Ireland
+* Thai: Santawat Thanyadit, University of Durham, UK
