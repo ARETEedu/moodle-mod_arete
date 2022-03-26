@@ -16,7 +16,7 @@ To activate the plugin in Moodle, you will need to:
 If you are the manager of the Moodle site, you need to create your token manually. This is because Moodle for security purposes does not allow to create the manager tokens using web service.
 
 ## Localisation Team
-
+* English: Abbas Jafari, Open University, UK / NTNU, Norway
 * Chinese: Na Li, University College Dublin, Ireland
 * German: Fridolin Wild, Open University, UK
 * Spanish: Ana Domínguez Fanlo, Vicomtech, Spain
