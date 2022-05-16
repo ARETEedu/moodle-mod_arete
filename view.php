@@ -28,7 +28,7 @@ use function \mod_arete\output\draw_table_for_students as draw_table_for_student
 use function \mod_arete\output\searchbox as searchbox;
 use function \mod_arete\output\draw_table_for_teachers as draw_table_for_teachers;
 use \mod_arete\output\pagination as pagination;
-use \mod_arete\output\edit_arlem as edit_arlem;
+use \mod_arete\output\edit_arlem_class as edit_arlem_class;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once("$CFG->dirroot/mod/arete/locallib.php");
@@ -163,7 +163,7 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
 //Create the edit page
 if ($pagemode == 'edit') {
 
-    $editarlem = new edit_arlem();
+    $editarlem = new edit_arlem_class();
 } else if ($pagemode == 'user') {
     //show only User arlems
     $arlemslist = search_result(true);
