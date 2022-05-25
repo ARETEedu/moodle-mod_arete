@@ -32,6 +32,7 @@ require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 
 $request = filter_input(INPUT_POST, 'request');
+$requesttype = filter_input(INPUT_POST, 'requesttype');
 $itemid = filter_input(INPUT_POST, 'itemid');
 $sessionid = filter_input(INPUT_POST, 'sessionid');
 $userid = filter_input(INPUT_POST, 'userid');
@@ -66,27 +67,30 @@ switch ($request) {
  */
 function get_arlem_list() {
 
-    global $DB, $userid, $token;
+    global $DB, $userid, $token, $requesttype;
 
+    if ($requesttype === null){
+        $requesttype = 'all';
+    }
+
+    if ($requesttype != 'my_activities_only' &&
+        $requesttype != 'my_courses_only' &&
+        $requesttype != 'all') {
+        throw new moodle_exception('allowed request type is "my_activities_only","my_courses_only","all"');
+    }
 
     if (isset($userid) && isset($token)) {
-
-        $params = [1, $userid];
-        //All pulblic and user's ARLEMs
-        $sql = ' upublic = ? OR userid = ? ';
-        $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
-
-        //The moudules that the user enrolled to their activitie
-        $usermoduleids = get_user_arete_modules_ids();
-
-        //If the user is enrolled atleast to one activity which contains arete module
-        if (!empty($usermoduleids)) {
-            //Sort the list by assigned courses
-            $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
-        } else {
-            $arlems = $unsortedarlems;
+        if ($requesttype == 'all') {
+            $arlems = get_all_arlems($userid, $DB);
         }
 
+        if ($requesttype == 'my_activities_only') {
+            $arlems = get_arlems_from_all_activities($userid, $DB);
+        }
+
+        if ($requesttype == 'my_courses_only') {
+            $arlems = get_arlems_from_all_courses();
+        }
         //Add author name to ARLEM file
         foreach ($arlems as $arlem) {
             $arlem->author = find_author($arlem);
@@ -105,6 +109,68 @@ function get_arlem_list() {
     }
 
     print_r(json_encode($arlems));
+}
+
+/**
+ * @param array $arlems
+ * @return array
+ */
+function get_arlems_from_all_courses(): array
+{
+    $arlems = [];
+    //The moudules that the user enrolled to their activitie
+    $usermoduleids = get_user_arete_modules_ids();
+
+    //If the user is enrolled atleast to one activity which contains arete module
+    if (!empty($usermoduleids)) {
+        //Sort the list by assigned courses
+        $arlems = sorted_arlemList_by_user_assigned($usermoduleids);
+    }
+    return $arlems;
+}
+
+/**
+ * @param $userid
+ * @param \moodle_database $DB
+ * @return array
+ * @throws \dml_exception
+ */
+function get_arlems_from_all_activities($userid, \moodle_database $DB): array
+{
+    $params = [$userid];
+    //All public and user's ARLEMs
+    $sql = 'userid = ? ';
+    $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
+
+    //If the user is enrolled atleast to one activity which contains arete module
+    $arlems = $unsortedarlems;
+    return $arlems;
+}
+
+/**
+ * @param $userid
+ * @param \moodle_database $DB
+ * @return array
+ * @throws \dml_exception
+ */
+function get_all_arlems($userid, \moodle_database $DB): array
+{
+    $params = [1, $userid];
+    //All public and user's ARLEMs
+    $sql = ' upublic = ? OR userid = ? ';
+    $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
+
+    //The moudules that the user enrolled to their activitie
+    $usermoduleids = get_user_arete_modules_ids();
+
+    //If the user is enrolled atleast to one activity which contains arete module
+    if (!empty($usermoduleids)) {
+        //Sort the list by assigned courses
+        $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
+    } else {
+        $arlems = $unsortedarlems;
+    }
+    return  $arlems;
 }
 
 /**
@@ -203,7 +269,7 @@ function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
                     $areteid_of_this_arlem = $aretearlem->areteid;
                     $arlem->deadline = get_course_deadline_by_arete_id($areteid_of_this_arlem);
 
-                    //Add the user enrolled arete at the begging of the list
+                    //Add the user enrolled arete at the start of the list
                     $newarray[] = $arlem;
 
                     if (in_array($arlem, $temparlemList)) {
