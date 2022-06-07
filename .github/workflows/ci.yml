@@ -119,7 +119,7 @@ jobs:
 
       - name: Run the API and Postman's tests
         run: |
-          pushd ../ && pwd && ls && popd && cd tests/postman/ && pwd && ls && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
+          pushd ../ && pwd && ls && popd && pwd && ls && cd tests/postman/ && pwd && ls && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
           kill -9 `lsof -i:5000 -t`
         env:
           CI: true
