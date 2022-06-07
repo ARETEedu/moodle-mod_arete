@@ -119,7 +119,7 @@ jobs:
 
       - name: Run the API and Postman's tests
         run: |
-          pwd && cd tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete.postman_collection.json"
+          pwd && ls && cd tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete.postman_collection.json"
           kill -9 `lsof -i:5000 -t`
         env:
           CI: true
