@@ -69,7 +69,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Newman dependency
-        run: npm install --prefix tests/postman/
+        run: npm install --prefix tests/postman/ newman
 
       - name: PHP Lint
         if: ${{ false }}
