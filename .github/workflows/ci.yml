@@ -33,10 +33,6 @@ jobs:
         php: ['7.3', '7.4', '8.0']
         moodle-branch: ['MOODLE_311_STABLE']
         database: [pgsql, mariadb]
-        moodleUsername: admin
-        moodlePassword: ''
-        moodleEmail: admin@example.com
-
 
     steps:
       - name: Check out repository code
