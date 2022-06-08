@@ -72,7 +72,7 @@ jobs:
 
       - name: Activate REST services
         run : |
-          pushd moodle && sudo moosh -n config-set enablewebservices 1 && sudo moosh -n config-set webserviceprotocols 'rest'
+          pushd moodle && sudo moosh admin-login && sudo moosh -n config-set enablewebservices 1 && sudo moosh -n config-set webserviceprotocols 'rest'
 
       - name: Install Node JS ${{ matrix.node-version }}
         uses: actions/setup-node@v1
