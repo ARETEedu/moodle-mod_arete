@@ -70,6 +70,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install moosh
 
+      - name: Install activate webservices
+        run : |
+          pushd moodle && moosh -n config-set enablewebservices 1 && moosh -n config-set webserviceprotocols 'rest'
+
       - name: Install Node JS ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
