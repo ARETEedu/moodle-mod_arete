@@ -34,7 +34,7 @@ jobs:
         moodle-branch: ['MOODLE_311_STABLE']
         database: [pgsql, mariadb]
         moodleUsername: admin
-        moodlePassword: admin
+        moodlePassword: ''
         moodleEmail: admin@example.com
 
 
