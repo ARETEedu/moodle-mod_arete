@@ -33,6 +33,10 @@ jobs:
         php: ['7.3', '7.4', '8.0']
         moodle-branch: ['MOODLE_311_STABLE']
         database: [pgsql, mariadb]
+        moodleUsername: admin
+        moodlePassword: admin
+        moodleEmail: admin@example.com
+
 
     steps:
       - name: Check out repository code
@@ -70,9 +74,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install moosh
 
-      - name: Activate webservices
+      - name: Activate REST services
         run : |
-          pushd moodle && sudo moosh -n config-set enablewebservices 1 && msudo oosh -n config-set webserviceprotocols 'rest'
+          pushd moodle && sudo moosh -n config-set enablewebservices 1 && sudo moosh -n config-set webserviceprotocols 'rest'
 
       - name: Install Node JS ${{ matrix.node-version }}
         uses: actions/setup-node@v1
