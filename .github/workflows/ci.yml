@@ -117,12 +117,9 @@ jobs:
         if: ${{ false }}
         run: moodle-plugin-ci behat --profile chrome
 
-      - name: Install tree
-        run: sudo apt-get install -y tree
-
       - name: Run the API and Postman's tests
         run: |
-          pushd moodle/mod/arete/ && tree -a && popd && cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
           kill -9 `lsof -i:5000 -t`
         env:
           CI: true
