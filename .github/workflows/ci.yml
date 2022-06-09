@@ -134,6 +134,11 @@ jobs:
         if: ${{ false }}
         run: moodle-plugin-ci behat --profile chrome
 
+      - name: Empty caches
+        run: |
+          cd moodle
+          php admin/cli/purge_caches.php
+
       - name: Run the API and Postman's tests
         run: |
           cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
