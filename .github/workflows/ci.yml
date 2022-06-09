@@ -80,7 +80,7 @@ jobs:
         run: npm install --prefix moodle/mod/arete/tests/postman/ newman
 
       - name: Install Moodle
-        run: cd moodle && sudo -u apache /usr/bin/php admin/cli/install.php --lang=cs
+        run: cd moodle && sudo /usr/bin/php admin/cli/install.php --lang=cs
 
       - name: Activate REST services
         run : |
