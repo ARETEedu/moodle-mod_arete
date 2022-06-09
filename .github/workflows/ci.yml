@@ -65,7 +65,7 @@ jobs:
 
       - name: cat configs
         run : |
-          cat moodle/config.php && cat moodle config-dist.php
+          cat moodle/config.php && cat moodle/config-dist.php
 
       - name: Install moosh
         run : |
