@@ -79,9 +79,11 @@ jobs:
       - name: Install Newman dependency
         run: npm install --prefix moodle/mod/arete/tests/postman/ newman
 
+      - name: Install Moodle
+        run: cd moodle && sudo -u apache /usr/bin/php admin/cli/install.php --lang=cs
+
       - name: Activate REST services
         run : |
-          sleep 40s
           cd moodle/mod/arete
           sudo moosh -u admin -n config-set enablewebservices 1 && sudo moosh -u admin -n config-set webserviceprotocols 'rest'
 
