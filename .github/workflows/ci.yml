@@ -80,12 +80,14 @@ jobs:
         run: npm install --prefix moodle/mod/arete/tests/postman/ newman
 
       - name: Install Moodle
-        run: cd moodle && sudo -u www-data /usr/bin/php admin/cli/install_database.php --lang=cs --adminpass=admin123 --agree-license
+        run: cd moodle && sudo -u www-data /usr/bin/php admin/cli/install_database.php --lang=en --adminpass=admin123 --agree-license
 
       - name: Activate REST services
         run : |
           cd moodle/mod/arete
-          sudo moosh -u admin -n config-set enablewebservices 1 && sudo moosh -u admin -n config-set webserviceprotocols 'rest'
+          sudo moosh -n config-set enablewebservices 1
+          sudo moosh -n config-set webserviceprotocols 'rest'
+          sudo moosh -n role-update-capability user moodle/webservice:createtoken allow 1
 
       - name: PHP Lint
         if: ${{ false }}
