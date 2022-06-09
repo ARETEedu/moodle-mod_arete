@@ -73,7 +73,7 @@ jobs:
       - name: Activate REST services
         run : |
           cd moodle/mod/arete
-          sudo moosh -n config-set enablewebservices 1 && sudo moosh -n config-set webserviceprotocols 'rest'
+          sudo moosh -n -v config-set enablewebservices 1 && sudo moosh -n -v config-set webserviceprotocols 'rest'
 
       - name: Install Node JS ${{ matrix.node-version }}
         uses: actions/setup-node@v1
