@@ -63,11 +63,6 @@ jobs:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
 
-      - name: cat configs
-        run : |
-          cat moodle/config.php
-          cat moodle/config-dist.php
-
       - name: Install moosh
         run : |
           sudo apt-get install software-properties-common 
@@ -77,7 +72,7 @@ jobs:
 
       - name: Activate REST services
         run : |
-          cd moodle
+          cd moodle/mod/arete
           sudo moosh -n config-set enablewebservices 1 && sudo moosh -n config-set webserviceprotocols 'rest'
 
       - name: Install Node JS ${{ matrix.node-version }}
