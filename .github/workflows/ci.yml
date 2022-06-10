@@ -140,6 +140,10 @@ jobs:
           cd moodle
           php admin/cli/purge_caches.php
 
+      - name: IP address
+        run: |
+          ip address
+
       - name: Curl
         run: |
           curl -X GET https://localhost
