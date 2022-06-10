@@ -157,10 +157,13 @@ jobs:
         run: |
           netstat -tulpn
 
+      - name: cat config
+        run: |
+          cd moodle && cat config.php
+
       - name: Curl
         run: |
           curl -X GET http://127.0.0.1/moodle/
-          curl -X GET http://localhost/moodle/
 
       - name: Run the API and Postman's tests
         run: |
