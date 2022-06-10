@@ -163,7 +163,7 @@ jobs:
 
       - name: generate moodle.conf
         run: |
-          sudo cd /etc/apache2/sites-available/ && sudo touch moodle.conf && sudo printf "<VirtualHost *.80>\n ServerName www.example.com\n  ServerAlias *\n  DocumentRoot /home/runner/work/moodle-mod_arete/moodle/\n</VirtualHost>\n" > moodle.conf
+          sudo su && cd /etc/apache2/sites-available/ && touch moodle.conf && sudo printf "<VirtualHost *.80>\n ServerName www.example.com\n  ServerAlias *\n  DocumentRoot /home/runner/work/moodle-mod_arete/moodle/\n</VirtualHost>\n" > moodle.conf
 
       - name: connect apache and moodle
         run: |
