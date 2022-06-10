@@ -6,7 +6,8 @@ jobs:
   test:
     container:
       ports:
-        - 8443:8443
+        - 80:80
+        - 8080:8080
     runs-on: ubuntu-18.04
 
     services:
