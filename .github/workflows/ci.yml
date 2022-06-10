@@ -4,10 +4,10 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-18.04
     container:
       ports:
         - 8443:8443
+    runs-on: ubuntu-18.04
 
     services:
       postgres:
