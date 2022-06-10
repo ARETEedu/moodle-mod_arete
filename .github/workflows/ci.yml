@@ -140,6 +140,10 @@ jobs:
           cd moodle
           php admin/cli/purge_caches.php
 
+      -name: Curl
+        run: |
+          curl -X GET http://localhost/moodle/
+
       - name: Run the API and Postman's tests
         run: |
           cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
