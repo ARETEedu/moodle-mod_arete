@@ -159,8 +159,8 @@ jobs:
 
       - name: Curl
         run: |
-          curl -X GET http://127.0.0.1/moodle
-          curl -X GET http://localhost/moodle
+          curl -X GET http://127.0.0.1/moodle/
+          curl -X GET http://localhost/moodle/
 
       - name: Run the API and Postman's tests
         run: |
