@@ -144,9 +144,13 @@ jobs:
         run: |
           ip address
 
+      - name: Netstat
+        run: |
+          netstat -tulpn
+
       - name: Curl
         run: |
-          curl -X GET http://172.18.0.1:8443/
+          curl -X GET http://172.17.0.1:8443/
 
       - name: Run the API and Postman's tests
         run: |
