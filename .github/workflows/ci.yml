@@ -142,7 +142,7 @@ jobs:
 
       - name: Curl
         run: |
-          curl -X GET http://localhost:8443/moodle/
+          curl -X GET https://localhost
 
       - name: Run the API and Postman's tests
         run: |
