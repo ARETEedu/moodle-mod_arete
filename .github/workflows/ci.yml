@@ -147,8 +147,7 @@ jobs:
 
       - name: restart apache
         run: |
-          sudo systemctl restart apache2
-          sudo systemctl status apache2
+          sudo systemctl restart apache2 && sudo systemctl status apache2
 
       - name: IP address
         run: |
@@ -160,7 +159,8 @@ jobs:
 
       - name: Curl
         run: |
-          curl -X GET http://127.0.0.1:8443/
+          curl -X GET http://127.0.0.1/
+          curl -X GET http://localhost/
 
       - name: Run the API and Postman's tests
         run: |
