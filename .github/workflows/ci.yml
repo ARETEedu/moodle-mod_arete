@@ -161,6 +161,10 @@ jobs:
         run: |
           cd moodle && cat config.php
 
+      - name: sites available
+        run: |
+          sudo ls /etc/apache2/sites-available/
+
       - name: Curl
         run: |
           curl -X GET http://127.0.0.1/moodle/
