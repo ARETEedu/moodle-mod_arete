@@ -140,6 +140,16 @@ jobs:
           cd moodle
           php admin/cli/purge_caches.php
 
+      - name: Is there apache?
+        run: |
+          pushd /etc
+          find . -type f | grep -i apache
+
+      - name: restart apache
+        run: |
+          sudo systemctl restart apache2
+          sudo systemctl status apache2
+
       - name: IP address
         run: |
           ip address
@@ -147,11 +157,6 @@ jobs:
       - name: Netstat
         run: |
           netstat -tulpn
-
-      - name: Is there apache?
-        run: |
-          pushd /etc
-          find . -type f | grep -i apache
 
       - name: Curl
         run: |
