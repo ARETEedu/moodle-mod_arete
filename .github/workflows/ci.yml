@@ -169,13 +169,17 @@ jobs:
         run: |
           sudo a2ensite moodle.conf
 
-      - name: restart apache
+      - name: reload apache
         run: |
-          sudo systemctl restart apache2 && sudo systemctl status apache2
+          sudo systemctl reload apache2 && sudo systemctl status apache2
 
       - name: sites available
         run: |
           sudo ls /etc/apache2/sites-available/
+
+      - name: sites available
+        run: |
+          sudo ls /etc/apache2/sites-enabled/ && sudo cat /etc/apache2/sites-enabled/moodle.conf
 
       - name: cat moodle.conf
         run: |
