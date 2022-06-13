@@ -183,7 +183,7 @@ jobs:
 
       - name: ls moodle folder
         run: |
-          ls /home/runner/work/moodle-mod_arete
+          ls /home/runner/work/moodle-mod_arete/moodle-mod_arete
 
       - name: Curl
         run: |
