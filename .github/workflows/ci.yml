@@ -177,9 +177,9 @@ jobs:
         run: |
           sudo ls /etc/apache2/sites-available/
 
-      - name: sites available
+      - name: sites enabled
         run: |
-          sudo ls /etc/apache2/sites-enabled/
+          sudo ls /etc/apache2/sites-enabled/ && cat /etc/apache2/sites-enabled/moodle.conf
 
       - name: cat moodle.conf
         run: |
