@@ -180,7 +180,6 @@ jobs:
       - name: sites available
         run: |
           sudo ls /etc/apache2/sites-enabled/
-          sudo cat /etc/apache2/sites-enabled/moodle.conf
 
       - name: cat moodle.conf
         run: |
