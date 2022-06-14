@@ -177,6 +177,10 @@ jobs:
         run: |
           sudo ls /etc/apache2/sites-available/
 
+      - name: Is apache config working?
+        run: |
+          apachectl -S
+
       - name: sites enabled
         run: |
           sudo ls /etc/apache2/sites-enabled/ && cat /etc/apache2/sites-enabled/moodle.conf
