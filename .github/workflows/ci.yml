@@ -173,6 +173,12 @@ jobs:
         run: |
           sudo systemctl reload apache2 && sudo systemctl status apache2
 
+      - name: apache php settings
+        run: |
+          sudo a2enmod proxy_fcgi setenvif
+          sudo a2enconf php${{ matrix.php }}-fpm
+          sudo service apache2 restart
+
       - name: sites available
         run: |
           sudo ls /etc/apache2/sites-available/
