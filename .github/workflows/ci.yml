@@ -163,7 +163,7 @@ jobs:
 
       - name: generate moodle.conf
         run: |
-          cd /etc/apache2/sites-available/ && sudo touch moodle.conf && sudo printf "<VirtualHost *.80>\n ServerName www.example.com\n  ServerAlias *\n  DocumentRoot /home/runner/work/moodle-mod_arete/moodle-mod_arete/\n<Directory "/opt/bitnami/moodle">\n    Options -Indexes +FollowSymLinks -MultiViews\n    AllowOverride All\n    Require all granted\n  </Directory>\n</VirtualHost>\n" | sudo tee moodle.conf
+          cd /etc/apache2/sites-available/ && sudo touch moodle.conf && sudo printf "<VirtualHost *:80>\n ServerName www.example.com\n  ServerAlias *\n  DocumentRoot /home/runner/work/moodle-mod_arete/moodle-mod_arete/\n<Directory "/opt/bitnami/moodle">\n    Options -Indexes +FollowSymLinks -MultiViews\n    AllowOverride All\n    Require all granted\n  </Directory>\n</VirtualHost>\n" | sudo tee moodle.conf
 
       - name: connect apache and moodle
         run: |
