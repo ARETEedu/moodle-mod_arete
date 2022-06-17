@@ -23,3 +23,5 @@ If you are the manager of the Moodle site, you need to create your token manuall
 * Greek: Georgia Psyrra, University College Dublin, Ireland
 * Thai: Santawat Thanyadit, University of Durham, UK
 * Irish: Eleni Mangina, University College Dublin, Ireland
+* French: Fabrice Blin, Singapore
+* Italian: Giuseppe Chiazzese, CNR-ITD, Italy
