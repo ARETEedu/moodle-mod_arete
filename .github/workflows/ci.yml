@@ -199,6 +199,10 @@ jobs:
         run: |
           ls /home/runner/work/moodle-mod_arete/moodle-mod_arete
 
+      - name: Generate test user
+        run: |
+          moosh user-create --password ${{ secrets.testuser_password }} --email me@example.com --digest 2 --city "Milton Keynes" --country UK --institution "Open University" --department "IET" --firstname "first" --lastname last testuser
+
       - name: Curl
         run: |
           curl -X GET http://127.0.0.1/moodle/
