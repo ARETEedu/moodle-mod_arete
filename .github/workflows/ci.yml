@@ -208,7 +208,7 @@ jobs:
       - name: Login using moosh
         run: |
           cd moodle/mod/arete
-          curl -L -s -o /dev/null -k -c "MoodleSession.cookie" https://127.0.0.1:8443/login/index.php&user=testuser&login=${{ secrets.TEST_USER_PASSWORD }} | cat MoodleSession.cookie | grep MoodleSession | awk '{print "MoodleSession:"$NF}'
+          curl -L -s -o /dev/null -k -c "MoodleSession.cookie" https://127.0.0.1/moodle/login/index.php&user=testuser&login=${{ secrets.TEST_USER_PASSWORD }} | cat MoodleSession.cookie | grep MoodleSession | awk '{print "MoodleSession:"$NF}'
 
       - name: Generate token using curl
         run: |
