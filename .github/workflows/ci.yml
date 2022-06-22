@@ -85,9 +85,9 @@ jobs:
       - name: Activate REST services
         run : |
           cd moodle/mod/arete
-          sudo moosh -n config-set enablewebservices 1
-          sudo moosh -n config-set webserviceprotocols 'rest'
-          sudo moosh -n role-update-capability user moodle/webservice:createtoken allow 1
+          sudo -u www-data moosh -n config-set enablewebservices 1
+          sudo -u www-data moosh -n config-set webserviceprotocols 'rest'
+          sudo -u www-data moosh -n role-update-capability user moodle/webservice:createtoken allow 1
 
       - name: PHP Lint
         if: ${{ false }}
@@ -202,7 +202,7 @@ jobs:
       - name: Generate test user
         run: |
           cd moodle/mod/arete
-          moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email me@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser && moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
+          sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email me@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser && sudo -u www-data moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
 
       - name: Login using curl
         run: |
@@ -212,7 +212,7 @@ jobs:
       - name: Generate token using curl
         run: |
           cd moodle/mod/arete
-          curl -X POST -L -k -d 'action=create&_qf__web_service_token_form=1&mform_isexpanded_id_token=1&user=2&service=2&iprestriction=&submitbutton=Save+changes' --cookie '($ moosh user-login testuser)' http://127.0.0.1/moodle/admin/settings.php?section=webservicetoken
+          curl -X POST -L -k -d 'action=create&_qf__web_service_token_form=1&mform_isexpanded_id_token=1&user=2&service=2&iprestriction=&submitbutton=Save+changes' --cookie '($ sudo -u www-data moosh user-login testuser)' http://127.0.0.1/moodle/admin/settings.php?section=webservicetoken
 
       - name: Curl
         run: |
