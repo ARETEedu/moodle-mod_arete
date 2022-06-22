@@ -202,8 +202,7 @@ jobs:
       - name: Generate test user
         run: |
           cd moodle/mod/arete
-          moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email me@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser
-          moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
+          moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email me@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser && moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
 
       - name: Login using curl
         run: |
