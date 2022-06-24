@@ -204,6 +204,10 @@ jobs:
           cd moodle/mod/arete
           sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email me@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser && sudo -u www-data moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
 
+      - name: Does it generate a token using curl?
+        run: |
+          curl http://127.0.0.1/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews
+
       - name: Login using curl
         run: |
           cd moodle/mod/arete
