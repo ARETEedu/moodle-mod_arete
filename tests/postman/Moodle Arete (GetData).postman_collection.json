@@ -75,10 +75,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.test(\"To Check if Value is Null\", function() {",
-					"    var jsonData = pm.response.json();",
-					"    pm.expect(jsonData).not.eq(undefined);",
-					"});"
+					""
 				]
 			}
 		}

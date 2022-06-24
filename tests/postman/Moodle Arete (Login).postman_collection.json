@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a1d25a4-0125-4d1b-ac76-b603401dcdc3",
+		"_postman_id": "8af5fee1-203e-43a2-8f26-3bd94b42c482",
 		"name": "Moodle Arete (Login)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "4275912"
@@ -85,10 +85,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.test(\"To Check if Value is Null\", function() {",
-					"    var jsonData = pm.response.json();",
-					"    pm.expect(jsonData).not.eq(undefined);",
-					"});"
+					""
 				]
 			}
 		}
