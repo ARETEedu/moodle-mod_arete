@@ -212,14 +212,8 @@ jobs:
         run: |
           curl -X GET http://127.0.0.1/moodle/
 
-      - name: Run the API and Postman's tests (Login)
+      - name: Run the API and Postman's tests
         run: |
-          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete (Login).postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
-        env:
-          CI: true
-
-      - name: Run the API and Postman's tests (GetData)
-        run: |
-          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete (GetData).postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete.postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
         env:
           CI: true
