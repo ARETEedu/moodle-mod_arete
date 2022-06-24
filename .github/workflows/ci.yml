@@ -206,7 +206,7 @@ jobs:
 
       - name: Does it generate a token using curl?
         run: |
-          curl http://127.0.0.1/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews
+          curl http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews
 
       - name: Login using curl
         run: |
