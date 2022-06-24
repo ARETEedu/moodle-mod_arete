@@ -208,22 +208,18 @@ jobs:
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'
 
-      - name: Login using curl
-        run: |
-          cd moodle/mod/arete
-          curl -L -s -o /dev/null -k -c "MoodleSession.cookie" http://127.0.0.1/moodle/login/index.php&user=testuser&login=${{ secrets.TEST_USER_PASSWORD }} && cat MoodleSession.cookie && grep MoodleSession && awk '{print "MoodleSession:"$NF}'
-
-      - name: Generate token using curl
-        run: |
-          cd moodle/mod/arete
-          curl -X POST -L -k -d 'action=create&_qf__web_service_token_form=1&mform_isexpanded_id_token=1&user=2&service=2&iprestriction=&submitbutton=Save+changes' --cookie '($ sudo -u www-data moosh user-login testuser)' http://127.0.0.1/moodle/admin/settings.php?section=webservicetoken
-
       - name: Curl
         run: |
           curl -X GET http://127.0.0.1/moodle/
 
       - name: Run the API and Postman's tests
         run: |
-          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run MoodleArete.postman_collection.json
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete (Login).postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
+        env:
+          CI: true
+
+      - name: Run the API and Postman's tests
+        run: |
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete (GetData).postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
         env:
           CI: true
