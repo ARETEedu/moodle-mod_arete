@@ -41,7 +41,7 @@ if (strpos($parameters, '&') !== false) { //For multiply parameters
     foreach ($params as $param) {
         if (strpos($param, '=') !== false) {
             $keyValues = list($key, $value) = explode('=', $param);
-            $parametersarray[$key] = $value;
+            $parametersarray[str_replace("'", "",str_replace('"', "",$key))] = str_replace("'", "",str_replace('"', "",$value));
         }
     }
 } else { //For single parameter
