@@ -214,6 +214,6 @@ jobs:
 
       - name: Run the API and Postman's tests
         run: |
-          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete.postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run "Moodle Arete.postman_collection.json" --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }} --env-var TOKEN=&(curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews')
         env:
           CI: true

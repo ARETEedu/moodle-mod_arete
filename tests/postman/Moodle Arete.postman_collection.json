@@ -121,6 +121,69 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testuser",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_USER_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"mod",
+						"arete",
+						"classes",
+						"webservice",
+						"authunity.php"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
