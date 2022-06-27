@@ -129,9 +129,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Can Login\", function() {\r",
-							"    var jsonData = pm.response.text();\r",
-							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).eq('13');\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -151,24 +151,29 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "username",
-							"value": "testuser",
+							"key": "token",
+							"value": "{{TOKEN}}",
 							"type": "text"
 						},
 						{
-							"key": "password",
-							"value": "{{TEST_USER_PASSWORD}}",
+							"key": "function",
+							"value": "core_user_get_users",
 							"type": "text"
 						},
 						{
-							"key": "domain",
-							"value": "http://localhost/moodle",
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php",
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -179,7 +184,7 @@
 						"arete",
 						"classes",
 						"webservice",
-						"authunity.php"
+						"getdata_from_moodle.php"
 					]
 				}
 			},
