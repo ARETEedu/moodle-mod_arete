@@ -192,6 +192,74 @@
 			"response": []
 		},
 		{
+			"name": "Get User email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User Email\", function() {\r",
+							"    var UserEmail = pm.response.text();\r",
+							"    pm.expect(UserEmail).eq('test_user@example.com');\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "mail",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"mod",
+						"arete",
+						"classes",
+						"webservice",
+						"getdata_from_moodle.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Upload",
 			"event": [
 				{
@@ -285,15 +353,15 @@
 			"response": []
 		},
 		{
-			"name": "Get User email",
+			"name": "Get Data from Database after storing",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Verify User Email\", function() {\r",
-							"    var UserEmail = pm.response.text();\r",
-							"    pm.expect(UserEmail).eq('test_user@example.com');\r",
+							"pm.test(\"To Check if Value is Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).eq(\"{}\");\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -313,29 +381,14 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "token",
-							"value": "{{TOKEN}}",
-							"type": "text"
-						},
-						{
-							"key": "function",
-							"value": "core_user_get_users",
-							"type": "text"
-						},
-						{
-							"key": "parameters",
-							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
-							"type": "text"
-						},
-						{
 							"key": "request",
-							"value": "mail",
+							"value": "arlemlist",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -346,7 +399,7 @@
 						"arete",
 						"classes",
 						"webservice",
-						"getdata_from_moodle.php"
+						"getdata_from_db.php"
 					]
 				}
 			},
