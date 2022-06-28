@@ -59,11 +59,7 @@ $curl = new \curl;
 $response = $curl->post($serverurl, $parametersarray);
 $jsonresult = json_decode($response, true);
 
-if ($response["exception"] != null){
-    print_r($response["errorcode"]);
-    print_r($response["message"]);
-    return;
-}
+print_r($response);
 
 //Check what unity needs and send it back to Unity
 switch ($requestedinfo) {
