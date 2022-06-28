@@ -131,7 +131,7 @@
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
 							"    var UserId = pm.response.text();\r",
-							"    pm.expect(UserId).eq('13');\r",
+							"    pm.expect(UserId).eq('3');\r",
 							"})"
 						],
 						"type": "text/javascript"
