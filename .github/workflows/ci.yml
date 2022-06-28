@@ -91,7 +91,7 @@ jobs:
           sudo -u www-data moosh -n config-set enablewebservices 1
           sudo -u www-data moosh -n config-set webserviceprotocols 'rest'
           sudo -u www-data moosh -n role-update-capability user moodle/webservice:createtoken allow 1
-          sudo -u www-data moosh -n role-update-capability user moodle/webservice/rest:use allow 1
+          sudo -u www-data moosh -n role-update-capability user webservice/rest:use allow 1
 
       - name: PHP Lint
         if: ${{ false }}
