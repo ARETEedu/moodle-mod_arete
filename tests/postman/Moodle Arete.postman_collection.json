@@ -257,7 +257,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "Activity.zip"
 						},
 						{
 							"key": "userid",
