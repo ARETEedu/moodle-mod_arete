@@ -162,7 +162,7 @@
 						},
 						{
 							"key": "parameters",
-							"value": "criteria[0]['key']=username&criteria[0]['value']=testuser",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
 							"type": "text"
 						},
 						{

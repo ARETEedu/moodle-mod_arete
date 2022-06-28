@@ -31,7 +31,7 @@ require_once("{$CFG->dirroot}/lib/filelib.php");
 //the variables which  are passed from Unity application
 $token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $function = filter_input(INPUT_POST, 'function', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$parameters = html_entity_decode(filter_input(INPUT_POST, 'parameters', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH),ENT_QUOTES, 'UTF-8');
+$parameters = filter_input(INPUT_POST, 'parameters', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 $requestedinfo = filter_input(INPUT_POST, 'request', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
 
@@ -41,13 +41,13 @@ if (strpos($parameters, '&') !== false) { //For multiply parameters
     foreach ($params as $param) {
         if (strpos($param, '=') !== false) {
             $keyValues = list($key, $value) = explode('=', $param);
-            $parametersarray[str_replace("'", "",str_replace('"', "",$key))] = str_replace("'", "",str_replace('"', "",$value));
+            $parametersarray[$key] = $value;
         }
     }
 } else { //For single parameter
     if (strpos($parameters, '=') !== false) {
         $keyValues = list($key, $value) = explode('=', $parameters);
-        $parametersarray[str_replace("'", "",str_replace('"', "",$key))] = str_replace("'", "",str_replace('"', "",$value));
+        $parametersarray[$key] = $value;
     }
 }
 
@@ -59,6 +59,11 @@ $curl = new \curl;
 $response = $curl->post($serverurl, $parametersarray);
 $jsonresult = json_decode($response, true);
 
+if ($response["exception"] != null){
+    print_r($response["errorcode"]);
+    print_r($response["message"]);
+    return;
+}
 
 //Check what unity needs and send it back to Unity
 switch ($requestedinfo) {
