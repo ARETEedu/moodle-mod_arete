@@ -362,8 +362,9 @@
 						"exec": [
 							"pm.test(\"To Check if Value is Null\", function() {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    var arlemid = jsonData[Object.keys(jsonData)[0]][\"itemid\"];\r",
-							"    var sessionid = jsonData[Object.keys(jsonData)[0]][\"sessionid\"];\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
 							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
 							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
 							"    pm.expect(arlemid).not.eq(null);\r",
@@ -408,6 +409,44 @@
 						"classes",
 						"webservice",
 						"getdata_from_db.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is not html\", function() {\r",
+							"    var responseText = pm.response.text();\r",
+							"    pm.expect(responseText.includes(\"Error\")).eq(false);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"pluginfile.php",
+						"1",
+						"mod_arete",
+						"arlems",
+						"{{ARLEM_ID}}",
+						"{{SESSION_ID}}.zip"
 					]
 				}
 			},
@@ -481,6 +520,45 @@
 						"classes",
 						"webservice",
 						"getdata_from_db.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download is not possible",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response is html Error\", function() {\r",
+							"    var responseText = pm.response.text();\r",
+							"    pm.expect(responseText.includes(\"<!DOCTYPE html>\")).eq(true);\r",
+							"    pm.expect(responseText.includes(\"Error\")).eq(true);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"pluginfile.php",
+						"1",
+						"mod_arete",
+						"arlems",
+						"{{ITEM_ID}}",
+						"{{SESSION_ID}}.zip"
 					]
 				}
 			},
