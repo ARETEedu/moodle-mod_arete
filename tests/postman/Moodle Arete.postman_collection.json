@@ -420,10 +420,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"To Check if response is true\", function() {\r",
-							"    var responseJson = pm.response.json();\r",
-							"    pm.expect(responseJson).eq(true);\r",
-							"})"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -493,7 +490,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"To Check if Value is Null\", function() {\r",
+							"pm.test(\"To Check if Value is empty\", function() {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.length).eq(0);\r",
 							"})"

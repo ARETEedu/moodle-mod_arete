@@ -293,7 +293,6 @@ function delete_arlem() {
 
     if (isset($itemid) && $filename !== null) {
         $result = delete_arlem_from_plugin($filename, $itemid, $sessionid);
-        print_r(json_encode($result));
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
         echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
