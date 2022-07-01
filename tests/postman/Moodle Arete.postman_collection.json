@@ -16,6 +16,7 @@
 							"pm.test(\"To Check if Value is Null\", function() {\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData).not.eq(undefined);\r",
+							"    pm.expect(jsonData.length).eq(0);\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -361,7 +362,140 @@
 						"exec": [
 							"pm.test(\"To Check if Value is Null\", function() {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData).eq(\"{}\");\r",
+							"    var arlemid = jsonData[Object.keys(jsonData)[0]][\"itemid\"];\r",
+							"    var sessionid = jsonData[Object.keys(jsonData)[0]][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"mod",
+						"arete",
+						"classes",
+						"webservice",
+						"getdata_from_db.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete arlem",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if response is true\", function() {\r",
+							"    var responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).eq(true);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "deleteArlem",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "sessionid",
+							"value": "{{SESSION_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"moodle",
+						"mod",
+						"arete",
+						"classes",
+						"webservice",
+						"getdata_from_db.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Value is Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).eq(0);\r",
 							"})"
 						],
 						"type": "text/javascript"
