@@ -310,7 +310,7 @@ function delete_arlem_from_plugin($fileReference, $itemid, $sessionid){
     global $DB;
 
     if (!empty($fileReference)) {
-        mod_arete_delete_arlem_from_plugin($fileReference, $file->itemid);
+        mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
         $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
         return true;
     }
