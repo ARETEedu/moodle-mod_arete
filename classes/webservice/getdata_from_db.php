@@ -304,13 +304,13 @@ function delete_arlem() {
  *
  * @global object $DB The Moodle database object
  * int $itemid The id of the ARLEM in arete_allalrems table
- * Object $file the file we have to delete
+ * Object $fileReference the file reference of the file we have to delete
  **/
-function delete_arlem_from_plugin($file, $itemid, $sessionid){
+function delete_arlem_from_plugin($fileReference, $itemid, $sessionid){
     global $DB;
 
-    if (!empty($file)) {
-        mod_arete_delete_arlem_from_plugin($file->filename, $file->itemid);
+    if (!empty($fileReference)) {
+        mod_arete_delete_arlem_from_plugin($fileReference, $file->itemid);
         $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
         return true;
     }
