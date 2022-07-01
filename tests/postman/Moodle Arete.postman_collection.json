@@ -420,7 +420,10 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							""
+							"pm.test(\"To Check if response is true\", function() {\r",
+							"    var responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).eq(true);\r",
+							"})"
 						],
 						"type": "text/javascript"
 					}
