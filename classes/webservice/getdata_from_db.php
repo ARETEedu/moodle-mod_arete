@@ -289,15 +289,36 @@ function delete_arlem() {
         $itemid = '';
     }
 
-    $filename = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
+    $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
-    if (isset($itemid) && $filename !== null) {
-        delete_arlem_from_plugin($filename, $itemid);
+    if (isset($itemid) && $fileReference !== null) {
+        $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid);
+        print_r(json_encode($result));
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
         echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
+        print_r(json_encode(false));
     }
 }
+
+/**
+ * Delete an arlem file
+ *
+ * @global object $DB The Moodle database object
+ * int $itemid The id of the ARLEM in arete_allalrems table
+ * Object $fileReference the file reference of the file we have to delete
+ **/
+function delete_arlem_from_plugin($fileReference, $itemid, $sessionid){
+    global $DB;
+
+    if (!empty($fileReference)) {
+        mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
+        $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
+        return true;
+    }
+    return false;
+}
+
 
 /**
  * Update views of the ARLEM every time the activity opens on MirageXR

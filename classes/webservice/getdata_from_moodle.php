@@ -59,7 +59,6 @@ $curl = new \curl;
 $response = $curl->post($serverurl, $parametersarray);
 $jsonresult = json_decode($response, true);
 
-
 //Check what unity needs and send it back to Unity
 switch ($requestedinfo) {
     case 'userid':
