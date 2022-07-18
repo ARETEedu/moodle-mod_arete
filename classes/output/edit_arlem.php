@@ -120,8 +120,7 @@ class edit_arlem {
         $author = $DB->get_field('user', 'username', array('id' => $this->params['author']));
 
         //The user editing folder
-        $path = '/mod/arete/temp/';
-        $this->userdirpath = $CFG->dirroot . $path . strval($USER->id);
+        $this->userdirpath = $CFG->tempdir . strval($USER->id);
 
         //Remove temp dir which is used on editing
         $tempdir = "{$this->userdirpath}/";
