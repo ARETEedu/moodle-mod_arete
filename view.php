@@ -71,6 +71,8 @@ $PAGE->requires->css('/mod/arete/css/styles.css');
 //rating css file
 $PAGE->requires->css('/mod/arete/assets/star-rating/dist/star-rating.css');
 
+$PAGE->requires->jquery();
+
 //For rating stars
 $PAGE->requires->js(new moodle_url("$CFG->wwwroot/mod/arete/assets/star-rating/dist/star-rating.js"));
 $PAGE->requires->js(new moodle_url("$CFG->wwwroot/mod/arete/js/table.js"));
