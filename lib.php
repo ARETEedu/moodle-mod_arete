@@ -123,6 +123,7 @@ function arete_delete_instance($id) {
  * @return bool false if the file not found, just send the file otherwise and do not return anything
  */
 function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    global $DB;
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
@@ -135,6 +136,12 @@ function arete_pluginfile($course, $cm, $context, $filearea, $args, $forcedownlo
     // Use the itemid to retrieve any relevant data records and perform any security checks to see if the
     // user really does have access to the file in question.
     // Extract the filename / filepath from the $args array.
+
+    $thisrecord = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+    if ($thisrecord->upublic != 1){
+        require_login($course, true, $cm);
+    }
+
     $filename = array_pop($args); // The last item in the $args array.
     if (!$args) {
         $filepath = '/'; // $args is empty => the path is '/'
