@@ -1,0 +1,1 @@
+This library was made from ( https://github.com/openARLEM/arlem.js ) using npm on Linux
