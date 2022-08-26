@@ -446,7 +446,7 @@ class edit_arlem {
 
         //JSON validator parameters
         $validatorscriptparams = array(
-            'src' => new moodle_url('/mod/arete/js/arlem.js'),
+            'src' => new moodle_url('/mod/arete/js/arlem/arlem.js'),
             'data-app-activity-ref' => 'activityEditor',
             'data-app-workplace-ref' => 'workplaceEditor',
             'data-app-activity' => $activityjson,
