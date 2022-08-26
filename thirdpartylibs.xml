@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>/mod/arete/js/arlem/arlem.js</location>
+        <name>arlem.js</name>
+        <version>1.0-</version>
+        <license>MIT</license>
+        <licenseversion>1.0-</licenseversion>
+    </library>
+</libraries>
