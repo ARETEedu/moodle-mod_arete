@@ -26,7 +26,6 @@ use function mod_arete\webservices\mod_arete_delete_arlem_from_other_tables;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/webservice/getdata_from_db.php');
 
 //Column order by ASC or DESC
 $order = filter_input(INPUT_GET, 'order');
