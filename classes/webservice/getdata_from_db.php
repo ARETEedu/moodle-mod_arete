@@ -305,6 +305,7 @@ function delete_arlem() {
 /**
  * Delete an arlem file
  *
+ * @throws \dml_exception if something goes wrong in the queries
  * @global object $DB The Moodle database object
  * int $itemid The id of the ARLEM in arete_allalrems table
  * Object $fileReference the file reference of the file we have to delete
@@ -315,12 +316,27 @@ function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileID){
 
     if (!empty($fileReference)) {
         mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
-        $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid, 'itemid' =>$itemid));
-        $DB->delete_records('arete_arlem', array('arlemid'=> $fileID));
-        $DB->delete_records('arete_rating', array('itemid' =>$itemid));
+        mod_arete_delete_arlem_from_other_tables($DB, $sessionid, $itemid, $fileID);
         return true;
     }
     return false;
+}
+
+/**
+ * Delete arlem from tables other than plugin
+ *
+ * @param \moodle_database $DB the database
+ * @param $sessionid the session id of the arlem
+ * @param $itemid the item id of the arlem
+ * @param $fileID the fileId of the arlem
+ * @return void
+ * @throws \dml_exception If something goes wrong in the database
+ */
+function mod_arete_delete_arlem_from_other_tables(\moodle_database $DB, $sessionid, $itemid, $fileID): void
+{
+    $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid, 'itemid' => $itemid));
+    $DB->delete_records('arete_arlem', array('arlemid' => $fileID));
+    $DB->delete_records('arete_rating', array('itemid' => $itemid));
 }
 
 
