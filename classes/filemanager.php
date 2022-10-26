@@ -443,16 +443,7 @@ function mod_arete_delete_arlem_from_plugin($filename, $itemid = null) {
             $thumbnail->delete();
         }
 
-        //Delete it from arete_allarlems table
-        if (!empty($DB->get_records('arete_allarlems', array('itemid' => $fileitemid)))) {
-            $DB->delete_records('arete_allarlems', array('itemid' => $fileitemid));
-        }
 
-
-        //Delete the rating of this ARLEM
-        if (!empty($DB->get_records('arete_rating', array('itemid' => $fileitemid)))) {
-            $DB->delete_records('arete_rating', array('itemid' => $fileitemid));
-        }
 
         //Delete the zip file
         $file->delete();
