@@ -22,11 +22,11 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use mod_arete\webservices\ArlemDeletion;
+use mod_arete\webservices\arlem_deletion;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/mod/arete/classes/webservice/ArlemDeletion.php');
+require_once($CFG->dirroot . '/mod/arete/classes/webservice/arlem_deletion.php');
 
 //Column order by ASC or DESC
 $order = filter_input(INPUT_GET, 'order');
@@ -601,7 +601,7 @@ function mod_arete_delete_arlem_by_sessionid($sessionid) {
     $file = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid));
     if (!empty($file)) {
         mod_arete_delete_arlem_from_plugin($file->filename, $file->itemid);
-        $deletion = new ArlemDeletion();
+        $deletion = new arlem_deletion();
         $deletion->mod_arete_delete_arlem_from_other_tables($DB,
             $file->sessionid, $file->itemid, $file->fileid);
         return true;

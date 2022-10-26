@@ -30,7 +30,7 @@ namespace mod_arete\webservices;
 require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
-require_once($CFG->dirroot . '/mod/arete/classes/webservice/ArlemDeletion.php');
+require_once($CFG->dirroot . '/mod/arete/classes/webservice/arlem_deletion.php');
 
 
 $request = filter_input(INPUT_POST, 'request');
@@ -318,7 +318,7 @@ function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid){
 
     if (!empty($fileReference)) {
         mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
-        $deletion = new ArlemDeletion();
+        $deletion = new arlem_deletion();
         $deletion->mod_arete_delete_arlem_from_other_tables($DB, $sessionid, $itemid, $fileid);
         return true;
     }
