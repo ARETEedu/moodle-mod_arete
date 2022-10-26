@@ -294,7 +294,7 @@ function delete_arlem() {
     $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
     $fileid = $DB->get_field('arete_allarlems', 'fileid', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
-    if (isset($itemid) && $fileReference !== null && $fileID !== null) {
+    if (isset($itemid) && $fileReference !== null && $fileid !== null) {
         $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid);
         print_r(json_encode($result));
     } else {
