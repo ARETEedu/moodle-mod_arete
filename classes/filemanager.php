@@ -22,10 +22,11 @@
  * @copyright  2021, Abbas Jafari & Fridolin Wild, Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-use function mod_arete\webservices\mod_arete_delete_arlem_from_other_tables;
+use mod_arete\webservices\ArlemDeletion;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../../../config.php');
+require_once($CFG->dirroot . '/mod/arete/classes/webservice/ArlemDeletion.php');
 
 //Column order by ASC or DESC
 $order = filter_input(INPUT_GET, 'order');
@@ -596,7 +597,7 @@ function mod_arete_upload_custom_file($filepath, $filename, $itemid = null, $dat
 
 /**
  * Delete an ARLEM from file system using session id
- * @global object $DB The Moodle database object
+
  * @param string $sessionid The activity id (sessionid in allalrems table)
  * @return bool The status of the file deletion
  * @throws dml_exception if something goes wrong in the queries
@@ -609,8 +610,9 @@ function mod_arete_delete_arlem_by_sessionid($sessionid) {
     $file = $DB->get_record('arete_allarlems', array('sessionid' => $sessionid));
     if (!empty($file)) {
         mod_arete_delete_arlem_from_plugin($file->filename, $file->itemid);
-        mod_arete_delete_arlem_from_other_tables($DB,
-            $file->sessionid, $file->itemid, $file->fileID);
+        $deletion = new ArlemDeletion();
+        $deletion->mod_arete_delete_arlem_from_other_tables($DB,
+            $file->sessionid, $file->itemid, $file->fileid);
         return true;
     }
 

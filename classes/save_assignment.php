@@ -25,13 +25,16 @@
 
 namespace mod_arete;
 
+use mod_arete\webservices\ArlemDeletion;
 use stdClass,
     context_course;
-use function mod_arete\webservices\mod_arete_delete_arlem_from_other_tables;
+
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once( "$CFG->dirroot/mod/arete/classes/filemanager.php");
 require_once( "$CFG->dirroot/mod/arete/classes/utilities.php");
+require_once($CFG->dirroot . '/mod/arete/classes/webservice/ArlemDeletion.php');
+
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -112,8 +115,8 @@ if (isset($_POST['deletearlem'])) {
         if (mod_arete_is_arlem_exist($itemid)) {
             $file = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
             mod_arete_delete_arlem_from_plugin($filename, $itemid);
-            mod_arete_delete_arlem_from_other_tables($DB,$file->sessionid, $file->itemid, $file->fileID);
-
+            $deletion = new ArlemDeletion();
+            $deletion->mod_arete_delete_arlem_from_other_tables($DB,$file->sessionid, $file->itemid, $file->fileid);
         }
     }
 }
