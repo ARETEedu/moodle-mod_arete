@@ -120,7 +120,7 @@ class provider implements
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {arete} a ON a.id = cm.instance
             INNER JOIN {arete_arlem} ar ON ar.areteid = a.id
-            INNER JOIN {arete_allarlems} aa ON a.id = aa.areteid AND aa.fileid = ar.arlemid
+            INNER JOIN {arete_allarlems} aa ON aa.fileid = ar.arlemid
                  WHERE aa.userid = :userid";
 
         $params = [
@@ -186,7 +186,7 @@ class provider implements
             INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
             INNER JOIN {arete} a ON a.id = cm.instance
             INNER JOIN {arete_arlem} ar ON ar.areteid = a.id
-            INNER JOIN {arlem_allarlems} aa ON aa.fileid = ar.arlemid AND aa.areteid = a.id
+            INNER JOIN {arlem_allarlems} aa ON aa.fileid = ar.arlemid
             INNER JOIN {arlem_rating} av ON av.userid = :userid
                  WHERE c.id {$contextsql}
                        AND aa.userid = :userid
