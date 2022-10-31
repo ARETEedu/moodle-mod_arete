@@ -30,6 +30,8 @@ namespace mod_arete\webservices;
 require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
+require_once($CFG->dirroot . '/mod/arete/classes/webservice/arlem_deletion.php');
+
 
 $request = filter_input(INPUT_POST, 'request');
 $itemid = filter_input(INPUT_POST, 'itemid');
@@ -290,9 +292,10 @@ function delete_arlem() {
     }
 
     $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
+    $fileid = $DB->get_field('arete_allarlems', 'fileid', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
-    if (isset($itemid) && $fileReference !== null) {
-        $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid);
+    if (isset($itemid) && $fileReference !== null && $fileid !== null) {
+        $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid);
         print_r(json_encode($result));
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
@@ -304,19 +307,23 @@ function delete_arlem() {
 /**
  * Delete an arlem file
  *
+ * @throws \dml_exception if something goes wrong in the queries
  * @global object $DB The Moodle database object
  * int $itemid The id of the ARLEM in arete_allalrems table
  * Object $fileReference the file reference of the file we have to delete
+ * Object $fileid the fileId of the arlem
  **/
-function delete_arlem_from_plugin($fileReference, $itemid, $sessionid){
+function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid){
     global $DB;
 
     if (!empty($fileReference)) {
         mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
-        $DB->delete_records('arete_allarlems', array('sessionid' => $sessionid));
+        $deletion = new arlem_deletion();
+        $deletion->mod_arete_delete_arlem_from_other_tables($DB, $sessionid, $itemid, $fileid);
         return true;
     }
     return false;
+
 }
 
 

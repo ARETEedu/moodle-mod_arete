@@ -24,6 +24,7 @@
  */
 
 namespace mod_arete;
+use stdClass;
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 
