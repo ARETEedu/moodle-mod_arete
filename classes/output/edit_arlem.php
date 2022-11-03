@@ -65,6 +65,7 @@ class edit_arlem {
 
     var $params = array();
     var $userdirpath = '';
+    var $tempdirpath = '';
 
     /**
      * Initiates the edit page 
@@ -120,7 +121,7 @@ class edit_arlem {
         $author = $DB->get_field('user', 'username', array('id' => $this->params['author']));
 
         //The user editing folder
-        $this->userdirpath = $CFG->tempdir . strval($USER->id);
+        $this->userdirpath = "{$CFG->tempdir}/". strval($USER->id);
 
         //Remove temp dir which is used on editing
         $tempdir = "{$this->userdirpath}/";
@@ -153,7 +154,7 @@ class edit_arlem {
         if (!file_exists($tempdirpath)) {
             mkdir($tempdirpath, 0777, true);
         }
-        mod_arete_copy_arlem_to_temp($filename, $itemid);
+        mod_arete_copy_arlem_to_temp($filename, $itemid, $tempdirpath);
 
         $this->unzip_arlem($filename);
     }

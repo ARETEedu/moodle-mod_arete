@@ -191,7 +191,7 @@ function mod_arete_get_user_arlem($filename, $itemid = null) {
  * @param string $filename The name of ARLEM in filearea
  * @param int $itemid The itemid of ARLEM in filearea
  */
-function mod_arete_copy_arlem_to_temp($filename, $itemid) {
+function mod_arete_copy_arlem_to_temp($filename, $itemid, $dest) {
 
     global $USER;
     // Get file
@@ -199,7 +199,7 @@ function mod_arete_copy_arlem_to_temp($filename, $itemid) {
 
     // Read contents
     if ($file) {
-        $file->copy_content_to("temp/{$USER->id}/{$file->get_filename()}");
+        $file->copy_content_to("{$dest}/{$file->get_filename()}");
     } else {
         // The file doesn't exist - do something
     }

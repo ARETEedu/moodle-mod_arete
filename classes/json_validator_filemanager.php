@@ -34,10 +34,10 @@ $workplacestring = filter_input(INPUT_POST, 'workplaceJSON');
 
 $activityjsonobject = json_decode($activitystring);
 
-$activityjsonpath = "$CFG->tmpdir/$USER->id/$activityjsonobject->id-activity.json";
+$activityjsonpath = "{$CFG->tempdir}/$USER->id/$activityjsonobject->id-activity.json";
 file_put_contents($activityjsonpath, $activitystring);
 
-$workplacejsonpath = "$CFG->tmpdir/$USER->id/$activityjsonobject->id-workplace.json";
+$workplacejsonpath = "{$CFG->tempdir}/$USER->id/$activityjsonobject->id-workplace.json";
 file_put_contents($workplacejsonpath, $workplacestring);
 
 echo get_string('validatorsavemsg', 'arete');
