@@ -288,11 +288,11 @@ class edit_arlem {
 
                     //If it is the activity json
                     if (strpos($ff, 'activity') !== false) {
-                        $activityjson = mod_arete_get_url(mod_arete_get_temp_file($ff));
+                        $activityjson = mod_arete_get_url($tempfile);
                     }
                     //If it is the workplace json
                     else if (strpos($ff, 'workplace') !== false) {
-                        $workplacejson = mod_arete_get_url(mod_arete_get_temp_file($ff));
+                        $workplacejson = mod_arete_get_url($tempfile);
                     }
                 }
             }
