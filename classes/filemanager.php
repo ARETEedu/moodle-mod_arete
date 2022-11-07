@@ -671,11 +671,8 @@ function mod_arete_get_arete_market_url($filename, $itemid, $title) {
         $file_url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
                         $file->get_filearea(), $file->get_itemid(),
                         $file->get_filepath(), $file->get_filename(), false);
-    } else {
-        //KB testing
-        $file_url = 'https://arete.ucd.ie/pluginfile.php/1/mod_arete/arlems/208133705/session-2022-04-08_14-21-35.zip';
-    }
-
+    } 
+    
     if ($file_url) {
         return $url.'&file='.$file_url;
     } else {
