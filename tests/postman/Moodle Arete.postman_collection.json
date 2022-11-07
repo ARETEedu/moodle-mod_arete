@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a4aeffe5-a1e2-41ca-9a43-4d194157ad8f",
+		"_postman_id": "210e2492-154f-4c82-937a-a5baffa8b4bb",
 		"name": "Moodle Arete",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "4275912"
@@ -326,7 +326,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "Activity.zip"
+							"src": "session-2021-12-01_09-44-22.zip"
 						},
 						{
 							"key": "userid",
@@ -717,7 +717,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "Activity.zip"
+							"src": "session-2021-12-01_09-44-22.zip"
 						},
 						{
 							"key": "userid",
