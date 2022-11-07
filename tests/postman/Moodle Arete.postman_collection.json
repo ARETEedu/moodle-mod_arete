@@ -269,7 +269,7 @@
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
 							"    var stored = pm.response.text();\r",
-							"    pm.expect(stored).eq('session-2022-06-28_11-40-07.zip Saved.');\r",
+							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -305,7 +305,7 @@
 						},
 						{
 							"key": "sessionid",
-							"value": "session-2022-06-28_11-40-07",
+							"value": "session-2021-12-01_09-44-22",
 							"type": "text"
 						},
 						{
@@ -660,7 +660,7 @@
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
 							"    var stored = pm.response.text();\r",
-							"    pm.expect(stored).eq('session-2022-06-28_11-40-07.zip Saved.');\r",
+							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -696,7 +696,7 @@
 						},
 						{
 							"key": "sessionid",
-							"value": "session-2022-06-28_11-40-07",
+							"value": "session-2021-12-01_09-44-22",
 							"type": "text"
 						},
 						{
