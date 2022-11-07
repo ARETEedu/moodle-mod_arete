@@ -69,11 +69,11 @@ $(document).ready(function() {
 
 //Gets from PHP 
 var domain, userviewmode, editmodebutton_on_text, editmodebutton_off_text, viewsTitle, playTitle, downloadTitle,
-        editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle , voteRegisteredTitle = "";
+        editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle , voteRegisteredTitle = "", uploadToMarketTitle;
 
 
 //get the data from PHP
-function init(userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle, voteRegisteredTitle){
+function init(userViewMode, editmodebutton_on_text , editmodebutton_off_text ,viewsTitle, playTitle, downloadTitle, editTitle, qrTitle, publicTitle, deleteTitle, assignTitle, ratingTitle, scoreTitle, voteTitle, voteRegisteredTitle, uploadToMarketTitle){
      this.userviewmode = userViewMode;
      this.editmodebutton_on_text = editmodebutton_on_text;
      this.editmodebutton_off_text = editmodebutton_off_text;
@@ -89,7 +89,8 @@ function init(userViewMode, editmodebutton_on_text , editmodebutton_off_text ,vi
      this.scoreTitle = scoreTitle;
      this.voteTitle = voteTitle;
      this.voteRegisteredTitle = voteRegisteredTitle;
-     
+     this.uploadToMarketTitle = uploadToMarketTitle;
+
      edit_mode_toggle(false , window.location.href.includes("&editing=on"));
      
      const params = new URLSearchParams(window.location.search);
@@ -155,6 +156,10 @@ function edit_mode_off(ButtonCallBack){
         if(userviewmode === 1 && header === assignTitle){
             $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').hide();
         }
+        //upload to market should not be displayed for the students at all
+        if(userviewmode === 1 && header === uploadToMarketTitle) {
+            $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').hide();
+        }
     });
 }
 
@@ -184,7 +189,7 @@ function edit_mode_on(ButtonCallBack){
         //only on page refreshing manage the columns (not on button pressing)
         if(!ButtonCallBack){
 
-            if(header === editTitle || header === publicTitle || header === deleteTitle || header === assignTitle){
+            if(header === editTitle || header === publicTitle || header === deleteTitle || header === assignTitle || header === uploadToMarketTitle){
                 $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').show();
             }
 

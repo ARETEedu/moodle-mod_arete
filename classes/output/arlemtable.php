@@ -179,6 +179,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
     $assigntitle = get_string('assigntitle', 'arete');
     $assignedbytitle = get_string('assignedbytitle', 'arete');
     $ratingtitle = get_string('ratingtitle', 'arete');
+    $uploadtomarkettitle = get_string('uploadtomarkettitle', 'arete');
 
     //Sortable headers for the ARLEM tables
     if ($teacherview) {
@@ -270,7 +271,8 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
             $publictitle,
             $deletetitle,
             $assigntitle,
-            $ratingtitle
+            $ratingtitle,
+            $uploadtomarkettitle
         );
     } else {
 
@@ -456,6 +458,22 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         //The 5 starts rating informastion
         $rating = generate_rating_stars($arlem->itemid, $teacherview);
 
+        //The upload to market button
+        $uploadtomarketurl = mod_arete_get_arete_market_url($arlem->filename, $arlem->itemid, $title);
+        $uploadtomarketbuttonimageparams = array(
+            'class' => 'tableicons',
+            'src' => $CFG->wwwroot . '/mod/arete/pix/uploadicon.png',
+            'alt' => get_string('uploadtomarketbuttonalt', 'arete'),
+        );
+        $uploadtomarketbuttonimage = html_writer::start_tag('img', $uploadtomarketbuttonimageparams);
+        $uploadtomarketbuttonparams = array(
+            'name' => 'dlBtn',
+            'href' => $uploadtomarketurl,
+            'target' => '_blank',
+            'rel' => 'noopener noreferrer'
+        );
+        $uploadtomarketbutton = html_writer::start_tag('a', $uploadtomarketbuttonparams) . $uploadtomarketbuttonimage . html_writer::end_tag('a');
+        
         //The array to hold all information of the a row
         if ($teacherview) {
             $tablerow = array(
@@ -473,7 +491,8 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
                 $publicbutton . $publichidden,
                 $deletebutton,
                 $assignradiobutton,
-                $rating
+                $rating,
+                $uploadtomarketbutton
             );
         } else {
             $tablerow = array(
@@ -493,6 +512,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
 
         //Deleting the column which should not be visible for the normal users (Not teacher or admin)
         //Only the owner and the manager can delete, chage privacy and edit files
+        //Only the owner can upload to the market place
         if ($teacherview) {
             // For the non author users in the teacher view (except admin)
             if ($USER->username != $authoruser->username && !has_capability('mod/arete:manageall', $context)) {
@@ -515,6 +535,12 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
                 $indexofpublicbutton = array_search($publicbutton . $publichidden, $tablerow);
                 if (isset($indexofpublicbutton)) {
                     $tablerow[$indexofpublicbutton] = get_string('deletenotallow', 'arete');
+                }
+
+                //Delete upload to market button
+                $indexofuploadtomarketbutton = array_search($uploadtomarketbutton, $tablerow);
+                if (isset($indexofuploadtomarketbutton)) {
+                    $tablerow[$indexofuploadtomarketbutton] = get_string('deletenotallow', 'arete');
                 }
             }
         }
@@ -685,7 +711,8 @@ function init($userviewmode) {
         get_string('ratingtitle', 'arete'),
         get_string('scoretitle', 'arete'),
         get_string('votetitle', 'arete'),
-        get_string('voteregistered', 'arete')
+        get_string('voteregistered', 'arete'),
+        get_string('uploadtomarkettitle', 'arete')
     );
 
     $script = html_writer::start_tag('script');

@@ -30,6 +30,7 @@ $string['assigntitle'] = 'Assign';
 $string['ratingtitle'] = 'Rating';
 $string['viewstitle'] = 'Views';
 $string['assignedbytitle'] = 'Assigned By';
+$string['uploadToMarketTitle'] = 'Upload To Arete Market';
 $string['notsetyet'] = 'Not set yet';
 $string['assignedarlem'] = 'This AR experience is assigned to this activity';
 $string['availabledarlem'] = 'The list of available AR experiences';

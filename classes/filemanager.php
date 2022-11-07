@@ -652,3 +652,33 @@ function mod_arete_validate_sorting($sortingmode) {
             return "timecreated";
     }
 }
+
+/**
+ * Get the Arete Market URL with parameters initialised
+ * @param string $filename The name of ARLEM in filearea
+ * @param int $itemid The itemid of ARLEM in filearea
+ * @param string $title The title of the ARLEM Activity
+ * @return string The URL of the Arete Market submission page, with url parameters set
+ */
+function mod_arete_get_arete_market_url($filename, $itemid, $title) {
+    
+    global $DB;
+    $title = "%20".$title."%20";
+    $url = 'https://arete.market/upload-arlem?title='.$title;
+    $file = mod_arete_get_arlem_by_name($filename, $itemid);
+    $file_url = '';
+    if ($file) {
+        $file_url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                        $file->get_filearea(), $file->get_itemid(),
+                        $file->get_filepath(), $file->get_filename(), false);
+    } else {
+        //KB testing
+        $file_url = 'https://arete.ucd.ie/pluginfile.php/1/mod_arete/arlems/208133705/session-2022-04-08_14-21-35.zip';
+    }
+
+    if ($file_url) {
+        return $url.'&file='.$file_url;
+    } else {
+        return $url;
+    }
+}
