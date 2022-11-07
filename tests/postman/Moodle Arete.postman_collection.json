@@ -289,11 +289,6 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "myfile",
-							"type": "file",
-							"src": "session-2021-12-01_09-44-22.zip"
-						},
-						{
 							"key": "token",
 							"value": "{{TOKEN}}",
 							"type": "text"
@@ -679,11 +674,6 @@
 				"body": {
 					"mode": "formdata",
 					"formdata": [
-						{
-							"key": "myfile",
-							"type": "file",
-							"src": "session-2021-12-01_09-44-22.zip"
-						},
 						{
 							"key": "token",
 							"value": "{{TOKEN}}",
