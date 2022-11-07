@@ -291,7 +291,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "session-2021-12-01_09-44-22.zip"
 						},
 						{
 							"key": "token",
@@ -682,7 +682,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "session-2021-12-01_09-44-22.zip"
 						},
 						{
 							"key": "token",
