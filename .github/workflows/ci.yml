@@ -167,11 +167,11 @@ jobs:
 
       - name: php changes
         run: |
-          RUN echo "post_max_size=1024M" >> /opt/bitnami/php/etc/php.ini && echo "memory_limit=-1" >> /opt/bitnami/php/etc/php.ini && echo "upload_max_filesize=1024M" >> /opt/bitnami/php/etc/php.ini
+          RUN echo "post_max_size=1024M" >> /usr/bin/php/php.ini && echo "memory_limit=-1" >> /usr/bin/php/php.ini && echo "upload_max_filesize=1024M" >> /usr/bin/php/php.ini
 
       - name: cat php.ini
         run: |
-          cat /opt/bitnami/php/etc/php.ini
+          cat /usr/bin/php/php.ini
 
       - name: generate moodle.conf
         run: |
