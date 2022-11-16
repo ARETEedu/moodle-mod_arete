@@ -45,7 +45,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ matrix.extensions }}
-          ini-values: max_input_vars=5000
+          ini-values: max_input_vars=5000, post_max_size=1024M, memory_limit=-1, upload_max_filesize=1024M
           coverage: none
 
       - name: Initialise moodle-plugin-ci
@@ -164,14 +164,6 @@ jobs:
       - name: cat config
         run: |
           cd moodle && cat config.php
-
-      - name: php changes
-        run: |
-          RUN echo "post_max_size=1024M" >> /usr/bin/php/php.ini && echo "memory_limit=-1" >> /usr/bin/php/php.ini && echo "upload_max_filesize=1024M" >> /usr/bin/php/php.ini
-
-      - name: cat php.ini
-        run: |
-          cat /usr/bin/php/php.ini
 
       - name: generate moodle.conf
         run: |
