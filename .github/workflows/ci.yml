@@ -165,6 +165,14 @@ jobs:
         run: |
           cd moodle && cat config.php
 
+      - name: php changes
+        run: |
+          RUN echo "post_max_size=1024M" >> /opt/bitnami/php/etc/php.ini && echo "memory_limit=-1" >> /opt/bitnami/php/etc/php.ini && echo "upload_max_filesize=1024M" >> /opt/bitnami/php/etc/php.ini
+
+      - name: cat php.ini
+        run: |
+          cat /opt/bitnami/php/etc/php.ini
+
       - name: generate moodle.conf
         run: |
           cd /etc/apache2/sites-available/ && sudo touch moodle.conf && sudo printf "<VirtualHost *:80>\n ServerName www.example.com\n  ServerAlias *\n  DocumentRoot /home/runner/work/moodle-mod_arete/moodle-mod_arete/\n<Directory "/home/runner/work/moodle-mod_arete/moodle-mod_arete/moodle">\n    Options -Indexes +FollowSymLinks -MultiViews\n    AllowOverride All\n    Require all granted\n  </Directory>\n</VirtualHost>\n" | sudo tee moodle.conf
