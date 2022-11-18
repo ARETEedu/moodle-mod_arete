@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "210e2492-154f-4c82-937a-a5baffa8b4bb",
+		"_postman_id": "291bab74-962f-4b97-950c-5f8d0740026d",
 		"name": "Moodle Arete",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "4275912"
@@ -212,6 +212,8 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
+							"    tests[\"[INFO] Request: \" + JSON.stringify(request)] = true;\r",
+							"    tests[\"[INFO] Response: \" + responseBody] = true;\r",
 							"    var stored = pm.response.text();\r",
 							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
@@ -512,6 +514,8 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
+							"    tests[\"[INFO] Request: \" + JSON.stringify(request)] = true;\r",
+							"    tests[\"[INFO] Response: \" + responseBody] = true;\r",
 							"    var stored = pm.response.text();\r",
 							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
