@@ -267,6 +267,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
+							"enabled": true,
 							"src": "Activity.zip"
 						},
 						{
@@ -569,6 +570,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
+							"enabled": true,
 							"src": "Activity.zip"
 						},
 						{
