@@ -212,8 +212,6 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
-							"    tests[\"[INFO] Request: \" + JSON.stringify(request)] = true;\r",
-							"    tests[\"[INFO] Response: \" + responseBody] = true;\r",
 							"    var stored = pm.response.text();\r",
 							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
@@ -267,7 +265,6 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"enabled": true,
 							"src": "Activity.zip"
 						},
 						{
@@ -515,8 +512,6 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
-							"    tests[\"[INFO] Request: \" + JSON.stringify(request)] = true;\r",
-							"    tests[\"[INFO] Response: \" + responseBody] = true;\r",
 							"    var stored = pm.response.text();\r",
 							"    pm.expect(stored).eq('session-2021-12-01_09-44-22.zip Saved.');\r",
 							"})"
@@ -570,7 +565,6 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"enabled": true,
 							"src": "Activity.zip"
 						},
 						{
