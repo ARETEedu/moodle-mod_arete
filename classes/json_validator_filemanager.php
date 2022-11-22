@@ -28,8 +28,8 @@ namespace mod_arete;
 require_once(dirname(__FILE__) . '/../../../config.php');
 
 //Getting the JSONs strings
-$activitystring = filter_input(INPUT_POST, 'activityJson');
-$workplacestring = filter_input(INPUT_POST, 'workplaceJSON');
+$activitystring = optional_param('activitystring', null, PARAM_RAW);
+$workplacestring = optional_param('workplacestring', null, PARAM_RAW);
 
 
 $activityjsonobject = json_decode($activitystring);

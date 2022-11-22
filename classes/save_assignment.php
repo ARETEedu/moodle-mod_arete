@@ -40,9 +40,9 @@ defined('MOODLE_INTERNAL') || die;
 
 global $DB, $USER, $COURSE;
 
-$returnurl = filter_input(INPUT_POST, 'returnurl');
-$areteid = filter_input(INPUT_POST, 'moduleid');
-$arlemid = filter_input(INPUT_POST, 'arlem');
+$returnurl = required_param('returnurl', PARAM_URL);
+$areteid = required_param('moduleid', PARAM_INT);
+$arlemid = optional_param('arlem', null, PARAM_RAW);
 
 
 //assign the activty

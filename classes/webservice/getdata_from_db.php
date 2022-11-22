@@ -33,11 +33,11 @@ require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot . '/mod/arete/classes/webservice/arlem_deletion.php');
 
 
-$request = filter_input(INPUT_POST, 'request');
-$itemid = filter_input(INPUT_POST, 'itemid');
-$sessionid = filter_input(INPUT_POST, 'sessionid');
-$userid = filter_input(INPUT_POST, 'userid');
-$token = filter_input(INPUT_POST, 'token');
+$request = required_param('request', PARAM_RAW);
+$itemid =optional_param('itemid', null, PARAM_INT);
+$sessionid = optional_param('sessionid', null, PARAM_RAW);
+$userid = optional_param('userid', null, PARAM_INT);
+$token = optional_param('token', null, PARAM_RAW);
 
 //Check the request and do what needs be done
 switch ($request) {

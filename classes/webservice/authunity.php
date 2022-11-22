@@ -28,9 +28,9 @@ namespace mod_arete\webservices;
 
 require_once 'autentication.php';
 
-$username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$password = filter_input(INPUT_POST, 'password');
-$domain = filter_input(INPUT_POST, 'domain');
+$username = required_param('username', PARAM_USERNAME);
+$password = required_param('password', PARAM_RAW);
+$domain = required_param('domain', PARAM_URL);
 
 $autentication = new autentication($domain);
 $token = $autentication->request_token($username, $password);
