@@ -29,7 +29,7 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
-$itemid = filter_input(INPUT_POST, 'itemid');
+$itemid = optional_param('itemid', null, PARAM_INT);
 
 
 if (!isset($itemid)) {
