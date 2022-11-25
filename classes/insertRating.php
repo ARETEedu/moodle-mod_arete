@@ -30,10 +30,10 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
-$userid = filter_input(INPUT_POST, 'userid');
-$itemid = filter_input(INPUT_POST, 'itemid');
-$rating = filter_input(INPUT_POST, 'rating');
-$onstart = filter_input(INPUT_POST, 'onstart');
+$userid = optional_param('userid', null, PARAM_INT);
+$itemid = optional_param('itemid', null, PARAM_INT);
+$rating = optional_param('rating', null, PARAM_INT);
+$onstart = required_param('onstart', PARAM_BOOL);
 
 if ($onstart == 1) {
     echo get_votes();
