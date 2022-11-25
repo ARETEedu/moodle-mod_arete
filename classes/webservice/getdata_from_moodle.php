@@ -29,10 +29,10 @@ require_once('../../../../config.php');
 require_once("{$CFG->dirroot}/lib/filelib.php");
 
 //the variables which  are passed from Unity application
-$token = filter_input(INPUT_POST, 'token', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$function = filter_input(INPUT_POST, 'function', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$parameters = filter_input(INPUT_POST, 'parameters', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
-$requestedinfo = filter_input(INPUT_POST, 'request', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+$token = required_param('token', PARAM_RAW);
+$function = required_param('function', PARAM_RAW);
+$parameters = required_param('parameters', PARAM_RAW);
+$requestedinfo = required_param('request', PARAM_RAW);
 
 
 //Split the unity parameters for all user parameter
