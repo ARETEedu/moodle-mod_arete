@@ -32,16 +32,16 @@ require_once("{$CFG->dirroot}/mod/arete/classes/utilities.php");
 defined('MOODLE_INTERNAL') || die;
 
 //The variables which  are passed by getfile_from_unity.php
-$token = filter_input(INPUT_POST, 'token');
-$title = filter_input(INPUT_POST, 'title');
-$sessionid = filter_input(INPUT_POST, 'sessionid');
-$base64file = filter_input(INPUT_POST, 'base64');
-$userid = filter_input(INPUT_POST, 'userid');
-$thumbnail = filter_input(INPUT_POST, 'thumbnail');
-$public = filter_input(INPUT_POST, 'public');
-$updatefile = filter_input(INPUT_POST, 'updatefile');
-$activityjson = filter_input(INPUT_POST, 'activity');
-$workplacejson = filter_input(INPUT_POST, 'workplace');
+$token = required_param('token', PARAM_RAW);
+$title = optional_param('title', null, PARAM_RAW);
+$sessionid = required_param('sessionid', PARAM_RAW);
+$base64file = required_param('base64', PARAM_RAW);
+$userid = required_param('userid', PARAM_INT);
+$thumbnail = required_param('thumbnail', PARAM_RAW);
+$public = required_param('public', PARAM_INT);
+$updatefile = required_param('updatefile', PARAM_INT);
+$activityjson = required_param('activity', PARAM_RAW);
+$workplacejson = required_param( 'workplace', PARAM_RAW);
 
 $context = context_user::instance($userid);
 $contextid = $context->id;
