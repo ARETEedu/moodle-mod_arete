@@ -29,10 +29,7 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/webservice/arlem_deletion.php');
 
 //Column order by ASC or DESC
-$order = filter_input(INPUT_GET, 'order');
-if (!isset($order)) {
-    $order = "DESC";
-}
+$order = optional_param('order', 'DESC', PARAM_RAW);
 
 $systemcontext = context_system::instance()->id;
 
