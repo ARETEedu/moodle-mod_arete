@@ -38,7 +38,7 @@ require_once("$CFG->libdir/pagelib.php");
 defined('MOODLE_INTERNAL') || die;
 
 
-$mode = filter_input(INPUT_GET, 'mode');
+$mode = optional_param('mode', null, PARAM_TEXT);
 if (isset($mode) && $mode == 'edit') {
 
     $bootstriplinkparams = array(
