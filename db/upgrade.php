@@ -39,6 +39,18 @@ function xmldb_arete_upgrade($oldversion) {
     // Automatically generated Moodle v3.9.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2022121202) {
+        $table = new xmldb_table('arete_allarlems');
+        $field = new xmldb_field('thumbnail', XMLDB_TYPE_TEXT);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // arete_allarlems savepoint reached.
+        upgrade_mod_savepoint(true, 2022121202, 'arete');
+    }
+
     if ($oldversion < 2021112500) {
         // Define field title to be added to arete_allarlems.
         $table = new xmldb_table('arete_allarlems');

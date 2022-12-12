@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/arete/db" VERSION="20220815" COMMENT="XMLDB file for Moodle mod/arete"
+<XMLDB PATH="mod/arete/db" VERSION="20221212" COMMENT="Added thumbnail"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -50,6 +50,7 @@
         <FIELD NAME="workplace_json" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="thumbnail" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The arlem thumbnail partial url"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
