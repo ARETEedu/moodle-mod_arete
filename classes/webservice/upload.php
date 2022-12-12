@@ -107,9 +107,10 @@ if (isset($base64file)) {
             mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
             echo "{$filename} Saved.";
 
+            $url = '';
             //Add the thumbnail to the DB
             if (isset($thumbnail) && $thumbnail != '') {
-                mod_arete_upload_thumbnail($contextid, $parameters['itemid']);
+                $url = mod_arete_upload_thumbnail($contextid, $parameters['itemid']);
             }
 
             //Insert data to arete_allarlems table
@@ -127,6 +128,14 @@ if (isset($base64file)) {
             $arlemdata->workplace_json = $workplacejson;
             $arlemdata->timecreated = $timecreated;
             $arlemdata->timemodified = $timemodifeid;
+            if (isset($thumbnail) && $thumbnail != '') {
+                $partial_url_array = explode('%2F', $url);
+                $lower_limit = sizeof($partial_url_array)-5;
+                $higher_limit = sizeof($partial_url_array);
+                $partial_url = implode('%2F',
+                    array_slice($partial_url_array, $lower_limit, $higher_limit));
+                $arlemdata->thumbnail = $partial_url;
+            }
             $DB->insert_record('arete_allarlems', $arlemdata);
         }
     }
@@ -164,11 +173,12 @@ function mod_arete_upload_thumbnail($contextid, $itemid) {
 
     if ($response == true) {
         //Move it to the plugin filearea
-        move_file_from_draft_area_to_arete($userid, $parameters['itemid'], context_system::instance()->id,
+        $result = move_file_from_draft_area_to_arete($userid, $parameters['itemid'], context_system::instance()->id,
                 get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
 
         //Delete file and the empty folder from user file area
         mod_arete_delete_user_arlem('thumbnail.jpg', $parameters['itemid'], true, $userid);
         mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
     }
+    return $result['url'];
 }
