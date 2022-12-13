@@ -130,6 +130,7 @@ if (isset($base64file)) {
             $arlemdata->timemodified = $timemodifeid;
             if (isset($thumbnail) && $thumbnail != '') {
                 $partial_url_array = explode('%2F', $url);
+                $partial_url_array[sizeof($partial_url_array)-1] = 'thumbnail.jpg';
                 $lower_limit = sizeof($partial_url_array)-5;
                 $higher_limit = sizeof($partial_url_array);
                 $partial_url = implode('%2F',
