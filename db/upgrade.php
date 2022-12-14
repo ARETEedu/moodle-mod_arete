@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_arete_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
     // Automatically generated Moodle v3.5.0 release upgrade line.
@@ -46,6 +46,7 @@ function xmldb_arete_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
+        //add_thumbnail_to_existing_arlems($DB, $CFG);
 
         // arete_allarlems savepoint reached.
         upgrade_mod_savepoint(true, 2022121202, 'arete');
@@ -67,4 +68,68 @@ function xmldb_arete_upgrade($oldversion) {
     // Automatically generated Moodle v3.10.0 release upgrade line.
     // Put any upgrade step following this.
     return true;
+}
+
+/**
+ * @param moodle_database $DB
+ * @param $CFG
+ * @return void
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
+{
+//update existing table entries that don't have a link
+    //retrieve arlem
+    $records = $DB->get_records('arete_allarlems', ['thumbnail' => null]);
+    foreach ($records as $record) {
+
+        $itemid = $record['itemid'];
+        $contextid = $record['contextid'];
+        $arlem_from_table = $record['filename'];
+        $userid = $record['userid'];
+
+        $fs = get_file_storage();
+
+        // Prepare file record object
+        $fileinfo = array(
+            'component' => 'mod_arete',      // usually = table name
+            'filearea' => 'arlems',             // usually = table name
+            'itemid' => $itemid,                // usually = ID of row in table
+            'contextid' => $contextid,          // ID of context
+            'filepath' => '/',                  // any path beginning and ending in /
+            'filename' => $arlem_from_table);   // any filename
+
+        // Get file
+        $arlem = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+            $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+
+        // Read contents
+        if ($arlem) {
+            //retrieve thumbnail from arlem
+            $thumbnail = get_thumbnail($arlem, $CFG);
+
+            $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
+            $token_record = $DB->get_record('external_tokens',
+                ['externalserviceis' => $service_record['id'],
+                    'userid' => $userid]);
+            $token = $token_record['token'];
+
+            //upload thumbnail
+            if (isset($thumbnail) && $thumbnail != '') {
+                $url = mod_arete_upload_thumbnail_all_parameters($token, $contextid, $itemid, $thumbnail, $userid, $CFG);
+            }
+            $partial_url = format_thumbnail_url_for_table($url);
+
+            $dataobject = array(
+                'id' => $record['id'],
+                'thumbnail' => $partial_url
+            );
+            //Add url to table
+            $DB->update_record('arete_allarlems', $dataobject);
+        } else {
+            // file doesn't exist - do something
+
+        }
+    }
 }
