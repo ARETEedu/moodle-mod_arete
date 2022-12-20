@@ -79,15 +79,14 @@ function xmldb_arete_upgrade($oldversion) {
  */
 function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
 {
-//update existing table entries that don't have a link
     //retrieve arlem
-    $records = $DB->get_records('arete_allarlems', ['thumbnail' => null]);
+    $records = $DB->get_recordset_sql('SELECT * FROM {arete_allarlems} WHERE thumbnail IS NULL');
     foreach ($records as $record) {
 
-        $itemid = $record['itemid'];
-        $contextid = $record['contextid'];
-        $arlem_from_table = $record['filename'];
-        $userid = $record['userid'];
+        $itemid = $record->itemid;
+        $contextid = $record->contextid;
+        $arlem_from_table = $record->filename;
+        $userid = $record->userid;
 
         $fs = get_file_storage();
 
@@ -106,27 +105,36 @@ function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
 
         // Read contents
         if ($arlem) {
-            //retrieve thumbnail from arlem
-            $thumbnail = get_thumbnail($arlem, $CFG);
+            $root = "{$CFG->tempdir}/" . rand() . "/";
+            $arlem_zip = $root . 'zip/arlem.zip';
 
-            $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
-            $token_record = $DB->get_record('external_tokens',
-                ['externalserviceis' => $service_record['id'],
-                    'userid' => $userid]);
-            $token = $token_record['token'];
+            mkdir($root . 'zip/');
+            $copied = $arlem->copy_content_to($arlem_zip);
 
-            //upload thumbnail
-            if (isset($thumbnail) && $thumbnail != '') {
-                $url = mod_arete_upload_thumbnail_all_parameters($token, $contextid, $itemid, $thumbnail, $userid, $CFG);
+            if ($copied) {
+                //retrieve thumbnail from arlem
+                $thumbnail = get_thumbnail($arlem_zip, $CFG);
+
+                if (isset($thumbnail) && $thumbnail != '') {
+                    $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
+                    $token_record = $DB->get_record('external_tokens',
+                        ['externalserviceid' => $service_record->id,
+                            'userid' => $userid]);
+                    $token = $token_record->token;
+
+                    //upload thumbnail
+                    $url = mod_arete_upload_thumbnail_all_parameters($token, $contextid, $itemid, $thumbnail, $userid, $CFG);
+                    $partial_url = format_thumbnail_url_for_table($url);
+
+                    $dataobject = array(
+                        'id' => $record->id,
+                        'thumbnail' => $partial_url
+                    );
+                    //Add url to table
+                    $DB->update_record('arete_allarlems', $dataobject);
+                }
+                unset($root);
             }
-            $partial_url = format_thumbnail_url_for_table($url);
-
-            $dataobject = array(
-                'id' => $record['id'],
-                'thumbnail' => $partial_url
-            );
-            //Add url to table
-            $DB->update_record('arete_allarlems', $dataobject);
         } else {
             // file doesn't exist - do something
 
