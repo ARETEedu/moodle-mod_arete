@@ -105,15 +105,12 @@ function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
 
         // Read contents
         if ($arlem) {
-            $root = "{$CFG->tempdir}/" . rand() . "/";
-            $arlem_zip = $root . 'zip/arlem.zip';
-
-            mkdir($root . 'zip/');
-            $copied = $arlem->copy_content_to($arlem_zip);
+            $root = "zip/". rand() . "/";
+            $copied = $arlem->copy_content_to_temp($root);
 
             if ($copied) {
                 //retrieve thumbnail from arlem
-                $thumbnail = get_thumbnail($arlem_zip, $CFG);
+                $thumbnail = get_thumbnail($copied, $CFG);
 
                 if (isset($thumbnail) && $thumbnail != '') {
                     $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
@@ -133,7 +130,7 @@ function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
                     //Add url to table
                     $DB->update_record('arete_allarlems', $dataobject);
                 }
-                unset($root);
+                unset($copied);
             }
         } else {
             // file doesn't exist - do something
