@@ -49,6 +49,21 @@ $contextid = $context->id;
 global $DB;
 
 //If base64 file is exists
+/**
+ * @param $url
+ * @return string
+ */
+function format_thumbnail_url_for_table($url): string
+{
+    $partial_url_array = explode('/', $url->__toString());
+    $partial_url_array[sizeof($partial_url_array) - 1] = 'thumbnail.jpg';
+    $lower_limit = sizeof($partial_url_array) - 5;
+    $higher_limit = sizeof($partial_url_array);
+    $partial_url = implode('/',
+        array_slice($partial_url_array, $lower_limit, $higher_limit));
+    return $partial_url;
+}
+
 if (isset($base64file)) {
     $itemid = random_int(100000000, 999999999);
     $timemodifeid = 0;
@@ -129,12 +144,7 @@ if (isset($base64file)) {
             $arlemdata->timecreated = $timecreated;
             $arlemdata->timemodified = $timemodifeid;
             if (isset($thumbnail) && $thumbnail != '') {
-                $partial_url_array = explode('%2F', $url);
-                $partial_url_array[sizeof($partial_url_array)-1] = 'thumbnail.jpg';
-                $lower_limit = sizeof($partial_url_array)-5;
-                $higher_limit = sizeof($partial_url_array);
-                $partial_url = implode('%2F',
-                    array_slice($partial_url_array, $lower_limit, $higher_limit));
+                $partial_url = format_thumbnail_url_for_table($url);
                 $arlemdata->thumbnail = $partial_url;
             }
             $DB->insert_record('arete_allarlems', $arlemdata);
@@ -155,6 +165,26 @@ function mod_arete_upload_thumbnail($contextid, $itemid) {
 
     global $token, $CFG, $thumbnail, $userid;
 
+    $result = mod_arete_upload_thumbnail_all_parameters($token, $contextid, $itemid, $thumbnail, $userid, $CFG);
+
+    return $result['url'];
+}
+
+/**
+ * Helper method that uploads thumbnail
+ *
+ * @param $token The token of the user whose id is passed
+ * @param int $contextid The context id of the arlem
+ * @param int $itemid the itemid of the arlem
+ * @param $thumbnail the thumbnail daata
+ * @param $userid The id of the user
+ * @param $CFG the CFG
+ * @return result array
+ * @throws coding_exception
+ * @throws dml_exception
+ */
+function mod_arete_upload_thumbnail_all_parameters($token, int $contextid, int $itemid, $thumbnail, $userid, $CFG)
+{
     $parameters = array(
         'wstoken' => $token,
         'wsfunction' => 'core_files_upload',
@@ -175,11 +205,11 @@ function mod_arete_upload_thumbnail($contextid, $itemid) {
     if ($response == true) {
         //Move it to the plugin filearea
         $result = move_file_from_draft_area_to_arete($userid, $parameters['itemid'], context_system::instance()->id,
-                get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
+            get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
 
         //Delete file and the empty folder from user file area
         mod_arete_delete_user_arlem('thumbnail.jpg', $parameters['itemid'], true, $userid);
         mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
     }
-    return $result['url'];
+    return $result;
 }

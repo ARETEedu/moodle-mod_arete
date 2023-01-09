@@ -46,7 +46,7 @@ function xmldb_arete_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        //add_thumbnail_to_existing_arlems($DB, $CFG);
+        add_thumbnail_to_existing_arlems($DB, $CFG);
 
         // arete_allarlems savepoint reached.
         upgrade_mod_savepoint(true, 2022121202, 'arete');
@@ -118,9 +118,13 @@ function add_thumbnail_to_existing_arlems(moodle_database $DB, $CFG): void
                         ['externalserviceid' => $service_record->id,
                             'userid' => $userid]);
                     $token = $token_record->token;
+                    $context = context_user::instance($userid);
+                    $user_contextid = $context->id;
+                    $thumbnail_itemid =  random_int(100000000, 999999999);
 
                     //upload thumbnail
-                    $url = mod_arete_upload_thumbnail_all_parameters($token, $contextid, $itemid, $thumbnail, $userid, $CFG);
+                    $result = mod_arete_upload_thumbnail_all_parameters($token, $user_contextid, $thumbnail_itemid, $thumbnail, $userid, $CFG);
+                    $url = $result['url'];
                     $partial_url = format_thumbnail_url_for_table($url);
 
                     $dataobject = array(
