@@ -293,9 +293,10 @@ function delete_arlem() {
 
     $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
     $fileid = $DB->get_field('arete_allarlems', 'fileid', array('itemid' => $itemid, 'sessionid' => $sessionid));
+    $jpg_url = $DB->get_field('arete_allarlems', 'thumbnail', array('itemid' => $itemid, 'sessionid' => $sessionid));
 
     if (isset($itemid) && $fileReference !== null && $fileid !== null) {
-        $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid);
+        $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid, $jpg_url);
         print_r(json_encode($result));
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
@@ -312,14 +313,16 @@ function delete_arlem() {
  * int $itemid The id of the ARLEM in arete_allalrems table
  * Object $fileReference the file reference of the file we have to delete
  * Object $fileid the fileId of the arlem
+ * String $jpg_url the url of the image linked to the arlem
  **/
-function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid){
+function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid, $jpg_url){
     global $DB;
 
     if (!empty($fileReference)) {
         mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
         $deletion = new arlem_deletion();
         $deletion->mod_arete_delete_arlem_from_other_tables($DB, $sessionid, $itemid, $fileid);
+        $deletion->delete_jpg($jpg_url);
         return true;
     }
     return false;

@@ -227,12 +227,12 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
 
 
     if (is_null($text)) {
-        $result['url'] = urlencode($url);
+        $result['url'] = $url;
         return $result;
     } else {
         $value = file_rewrite_urls_to_pluginfile($text, $draftitemid, $forcehttps);
         $result ['text'] = $value;
-        $result ['url' ] = urlencode($url);
+        $result ['url' ] = $url;
         return $result;
     }
 }
