@@ -184,11 +184,11 @@ function edit_mode_on(ButtonCallBack){
         //only on page refreshing manage the columns (not on button pressing)
         if(!ButtonCallBack){
 
-            if(header === editTitle || header === publicTitle || header === deleteTitle || header === assignTitle){
+            if(header === editTitle || header === publicTitle || header === deleteTitle || header === assignTitle || header === downloadTitle){
                 $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').show();
             }
 
-            if(header === playTitle || header === downloadTitle || header === qrTitle || header === ratingTitle || header === viewsTitle){
+            if(header === playTitle || header === qrTitle || header === ratingTitle || header === viewsTitle){
                 $('#arlemTable td:nth-child(' + index + '),#arlemTable th:nth-child(' + index + ')').hide();
             }
 
