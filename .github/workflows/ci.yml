@@ -33,7 +33,7 @@ jobs:
         php: ['7.3', '7.4', '8.0']
         moodle-branch: ['MOODLE_311_STABLE']
         database: [pgsql, mariadb]
-        node-version: ['17', '18', '19']
+        node-version: ['17']
 
     steps:
       - name: Check out repository code
@@ -76,7 +76,7 @@ jobs:
           sudo apt-get install jq 
 
       - name: Install Node JS ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
