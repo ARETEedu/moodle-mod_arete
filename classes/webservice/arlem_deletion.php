@@ -20,8 +20,7 @@ class arlem_deletion
         $DB->delete_records('arete_arlem', array('arlemid' => $fileid));
         $DB->delete_records('arete_rating', array('itemid' => $itemid));
     }
-
-    /**
+/**
      * Delete the jpg linked to the arlem from moodle
      *
      * @param $jpg_url the url of the jpg linked to the arlem

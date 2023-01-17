@@ -46,7 +46,7 @@ function xmldb_arete_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        add_thumbnail_to_existing_arlems($DB, $CFG);
+        //add_thumbnail_to_existing_arlems($DB, $CFG);
 
         // arete_allarlems savepoint reached.
         upgrade_mod_savepoint(true, 2022121202, 'arete');
