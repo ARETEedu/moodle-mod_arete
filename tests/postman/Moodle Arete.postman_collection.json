@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "a4aeffe5-a1e2-41ca-9a43-4d194157ad8f",
-		"name": "Moodle Arete",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_postman_id": "9ce1fac1-f747-4684-9606-72d5c93b45cb",
+		"name": "Moodle Arete Copy 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "4275912"
 	},
 	"item": [
@@ -42,21 +42,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -105,21 +91,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"authunity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
 			},
 			"response": []
 		},
@@ -174,21 +146,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_moodle.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
 			},
 			"response": []
 		},
@@ -242,21 +200,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_moodle.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
 			},
 			"response": []
 		},
@@ -291,7 +235,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "Activity.zip"
 						},
 						{
 							"key": "token",
@@ -430,21 +374,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -467,22 +397,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -541,21 +456,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -579,22 +480,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ITEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -633,21 +519,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -682,7 +554,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "Activity.zip"
 						},
 						{
 							"key": "token",
@@ -726,21 +598,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getfile_from_unity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
 			},
 			"response": []
 		},
@@ -814,21 +672,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getfile_from_unity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
 			},
 			"response": []
 		},
@@ -909,21 +753,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -946,22 +776,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1020,21 +835,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1115,21 +916,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1152,22 +939,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1226,21 +998,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1264,22 +1022,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ITEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1318,21 +1061,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		}
