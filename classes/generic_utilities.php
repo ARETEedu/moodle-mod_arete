@@ -1,8 +1,5 @@
 <?php
 
-ini_set("log_errors", 1);
-ini_set("error_log", "/C/xampp/htdocs/moodle/mod/arete/error.log");
-
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/move_arlem_from_draft.php');
 
