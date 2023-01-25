@@ -43,8 +43,12 @@
     
     
     function toggle_validator(){
-        $("#validator-modal").toggle();
+      $("#validator-modal").toggle();
+    }
 
+    function toggle_visual_editor()
+    {
+      $("#visualEditor").toggle();
     }
     
     

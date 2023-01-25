@@ -351,6 +351,106 @@
     padding-left: 6px;
 }
 
+/*#region Visual Editor*/
+
+#visualEditor
+{
+  display:none;
+  position: fixed; /* Stay in place */
+  z-index: 100; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(255,255,255,0.95); /* Black w/ opacity */
+}
+
+
+#visualEditorContent
+{
+  /*background-color: #fefefe;*/
+  margin: 60px auto;
+  padding: 20px;
+  width: 80%;
+}
+
+#visualEditorTableFirstColumn
+{
+  width: 200px;
+  border-right: 1px solid black;
+}
+
+#visualEditorTable
+{
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+#visualEditor tr
+{
+  border-top: 1px solid black;
+}
+
+#visualEditorTable th, td
+{
+  height: 50px;
+  width: 50px;
+  border-right: 1px dashed black;
+}
+
+#visualEditorTable #elementSelected
+{
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  border: 1px solid green;
+  
+  margin: 3px;
+  background-color: green;
+}
+
+#visualEditorTable #elementSingle
+{
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  border: 1px solid green;
+  border-radius: 5px;
+  margin: 3px;
+  background-color: green;
+}
+
+#visualEditorTable #elementStart
+{
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  border: 1px solid green;
+  border-radius: 5px 0px 0px 5px;
+  margin: 3px 0px 3px 3px;
+  background-color: green;
+}
+
+#visualEditorTable #elementMiddle
+{
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  border: 1px solid green;
+  margin: 3px 0px;
+  background-color: green;
+}
+
+#visualEditorTable #elementEnd
+{
+  height: -webkit-fill-available;
+  width: -webkit-fill-available;
+  border: 1px solid green;
+  border-radius: 0px 5px 5px 0px;
+  margin: 3px 3px 3px 0px;
+  background-color: green;
+}
+
+/*#endregion */
+
 
 #validator-modal{
   display: none; /* Hidden by default */

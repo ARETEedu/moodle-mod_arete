@@ -213,7 +213,28 @@ class edit_arlem {
 
         //Add these only once
         if ($mainfolder == true) {
+            
+            /*echo html_writer::start_tag('div', array('id' => 'borderEditPage'));
+            $newEditorParams = array(
+                'type' => 'button',
+                'id' => 'open-editor-button',
+                'value' => 'New Editor',
+                'onClick' => 'toggle_validator();'
+            );
+            echo html_writer::empty_tag('input', $newEditorParams);
+            echo html_writer::end_tag('div');*/
+
+
             echo html_writer::start_tag('div', array('id' => 'borderEditPage'));
+
+            $visualEditorbuttonparams = array(
+                'type' => 'button',
+                'id' => 'open-editor-button',
+                'value' => 'Open Visual Editor', // change it to support all languages ,lang/./arete.php, get_string()
+                'onClick' => 'toggle_visual_editor();'
+            );
+            echo html_writer::empty_tag('input', $visualEditorbuttonparams);
+
             $validatorbuttonparams = array(
                 'type' => 'button',
                 'id' => 'open-editor-button',
@@ -403,12 +424,62 @@ class edit_arlem {
             //Print the edit page 
             echo $form;
 
+            $this->visualEditor($activityjson, $workplacejson);
 
             //JSON Validator Modal
             $this->Modal($activityjson, $workplacejson);
         }
     }
 
+    private function visualEditor($activityjson, $workplacejson)
+    {
+        echo html_writer::start_div('visualEditor', array('id' => 'visualEditor'));
+        echo html_writer::start_div('visualEditorContent', array('id' => 'visualEditorContent'));
+
+        $buttons = html_writer::start_div('text-right');
+
+        $validatorclosebuttonparams = array(
+            'type' => 'button',
+            'value' => 'close', // change it to support all languages ,lang/./arete.php, get_string()
+            'onClick' => 'toggle_visual_editor();'
+        );
+        $buttons .= html_writer::empty_tag('input', $validatorclosebuttonparams);
+
+        $buttons .= html_writer::end_div();
+        echo $buttons;
+        
+        // $savejsonbuttonparams = array(
+        //     'type' => 'button',
+        //     'id' => 'saveJSON',
+        //     'value' => get_string('validatorsave', 'arete'),
+        //     'onClick' => 'On_Save_JSON_Pressed();'
+        // );
+        // $buttons .= html_writer::empty_tag('input', $savejsonbuttonparams);
+
+        $validator = html_writer::start_div('', array('id' => 'visualEditorContainer'));
+        $validator .= html_writer::start_tag('noscript');
+        $validator .= 'JavaScript needs to be enabled';
+        $validator .= html_writer::end_tag('noscript');
+
+        $newEditorTestParams = array(
+            'src' => 'classes/output/visualEditor.js',
+            'name' => 'Nick',
+            // 'activityjson' => $activityjson,
+            // 'workplacejson' => $workplacejson
+        );
+
+        $validator .= html_writer::start_tag('script', $newEditorTestParams);
+        $validator .= html_writer::end_tag('script');
+        $validator .= html_writer::end_div();
+
+        echo $validator;
+        echo html_writer::end_div();
+        echo html_writer::end_div();
+    }
+
+
+
+    //Edit or replace this (Modal)
     /**
      * This will create a modal where the JSON validator will be displayed on
      * @param string $activityjson The activity JSON string
