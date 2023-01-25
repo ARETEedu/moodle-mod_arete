@@ -322,7 +322,9 @@ function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid, 
         mod_arete_delete_arlem_from_plugin($fileReference, $itemid);
         $deletion = new arlem_deletion();
         $deletion->mod_arete_delete_arlem_from_other_tables($DB, $sessionid, $itemid, $fileid);
-        $deletion->delete_jpg($jpg_url);
+        if (!empty($jpg_url)) {
+            $deletion->delete_jpg($jpg_url);
+        }
         return true;
     }
     return false;
