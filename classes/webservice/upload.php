@@ -28,6 +28,7 @@ require_once('../../../../config.php');
 require_once("{$CFG->dirroot}/mod/arete/classes/move_arlem_from_draft.php");
 require_once("{$CFG->dirroot}/mod/arete/classes/filemanager.php");
 require_once("{$CFG->dirroot}/mod/arete/classes/utilities.php");
+require_once($CFG->dirroot.'/mod/arete/classes/generic_utilities.php');
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -49,21 +50,6 @@ $contextid = $context->id;
 global $DB;
 
 //If base64 file is exists
-/**
- * @param $url
- * @return string
- */
-function format_thumbnail_url_for_table($url): string
-{
-    $partial_url_array = explode('/', $url->__toString());
-    $partial_url_array[sizeof($partial_url_array) - 1] = 'thumbnail.jpg';
-    $lower_limit = sizeof($partial_url_array) - 5;
-    $higher_limit = sizeof($partial_url_array);
-    $partial_url = implode('/',
-        array_slice($partial_url_array, $lower_limit, $higher_limit));
-    return $partial_url;
-}
-
 if (isset($base64file)) {
     $itemid = random_int(100000000, 999999999);
     $timemodifeid = 0;
@@ -170,46 +156,4 @@ function mod_arete_upload_thumbnail($contextid, $itemid) {
     return $result['url'];
 }
 
-/**
- * Helper method that uploads thumbnail
- *
- * @param $token The token of the user whose id is passed
- * @param int $contextid The context id of the arlem
- * @param int $itemid the itemid of the arlem
- * @param $thumbnail the thumbnail daata
- * @param $userid The id of the user
- * @param $CFG the CFG
- * @return result array
- * @throws coding_exception
- * @throws dml_exception
- */
-function mod_arete_upload_thumbnail_all_parameters($token, int $contextid, int $itemid, $thumbnail, $userid, $CFG)
-{
-    $parameters = array(
-        'wstoken' => $token,
-        'wsfunction' => 'core_files_upload',
-        'contextid' => $contextid,
-        'component' => 'user',
-        'filearea' => 'draft',
-        'itemid' => $itemid,
-        'filepath' => '/', //Should start with / and end with /
-        'filename' => 'thumbnail.jpg',
-        'filecontent' => $thumbnail,
-        'contextlevel' => 'user',
-        'instanceid' => $userid,
-    );
 
-    $serverurl = "{$CFG->wwwroot}/webservice/rest/server.php";
-    $response = mod_arete_httpPost($serverurl, $parameters);
-
-    if ($response == true) {
-        //Move it to the plugin filearea
-        $result = move_file_from_draft_area_to_arete($userid, $parameters['itemid'], context_system::instance()->id,
-            get_string('component', 'arete'), 'thumbnail', $parameters['itemid']);
-
-        //Delete file and the empty folder from user file area
-        mod_arete_delete_user_arlem('thumbnail.jpg', $parameters['itemid'], true, $userid);
-        mod_arete_delete_user_arlem('.', $parameters['itemid'], true, $userid);
-    }
-    return $result;
-}

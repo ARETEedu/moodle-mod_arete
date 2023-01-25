@@ -3,7 +3,7 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
 require_once($CFG->dirroot . '/mod/arete/classes/move_arlem_from_draft.php');
-require_once($CFG->dirroot . '/mod/arete/lib.php');
+require_once($CFG->dirroot . '/mod/arete/classes/generic_utilities.php');
 
 global $DB, $CFG;
 
