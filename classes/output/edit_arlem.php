@@ -303,6 +303,7 @@ class edit_arlem {
                 if ($ff == 'thumbnail.jpg') {
                     $thumbnailexist = true;
                 }
+                //Test Activity.json is not lower case
 
                 //Parse the url of the json file
                 if ((strcmp(pathinfo($ff, PATHINFO_EXTENSION), 'json') === 0)) {
@@ -462,10 +463,10 @@ class edit_arlem {
         $validator .= html_writer::end_tag('noscript');
 
         $newEditorTestParams = array(
-            'src' => 'classes/output/visualEditor.js',
+            'src' => 'js/visualEditor.js',
             'name' => 'Nick',
-            // 'activityjson' => $activityjson,
-            // 'workplacejson' => $workplacejson
+            'activityjson' => $activityjson,
+            'workplacejson' => $workplacejson
         );
 
         $validator .= html_writer::start_tag('script', $newEditorTestParams);
