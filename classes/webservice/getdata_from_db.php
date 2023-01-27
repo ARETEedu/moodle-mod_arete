@@ -254,7 +254,7 @@ function get_course_deadline_by_arete_id($areteid) {
 
     $info = json_decode($response);
 
-    $deadline = $DB->get_field('course', 'enddate', array('id' => $info->cm->course));
+    $deadline = $DB->get_field('course_completion_criteria', 'timeend', array('course' => $info->cm->course));
 
     return date('d.m.Y H:i ', $deadline);
 }
