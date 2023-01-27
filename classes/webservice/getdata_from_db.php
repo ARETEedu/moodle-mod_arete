@@ -70,7 +70,7 @@ function get_arlem_list() {
 
     global $DB, $userid, $token;
 
-    $fields = "id , contextid , fileid , userid , itemid , sessionid , filename , title , views , filesize , upublic , rate , timecreated , timemodified , thumbnail ";
+    $fields = "id , contextid , fileid , userid , itemid , sessionid , filename , title , views , filesize , upublic , rate , timecreated , timemodified";
 
     if (isset($userid) && isset($token)) {
 
