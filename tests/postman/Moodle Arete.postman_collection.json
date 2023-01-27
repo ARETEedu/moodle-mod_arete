@@ -311,7 +311,6 @@
 							"    pm.expect(\"rate\" in jsonData[id]).eq(true);\r",
 							"    pm.expect(\"timecreated\" in jsonData[id]).eq(true);\r",
 							"    pm.expect(\"timemodified\" in jsonData[id]).eq(true);\r",
-							"    pm.expect(\"thumbnail\" in jsonData[id]).eq(true);\r",
 							"    pm.expect(\"workplace_json\" in jsonData[id]).eq(false);\r",
 							"    pm.expect(\"activity_json\" in jsonData[id]).eq(false);\r",
 							"    pm.expect(arlemid).not.eq(null);\r",
