@@ -187,8 +187,9 @@ function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
     global $DB;
 
     //Get arete_arlems which user is enrolled to its areteid
-    $sql = 'areteid IN ( ? )';
-    $aretearlemlist = $DB->get_records_select('arete_arlem', $sql, array(implode(',', $user_arete_list)));
+    $array_par = join(',',array_fill(0,count($user_arete_list),'?'));
+    $sql = 'areteid IN ( '.$array_par.' )';
+    $aretearlemlist = $DB->get_records_select('arete_arlem', $sql, $user_arete_list);
 
     $temparlemList = $arlemList;
 
@@ -205,7 +206,7 @@ function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
                     $areteid_of_this_arlem = $aretearlem->areteid;
                     $arlem->deadline = get_course_deadline_by_arete_id($areteid_of_this_arlem);
 
-                    //Add the user enrolled arete at the begging of the list
+                    //Add the user enrolled arete at the start of the list
                     $newarray[] = $arlem;
 
                     if (in_array($arlem, $temparlemList)) {
@@ -254,7 +255,9 @@ function get_course_deadline_by_arete_id($areteid) {
 
     $info = json_decode($response);
 
-    $deadline = $DB->get_field('course_completion_criteria', 'timeend', array('course' => $info->cm->course));
+    // 2 is END_Of_COURSE, 28 is ARETE module
+    $module = $DB->get_field('modules', 'id', array('name' => 'arete'));
+    $deadline = $DB->get_field('course_modules', 'completionexpected', array('course' => $info->cm->course, 'module' => $module));
 
     return date('d.m.Y H:i ', $deadline);
 }
