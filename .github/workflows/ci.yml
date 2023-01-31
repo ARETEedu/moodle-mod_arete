@@ -218,10 +218,10 @@ jobs:
           cd moodle/mod/arete
           sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --email test_administrator@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "firstad" --lastname "last" testadmin && sudo -u www-data moosh -n role-update-capability testadmin moodle/webservice:createtoken allow 1
 
-      - name: Give user test Administrator administrator privileges
+      - name: List admins
         run: |
           cd moodle/mod/arete
-          sudo moosh user-assign-system-role testadmin administrator
+          sudo moosh -n config-get | grep --color=always admin
 
       - name: Does it generate a token using curl?
         run: |
