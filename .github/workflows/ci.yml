@@ -223,6 +223,11 @@ jobs:
           cd moodle/mod/arete
           sudo moosh -n config-get | grep --color=always admin
 
+      - name: List users
+        run: |
+          cd moodle/mod/arete
+          sudo moosh -n user-list
+
       - name: Does it generate a token using curl?
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'
