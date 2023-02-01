@@ -73,29 +73,40 @@ function get_arlem_list() {
 
     if (isset($userid) && isset($token)) {
 
-        $params = [1, $userid];
-        //All pulblic and user's ARLEMs
-        $sql = ' upublic = ? OR userid = ? ';
-        $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
+        $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
+        $token_record = $DB->get_record('external_tokens',
+            ['externalserviceid' => $service_record->id,
+            'token' => $token]);
+        $user_contextid = $token_record->userid;
 
-        //The moudules that the user enrolled to their activitie
-        $usermoduleids = get_user_arete_modules_ids();
+        if (is_siteadmin($user_contextid) || $userid==$user_contextid) {
 
-        //If the user is enrolled atleast to one activity which contains arete module
-        if (!empty($usermoduleids)) {
-            //Sort the list by assigned courses
-            $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
-        } else {
-            $arlems = $unsortedarlems;
+            $params = [1, $userid];
+            //All public and user's ARLEMs
+            $sql = ' upublic = ? OR userid = ? ';
+            $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
+
+            //The moudules that the user enrolled to their activitie
+            $usermoduleids = get_user_arete_modules_ids();
+
+            //If the user is enrolled atleast to one activity which contains arete module
+            if (!empty($usermoduleids)) {
+                //Sort the list by assigned courses
+                $arlems = sorted_arlemList_by_user_assigned($unsortedarlems, $usermoduleids);
+            } else {
+                $arlems = $unsortedarlems;
+            }
+
+            //Add author name to ARLEM file
+            foreach ($arlems as $arlem) {
+                $arlem->author = find_author($arlem);
+            }
+
+            print_r(json_encode($arlems));
+            return;
         }
 
-        //Add author name to ARLEM file
-        foreach ($arlems as $arlem) {
-            $arlem->author = find_author($arlem);
-        }
 
-        print_r(json_encode($arlems));
-        return;
     }
 
     //Get only the public ARLEMs
@@ -186,6 +197,8 @@ function get_user_arete_modules_ids() {
 function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
     global $DB;
 
+    $finallist = array();
+
     //Get arete_arlems which user is enrolled to its areteid
     $sql = 'areteid IN ( ? )';
     $aretearlemlist = $DB->get_records_select('arete_arlem', $sql, array(implode(',', $user_arete_list)));
@@ -229,6 +242,7 @@ function sorted_arlemList_by_user_assigned($arlemList, $user_arete_list) {
         }
         return $finallist;
     }
+    return $finallist;
 }
 
 /**
