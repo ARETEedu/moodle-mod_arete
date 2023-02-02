@@ -233,9 +233,17 @@ jobs:
           cd moodle/mod/arete
           sudo moosh -n config-set siteadmins '2,5'
 
-      - name: Does it generate a token using curl?
+      - name: Does it generate a token using curl for test user?
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'
+
+      - name: Does it generate a token using curl for test user 1?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testuser1&password=${{ secrets.TEST_USER_1_PASSWORD }}&service=aretews'
+
+      - name: Does it generate a token using curl for test admin?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
 
       - name: Curl
         run: |
