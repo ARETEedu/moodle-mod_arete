@@ -576,7 +576,7 @@
 						},
 						{
 							"key": "password",
-							"value": "{{TEST_USER1_PASSWORD}}",
+							"value": "{{TEST_USER_1_PASSWORD}}",
 							"type": "text"
 						},
 						{
@@ -866,7 +866,7 @@
 						},
 						{
 							"key": "password",
-							"value": "{{TEST_ADMIN_PASSWORD}}",
+							"value": "{{TEST_ADMINISTRATOR_PASSWORD}}",
 							"type": "text"
 						},
 						{
