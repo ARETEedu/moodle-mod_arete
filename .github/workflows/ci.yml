@@ -250,6 +250,10 @@ jobs:
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser1&password=${{ secrets.TEST_USER_1_PASSWORD }}&service=aretews'
 
+      - name: Does it keep the token using curl for test admin?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
+
       - name: Curl
         run: |
           curl -X GET http://127.0.0.1/moodle/
