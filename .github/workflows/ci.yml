@@ -233,6 +233,11 @@ jobs:
           cd moodle/mod/arete
           sudo moosh -n config-set siteadmins '2,5'
 
+      - name: Set capabilities for test admin
+        run: |
+          cd moodle/mod/arete
+          sudo -u www-data moosh -n role-update-capability testadmin moodle/webservice:createtoken allow 1
+
       - name: Does it generate a token using curl for test user?
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'
