@@ -216,7 +216,7 @@ jobs:
       - name: Generate user test Administrator
         run: |
           cd moodle/mod/arete
-          sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --email test_administrator@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "firstad" --lastname "last" testadmin && sudo -u www-data moosh -n role-update-capability testadmin moodle/webservice:createtoken allow 1
+          sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --email test_administrator@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "firstad" --lastname "last" testadmin && sudo -u www-data moosh -n role-update-capability manager moodle/webservice:createtoken allow 1 && sudo -u www-data moosh -n user-assign-system-role testadmin manager
 
       - name: List admins
         run: |
