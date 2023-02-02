@@ -218,6 +218,10 @@ jobs:
           cd moodle/mod/arete
           sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --email test_administrator@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "firstad" --lastname "last" testadmin && sudo -u www-data moosh -n role-update-capability manager moodle/webservice:createtoken allow 1 && sudo -u www-data moosh -n user-assign-system-role testadmin manager
 
+      - name: Does it generate a token using curl for test admin?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
+
       - name: List admins
         run: |
           cd moodle/mod/arete
@@ -245,10 +249,6 @@ jobs:
       - name: Does it generate a token using curl for test user 1?
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser1&password=${{ secrets.TEST_USER_1_PASSWORD }}&service=aretews'
-
-      - name: Does it generate a token using curl for test admin?
-        run: |
-          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
 
       - name: Curl
         run: |
