@@ -297,7 +297,7 @@ function delete_arlem() {
 
     global $DB, $itemid, $sessionid, $token;
 
-    if (!isset($token)){
+    if (!isset($token) || empty($token)){
         echo 'Only authenticated user can delete arlems';
         print_r(json_encode(false));
     }
