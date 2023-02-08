@@ -203,14 +203,56 @@ jobs:
         run: |
           ls /home/runner/work/moodle-mod_arete/moodle-mod_arete
 
-      - name: Generate test user
+      - name: Generate user test user
         run: |
           cd moodle/mod/arete
           sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_USER_PASSWORD }} --email test_user@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first" --lastname "last" testuser && sudo -u www-data moosh -n role-update-capability testuser moodle/webservice:createtoken allow 1
 
-      - name: Does it generate a token using curl?
+      - name: Generate user test user1
+        run: |
+          cd moodle/mod/arete
+          sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_USER_1_PASSWORD }} --email test_user1@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "first1" --lastname "last" testuser1 && sudo -u www-data moosh -n role-update-capability testuser1 moodle/webservice:createtoken allow 1
+
+      - name: Generate user test Administrator
+        run: |
+          cd moodle/mod/arete
+          sudo -u www-data moosh -n user-create --password ${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --email test_administrator@example.com --city "Milton Keynes" --country GB --institution "Open University" --department "IET" --firstname "firstad" --lastname "last" testadmin && sudo -u www-data moosh -n role-update-capability manager moodle/webservice:createtoken allow 1 && sudo -u www-data moosh -n user-assign-system-role testadmin manager
+
+      - name: Does it generate a token using curl for test admin?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
+
+      - name: List admins
+        run: |
+          cd moodle/mod/arete
+          sudo moosh -n config-get | grep --color=always admin
+
+      - name: List users
+        run: |
+          cd moodle/mod/arete
+          sudo moosh -n user-list
+
+      - name: Set admins
+        run: |
+          cd moodle/mod/arete
+          sudo moosh -n config-set siteadmins '2,5'
+
+      - name: Set capabilities for test admin
+        run: |
+          cd moodle/mod/arete
+          sudo -u www-data moosh -n role-update-capability testadmin moodle/webservice:createtoken allow 1
+
+      - name: Does it generate a token using curl for test user?
         run: |
           curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'
+
+      - name: Does it generate a token using curl for test user 1?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testuser1&password=${{ secrets.TEST_USER_1_PASSWORD }}&service=aretews'
+
+      - name: Does it keep the token using curl for test admin?
+        run: |
+          curl -X GET 'http://localhost/moodle/login/token.php?username=testadmin&password=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }}&service=aretews'
 
       - name: Curl
         run: |
@@ -218,6 +260,6 @@ jobs:
 
       - name: Run the API and Postman's tests
         run: |
-          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run --verbose "Moodle Arete.postman_collection.json" --env-var USER_ID=3 --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }} --env-var TOKEN=$(curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'| jq ".token" | sed s/\"//g)
+          cd moodle/mod/arete/tests/postman/ && ./node_modules/newman/bin/newman.js run --verbose "Moodle Arete.postman_collection.json" --env-var USER_ID=3 --env-var TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }} --env-var TEST_USER_1_PASSWORD=${{ secrets.TEST_USER_1_PASSWORD }} --env-var TEST_ADMINISTRATOR_PASSWORD=${{ secrets.TEST_ADMINISTRATOR_PASSWORD }} --env-var TOKEN=$(curl -X GET 'http://localhost/moodle/login/token.php?username=testuser&password=${{ secrets.TEST_USER_PASSWORD }}&service=aretews'| jq ".token" | sed s/\"//g)
         env:
           CI: true

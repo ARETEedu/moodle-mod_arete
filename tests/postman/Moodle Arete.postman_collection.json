@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "a4aeffe5-a1e2-41ca-9a43-4d194157ad8f",
-		"name": "Moodle Arete",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_postman_id": "a0a5d912-4a6a-4454-aec9-5adaa6249b9e",
+		"name": "Moodle Arete Copy 5",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "4275912"
 	},
 	"item": [
@@ -42,21 +42,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -70,6 +56,8 @@
 							"pm.test(\"Can Login\", function() {\r",
 							"    var jsonData = pm.response.text();\r",
 							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -105,21 +93,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"authunity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
 			},
 			"response": []
 		},
@@ -132,8 +106,9 @@
 						"exec": [
 							"pm.test(\"Verify User id\", function() {\r",
 							"    var UserId = pm.response.text();\r",
-							"    var expectedUser = pm.environment.get('USER_ID');\r",
-							"    pm.expect(UserId).eq(expectedUser);\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"    var testUserId = pm.environment.set('TEST_USER_ID', UserId);\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -174,21 +149,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_moodle.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
 			},
 			"response": []
 		},
@@ -242,21 +203,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_moodle.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
 			},
 			"response": []
 		},
@@ -291,7 +238,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "Activity.zip"
 						},
 						{
 							"key": "token",
@@ -335,21 +282,86 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getfile_from_unity.php"
-					]
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Private Delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var stored = pm.response.text();\r",
+							"    pm.expect(stored).eq('session-2022-06-28_11-40-07.1.zip Saved.');\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
 				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "myfile",
+							"type": "file",
+							"src": "Delete.zip"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "updatefile",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "sessionid",
+							"value": "session-2022-06-28_11-40-07.1",
+							"type": "text"
+						},
+						{
+							"key": "activity",
+							"value": "{\"id\":\"session-2022-06-28_11-40-07\",\"name\":\"Activity (28/06/2022 12:40:06)\",\"version\":\"$appVersion\",\"description\":\"\",\"language\":\"\",\"workplace\":\"session-2022-06-28_11-40-07-workplace.json\",\"start\":\"TS-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"actions\":[{\"isActive\":true,\"isCompleted\":true,\"id\":\"TS-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"viewport\":\"actions\",\"type\":\"action\",\"device\":\"wekit.one\",\"location\":\"here\",\"predicate\":\"none\",\"user\":\"\",\"instruction\":{\"title\":\"\",\"description\":\"Add task step description here...\"},\"appIDs\":[],\"enter\":{\"removeSelf\":false,\"messages\":[],\"activates\":[{\"id\":\"TS-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"type\":\"tangible\",\"predicate\":\"act:Allow\",\"poi\":\"AN-749edc0f-4bf5-4b9b-a913-de633898fcae\",\"option\":\"Allow\",\"viewport\":\"\",\"url\":\"resources://act:Allow\",\"state\":\"\",\"text\":\"act:Allow\",\"sensor\":\"\",\"key\":\"\",\"tangible\":\"\",\"warning\":\"\",\"position\":\"\",\"rotation\":\"\",\"scale\":1.0,\"duration\":0.0,\"guide\":false}],\"deactivates\":[]},\"exit\":{\"removeSelf\":false,\"messages\":[],\"activates\":[],\"deactivates\":[{\"id\":\"TS-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"type\":\"tangible\",\"predicate\":\"act:Allow\",\"poi\":\"AN-749edc0f-4bf5-4b9b-a913-de633898fcae\",\"option\":\"Allow\",\"viewport\":\"\",\"url\":\"resources://act:Allow\",\"state\":\"\",\"text\":\"act:Allow\",\"sensor\":\"\",\"key\":\"\",\"tangible\":\"\",\"warning\":\"\",\"position\":\"\",\"rotation\":\"\",\"scale\":1.0,\"duration\":0.0,\"guide\":false}]},\"triggers\":[{\"mode\":\"voice\",\"type\":\"action\",\"viewport\":\"actions\",\"id\":\"start\",\"duration\":0.0,\"data\":\"\",\"value\":\"\",\"option\":\"\"},{\"mode\":\"click\",\"type\":\"action\",\"viewport\":\"actions\",\"id\":\"start\",\"duration\":0.0,\"data\":\"\",\"value\":\"\",\"option\":\"\"}]}],\"message\":\"\",\"resumeable\":true}",
+							"type": "text"
+						},
+						{
+							"key": "workplace",
+							"value": "{\"id\":\"session-2022-06-28_11-40-07-workplace.json\",\"name\":\"\",\"version\":\"\",\"things\":[],\"places\":[{\"id\":\"TS-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"name\":\"\",\"detectable\":\"WA-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"type\":\"\",\"pois\":[{\"id\":\"AN-749edc0f-4bf5-4b9b-a913-de633898fcae\",\"x_offset\":0.7852574586868286,\"y_offset\":0.22006413340568543,\"z_offset\":-0.04608851671218872,\"offset\":\"0.7852575, 0.2200641, -0.04608852\",\"rotation\":\"0, 0, 0\",\"scale\":\"\"}],\"sensor\":\"\"}],\"persons\":[],\"sensors\":[],\"devices\":[],\"apps\":[],\"detectables\":[{\"id\":\"WA-0e65b856-8e65-4880-8d78-22dcfc8c8b20\",\"sensor\":\"\",\"type\":\"anchor\",\"url\":\"\",\"origin_position\":\"0.006612808, 0.01916765, 1.012058\",\"origin_rotation\":\"0, 0, 0\"}],\"predicates\":[],\"warnings\":[],\"hazards\":[]}",
+							"type": "text"
+						},
+						{
+							"key": "public",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "myfile",
+							"type": "file",
+							"src": "Delete.zip"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
 			},
 			"response": []
 		},
@@ -362,6 +374,7 @@
 						"exec": [
 							"pm.test(\"To Check if Values are Null\", function() {\r",
 							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(1);\r",
 							"    var id = Object.keys(jsonData)[0];\r",
 							"    var arlemid = jsonData[id][\"itemid\"];\r",
 							"    var sessionid = jsonData[id][\"sessionid\"];\r",
@@ -430,21 +443,785 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database after storing as user that stored",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(2);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
 				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Login as test 1 user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testuser1",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_USER_1_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get test 1 user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser1",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database after storing as test user 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(1);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Other user data from Database after storing as test user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(1);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Login as test admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testadmin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_ADMINISTRATOR_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get test admin user id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testadmin",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database after storing as test admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(2);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{TEST_USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Login test user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testuser",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_USER_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get test User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database after storing from test user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(2);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -467,22 +1244,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -541,21 +1303,158 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data from Database after storing from test user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if Values are Null\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(Object.keys(jsonData).length).eq(1);\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var arlemid = jsonData[id][\"itemid\"];\r",
+							"    var sessionid = jsonData[id][\"sessionid\"];\r",
+							"    pm.environment.set(\"ARLEM_ID\", arlemid);\r",
+							"    pm.environment.set(\"SESSION_ID\", sessionid);\r",
+							"    pm.expect(arlemid).not.eq(null);\r",
+							"    pm.expect(arlemid).not.eq(\"\");\r",
+							"    pm.expect(sessionid).not.eq(null);\r",
+							"    pm.expect(sessionid).not.eq(\"\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var id = Object.keys(jsonData)[0];\r",
+							"    var idjson = jsonData[id][\"id\"];\r",
+							"    var contextidjson = jsonData[id][\"contextid\"];\r",
+							"    pm.expect(null).not.eq(contextidjson);\r",
+							"    var fileidjson = jsonData[id][\"fileid\"];\r",
+							"    pm.expect(null).not.eq(fileidjson);\r",
+							"    var useridjson = jsonData[id][\"userid\"];\r",
+							"    pm.expect(null).not.eq(useridjson);\r",
+							"    var itemidjson = jsonData[id][\"itemid\"];\r",
+							"    pm.expect(null).not.eq(itemidjson);\r",
+							"    var titlejson = jsonData[id][\"title\"];\r",
+							"    pm.expect(null).not.eq(titlejson);\r",
+							"    var viewsjson = jsonData[id][\"views\"];\r",
+							"    pm.expect(null).not.eq(viewsjson);\r",
+							"    var sessionidjson = jsonData[id][\"sessionid\"];\r",
+							"    pm.expect(null).not.eq(sessionidjson);\r",
+							"    var filesizejson = jsonData[id][\"filesize\"];\r",
+							"    pm.expect(null).not.eq(filesizejson);\r",
+							"    var upublicjson = jsonData[id][\"upublic\"];\r",
+							"    pm.expect(null).not.eq(upublicjson);\r",
+							"    var ratejson = jsonData[id][\"rate\"];\r",
+							"    pm.expect(null).not.eq(ratejson);\r",
+							"    var activityjson = jsonData[id][\"activity_json\"];\r",
+							"    pm.expect(null).not.eq(activityjson);\r",
+							"    var workplacejson = jsonData[id][\"workplace_json\"];\r",
+							"    pm.expect(null).not.eq(workplacejson);\r",
+							"    var timejson = jsonData[id][\"timecreated\"];\r",
+							"    pm.expect(null).not.eq(timejson);\r",
+							"    var timemodified = jsonData[id][\"timemodified\"];\r",
+							"    pm.expect(null).not.eq(timemodified);\r",
+							"    var author = jsonData[id][\"author\"];\r",
+							"    pm.expect(null).not.eq(author);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
 				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "arlemlist",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{TEST_USER_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete other arlem",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if response is true\", function() {\r",
+							"    var responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).eq(true);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "deleteArlem",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "sessionid",
+							"value": "{{SESSION_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -579,22 +1478,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ITEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -633,21 +1517,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -682,7 +1552,7 @@
 						{
 							"key": "myfile",
 							"type": "file",
-							"src": "/C:/Users/pasqu/OneDrive/Documents/GitHub/moodle-mod_arete/tests/postman/Activity.zip"
+							"src": "Activity.zip"
 						},
 						{
 							"key": "token",
@@ -726,21 +1596,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getfile_from_unity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
 			},
 			"response": []
 		},
@@ -814,21 +1670,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getfile_from_unity.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getfile_from_unity.php"
 			},
 			"response": []
 		},
@@ -909,21 +1751,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -946,22 +1774,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1020,21 +1833,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1115,21 +1914,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1152,22 +1937,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ARLEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ARLEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1226,21 +1996,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		},
@@ -1264,22 +2020,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"pluginfile.php",
-						"1",
-						"mod_arete",
-						"arlems",
-						"{{ITEM_ID}}",
-						"{{SESSION_ID}}.zip"
-					]
-				}
+				"url": "http://localhost/moodle/pluginfile.php/1/mod_arete/arlems/{{ITEM_ID}}/{{SESSION_ID}}.zip"
 			},
 			"response": []
 		},
@@ -1318,21 +2059,7 @@
 						}
 					]
 				},
-				"url": {
-					"raw": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"path": [
-						"moodle",
-						"mod",
-						"arete",
-						"classes",
-						"webservice",
-						"getdata_from_db.php"
-					]
-				}
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
 			},
 			"response": []
 		}
