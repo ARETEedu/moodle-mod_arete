@@ -313,7 +313,7 @@ function delete_arlem() {
     $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
     $fileid = $DB->get_field('arete_allarlems', 'fileid', array('itemid' => $itemid, 'sessionid' => $sessionid));
     $arlem_owner_user_id = $DB->get_field('arete_allarlems', 'userid', array('itemid' => $itemid, 'sessionid' => $sessionid));
-    $is_private = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid)) == 0;
+    $is_private = $DB->get_field('arete_allarlems', 'upublic', array('itemid' => $itemid, 'sessionid' => $sessionid)) == 0;
     $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
     $token_record = $DB->get_record('external_tokens',
         ['externalserviceid' => $service_record->id,
