@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a0a5d912-4a6a-4454-aec9-5adaa6249b9e",
-		"name": "Moodle Arete Copy 5",
+		"_postman_id": "8a6546ad-def8-4422-8a83-184d914e9d6c",
+		"name": "Moodle Arete Copy 6",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "4275912"
 	},
@@ -1396,6 +1396,338 @@
 					]
 				},
 				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Doesn't delete the arlem as unauthenticated user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if response is false\", function() {\r",
+							"    var responseText = pm.response.text();\r",
+							"    pm.expect(responseText).contain(false);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "deleteArlem",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "sessionid",
+							"value": "{{SESSION_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "\n",
+							"value": "\n",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "\n",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Login as test 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testuser1",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_USER_1_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get test 1 user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser1",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Doesn't delete the arlem",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Check if response is false\", function() {\r",
+							"    var responseText = pm.response.text();\r",
+							"    pm.expect(responseText).contain(false);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "deleteArlem",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "sessionid",
+							"value": "{{SESSION_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "userid",
+							"value": "{{USER_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Login test user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Can Login\", function() {\r",
+							"    var jsonData = pm.response.text();\r",
+							"    pm.expect(jsonData.startsWith(\"succeed\")).eq(true);\r",
+							"    token = jsonData.split(',')[1];\r",
+							"    pm.environment.set('TOKEN',token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "testuser",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{TEST_USER_PASSWORD}}",
+							"type": "text"
+						},
+						{
+							"key": "domain",
+							"value": "http://localhost/moodle",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/authunity.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Get test User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify User id\", function() {\r",
+							"    var UserId = pm.response.text();\r",
+							"    pm.expect(UserId).not.eq('error');\r",
+							"    var expectedUser = pm.environment.set('USER_ID',UserId);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "function",
+							"value": "core_user_get_users",
+							"type": "text"
+						},
+						{
+							"key": "parameters",
+							"value": "criteria[0][key]=username&criteria[0][value]=testuser",
+							"type": "text"
+						},
+						{
+							"key": "request",
+							"value": "userid",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_moodle.php"
 			},
 			"response": []
 		},
