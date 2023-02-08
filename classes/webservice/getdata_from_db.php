@@ -320,7 +320,7 @@ function delete_arlem() {
             'token' => $token]);
     $user_contextid = $token_record->userid;
 
-    echo $itemid . ' ' .$fileReference . ' ' . $fileid . ' '.' '. $is_private . ' '. $user_contextid . ' ' . $arlem_owner_user_id;
+
 
     if ((isset($itemid) && $fileReference !== null && $fileid !== null) &&
         (!$is_private || ($is_private && $user_contextid==$arlem_owner_user_id))) {
