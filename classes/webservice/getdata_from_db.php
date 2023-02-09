@@ -323,7 +323,8 @@ function delete_arlem() {
 
 
     if ((isset($itemid) && $fileReference !== null && $fileid !== null) &&
-        (!$is_private || ($is_private && $user_contextid==$arlem_owner_user_id))) {
+        (!$is_private || ($is_private &&
+                ($user_contextid==$arlem_owner_user_id || is_siteadmin($user_contextid) )))) {
         $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid);
         print_r(json_encode($result));
     } else {
