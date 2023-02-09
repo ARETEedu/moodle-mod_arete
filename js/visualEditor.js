@@ -5,30 +5,23 @@ var workplacePath = data.getAttribute("workplacejson");
 var jsonActivity = null;
 var jsonWorkplace = null;
 
-$.ajax({
-    url: activityPath,
-    dataType: "text",
-    success: function(data){
-        jsonActivity = JSON.parse(data);
-        if(jsonWorkplace != null)
-            SetupEditor();
-    }
-});
+FetchFiles();
 
-$.ajax({
-    url: workplacePath,
-    dataType: "text",
-    success: function(data){
-        jsonWorkplace = JSON.parse(data);
-        if(jsonActivity != null)
+function FetchFiles()
+{
+    fetch(activityPath).then((responseActivity) => 
+    responseActivity.json().then((dataActivity) => {
+        jsonActivity = dataActivity;
+        fetch(workplacePath).then((responseWorkplace) => 
+        responseWorkplace.json().then((dataWorkplace) => {
+            jsonWorkplace = dataWorkplace;
             SetupEditor();
-    }
-});
+        }));
+    }));
+}
 
 function SetupEditor()
 {
-    console.log(jsonActivity);
-    console.log(jsonWorkplace);
     var tableHTML = "";
 
     tableHTML += "<table id='visualEditorTable'>";
@@ -39,34 +32,32 @@ function SetupEditor()
     //#region header
     tableHTML += "<th id='visualEditorTableFirstColumn'></th>"
 
-    for(var i = 0; i < jsonActivity.actions.length; i++)
-    {
-        tableHTML += "<th>" + (i + 1) + "</th>";
-
-        jsonActivity.actions[i].enter.activates.forEach((item) => 
-        {
-            if(item.predicate == "")
+    jsonActivity.actions.forEach((element, index) =>{
+        tableHTML += `<th>${index + 1}</th>`;
+        element.enter.activates.forEach((item) => {
+            if(item.type == "tangible")
             {
-                return null;
-            }
-        
-            if(!uniqueElementIds.includes(item.poi))
-            {
-                uniqueElementIds.push(item.poi);
-                uniqueElements.push({id:item.poi, active:[i + 1]});
-            }
-            else
-            {
-                uniqueElements.find(obj => 
+                var entryID = item.url;
+                if(item.predicate == "pickandplace")
                 {
-                    return obj.id === item.poi;
-                }).active.push(i + 1);
+                    entryID = "pickandplace";
+                }
+                if(!uniqueElementIds.includes(entryID))
+                {
+                    uniqueElementIds.push(entryID);
+                    uniqueElements.push({id:entryID, active:[index + 1]});
+                }
+                else
+                {
+                    uniqueElements.find(obj => 
+                    {
+                        return obj.id === entryID;
+                    }).active.push(index + 1);
+                }
             }
-        });
-    }
-
-    tableHTML += "<th> + </th>";
-    //#endregion
+        })
+    });
+    tableHTML += "<th onclick='cellClicked()'>+</th>";
 
     for(var i = 0; i < uniqueElements.length; i++)
     {
@@ -80,42 +71,90 @@ function SetupEditor()
                 continue;
             }
 
+            tableHTML += `<td onclick='cellClicked(this, ${j})'>`;
+
             //Singles
             if(uniqueElements[i].active.length == 1)
             {
                 if(uniqueElements[i].active[0] == j)
                 {
-                    tableHTML += "<td><div id='elementSingle'></div></td>";
+                    tableHTML += "<div id='elementSingle'></div></td>";
                     continue;
                 }
-                tableHTML += "<td><div></div></td>";
+                tableHTML += "<div id='empty'></div></td>";
                 continue;
             }
 
             //Multiples
             if(!uniqueElements[i].active.includes(j))
             {
-                tableHTML += "<td><div></div></td>";
+                tableHTML += "<div id='empty'></div></td>";
                 continue;
             }
 
             if(j == 1)
             {
-                tableHTML += "<td><div id='elementStart'>";
+                tableHTML += "<div id='elementStart'>";
             }
             else if(j == uniqueElements[i].active.length)
             {
-                tableHTML += "<td><div id='elementEnd'>";
+                tableHTML += "<div id='elementEnd'>";
             }
             else if(j > 1 && j < uniqueElements[i].active.length)
             {
-                tableHTML += "<td><div id='elementMiddle'>";
+                tableHTML += "<div id='elementMiddle'>";
             }
             tableHTML += "</div></td>";
         }
-        tableHTML += "<td></td></tr>";
+        tableHTML += `<td onClick='cellClicked(this, ${jsonActivity.actions.length + 1})'><div></div></td></tr>`;
     }
 
+    tableHTML += "<tr><td>";
+    tableHTML += "<input type='file'>";
+    tableHTML += "</td></tr>";
     tableHTML += "</table>";
+
     document.getElementById("visualEditorContent").innerHTML += tableHTML;
+}
+
+//How?
+
+function cellClicked(elem, x)
+{
+    var parent = elem.parentElement;
+
+    var neighborStates = 0;
+    
+    if(elem.children[0].id != "empty")
+    {
+        elem.children[0].id = "empty";
+        return;
+    }
+
+    if(parent.children[x - 1].children[0].id.startsWith("element"))
+    {
+        neighborStates += 1;
+    }
+
+    if(x < (parent.children.length - 1))
+    {
+        if(parent.children[x + 1].children[0].id.startsWith("element"))
+        {
+            neighborStates += 2;
+        }
+    }
+
+    switch(neighborStates)
+    {
+        case 0: elem.children[0].id = "elementSingle";
+            break;
+        case 1: elem.children[0].id = "elementEnd";
+            break;
+        case 2: elem.children[0].id = "elementStart";
+            break;
+        case 3: elem.children[0].id = "elementMiddle";
+            break;
+        default:
+            break;
+    }
 }

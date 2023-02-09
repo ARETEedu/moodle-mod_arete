@@ -428,7 +428,7 @@ class edit_arlem {
             $this->visualEditor($activityjson, $workplacejson);
 
             //JSON Validator Modal
-            $this->Modal($activityjson, $workplacejson);
+            // $this->Modal($activityjson, $workplacejson);
         }
     }
 
@@ -464,7 +464,6 @@ class edit_arlem {
 
         $newEditorTestParams = array(
             'src' => 'js/visualEditor.js',
-            'name' => 'Nick',
             'activityjson' => $activityjson,
             'workplacejson' => $workplacejson
         );
