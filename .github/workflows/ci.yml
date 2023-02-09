@@ -33,6 +33,7 @@ jobs:
         php: ['7.3', '7.4', '8.0']
         moodle-branch: ['MOODLE_311_STABLE']
         database: [pgsql, mariadb]
+        node-version: ['17']
 
     steps:
       - name: Check out repository code
