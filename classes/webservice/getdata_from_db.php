@@ -295,7 +295,12 @@ function find_author($arlem) {
  */
 function delete_arlem() {
 
-    global $DB, $itemid, $sessionid;
+    global $DB, $itemid, $sessionid, $token;
+
+    if (!isset($token) || empty($token)){
+        echo 'Only authenticated user can delete arlems';
+        print_r(json_encode(false));
+    }
 
     if (!isset($sessionid)) {
         $sessionid = '';
@@ -307,13 +312,24 @@ function delete_arlem() {
 
     $fileReference = $DB->get_field('arete_allarlems', 'filename', array('itemid' => $itemid, 'sessionid' => $sessionid));
     $fileid = $DB->get_field('arete_allarlems', 'fileid', array('itemid' => $itemid, 'sessionid' => $sessionid));
+    $arlem_owner_user_id = $DB->get_field('arete_allarlems', 'userid', array('itemid' => $itemid, 'sessionid' => $sessionid));
+    $is_private = $DB->get_field('arete_allarlems', 'upublic', array('itemid' => $itemid, 'sessionid' => $sessionid)) == 0;
+    $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
+    $token_record = $DB->get_record('external_tokens',
+        ['externalserviceid' => $service_record->id,
+            'token' => $token]);
+    $user_contextid = $token_record->userid;
 
-    if (isset($itemid) && $fileReference !== null && $fileid !== null) {
+
+
+    if ((isset($itemid) && $fileReference !== null && $fileid !== null) &&
+        (!$is_private || ($is_private &&
+                ($user_contextid==$arlem_owner_user_id || is_siteadmin($user_contextid) )))) {
         $result = delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid);
         print_r(json_encode($result));
     } else {
         //The text will be used on the webservice app, therefore it is hardcoded
-        echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete is not exist!';
+        echo 'Error: Check if itemid is not empty. Or maybe the file you are trying to delete does not exist!';
         print_r(json_encode(false));
     }
 }
