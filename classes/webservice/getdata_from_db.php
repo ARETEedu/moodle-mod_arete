@@ -70,6 +70,7 @@ function get_arlem_list() {
 
     global $DB, $userid, $token;
 
+    $fields = "id , contextid , fileid , userid , itemid , sessionid , filename , title , views , filesize , upublic , rate , timecreated , timemodified";
 
     if (isset($userid) && isset($token)) {
 
@@ -84,7 +85,7 @@ function get_arlem_list() {
             $params = [1, $userid];
             //All public and user's ARLEMs
             $sql = ' upublic = ? OR userid = ? ';
-            $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC');
+            $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC', $fields);
 
             //The moudules that the user enrolled to their activitie
             $usermoduleids = get_user_arete_modules_ids();
@@ -110,7 +111,7 @@ function get_arlem_list() {
     }
 
     //Get only the public ARLEMs
-    $arlems = $DB->get_records('arete_allarlems', array('upublic' => 1), 'timecreated DESC');
+    $arlems = $DB->get_records('arete_allarlems', array('upublic' => 1), 'timecreated DESC', $fields);
     //
     //Adding author name to the ARLEM object
     foreach ($arlems as $arlem) {
