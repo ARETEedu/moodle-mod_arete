@@ -451,6 +451,184 @@
 			"response": []
 		},
 		{
+			"name": "Empty views if token is not sent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Empty keys\", function() {\r",
+							"    var keys = Object.keys(pm.response.json());\r",
+							"    pm.expect(keys.length).eq(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "updateViews",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Empty views if no item id is sent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Empty keys\", function() {\r",
+							"    var keys = Object.keys(pm.response.json());\r",
+							"    pm.expect(keys.length).eq(0);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "updateViews",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "How many views",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"To Store Non zero value\", function() {\r",
+							"    var returnedValue = pm.response.json()['views'];\r",
+							"    var keys = Object.keys(pm.response.json());\r",
+							"    pm.expect(keys.length).not.eq(0);\r",
+							"    pm.environment.set(\"VIEWS\", returnedValue);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "updateViews",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
+			"name": "Views is plus one",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"View plus one\", function() {\r",
+							"    var returnedValue = pm.response.json()['views'];\r",
+							"    var keys = Object.keys(pm.response.json());\r",
+							"    pm.expect(keys.length).not.eq(0);\r",
+							"    var storedViews = pm.environment.get(\"VIEWS\");\r",
+							"    pm.expect(returnedValue).eq(storedViews + 1);\r",
+							"    pm.environment.set(\"VIEWS\", returnedValue);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "request",
+							"value": "updateViews",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "text"
+						},
+						{
+							"key": "itemid",
+							"value": "{{ARLEM_ID}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost/moodle/mod/arete/classes/webservice/getdata_from_db.php"
+			},
+			"response": []
+		},
+		{
 			"name": "Get Data from Database after storing as user that stored",
 			"event": [
 				{
