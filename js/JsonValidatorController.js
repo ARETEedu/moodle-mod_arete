@@ -11,7 +11,7 @@ $( document ).ready(function() {
 
 
 function init(){
-    
+
     setTimeout(function(){ 
         if (typeof activityEditor === 'undefined' || typeof workplaceEditor === 'undefined') {
          init();

@@ -72,6 +72,7 @@ if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
 $uploadedfile = $_FILES['files']['tmp_name'];
 $lastfile = end($uploadedfile);
 
+echo "<script type='text/javascript'>alert($uploadedfile);</script>";
 //Replace user selected files
 if (!empty(array_filter($_FILES['files']['name']))) {
 
@@ -88,7 +89,8 @@ if (!empty(array_filter($_FILES['files']['name']))) {
         $filename = $_FILES['files']['name'][$key];
         $fileextention = pathinfo($filename, PATHINFO_EXTENSION);
 
-        $result = replace_file($userdirpath, $filename, $fileextention, $filetempname, $lastfile == $value);
+        // $result = replace_file($userdirpath, $filename, $fileextention, $filetempname, $lastfile == $value);
+        $result = upload_files($userdirpath, $filename, $fileextention, $filetempname, $lastfile == $value);
     }
 }
 
@@ -161,6 +163,33 @@ function replace_file($dir, $filename, $fileextention, $filetempname, $is_lastFi
     }
 }
 
+function upload_files($dir, $filename, $fileextention, $filetempname, $islastfile = false)
+{
+    global $DB, $itemid, $numberofupdated, $userdirpath;
+
+    $ffs = scandir($dir);
+
+    unset($ffs[array_search('.', $ffs, true)]);
+    unset($ffs[array_search('..', $ffs, true)]);
+
+    // Prevent empty ordered elements
+    if (count($ffs) < 1) {
+        return;
+    }
+
+    foreach($ffs as $ff) {
+        if($filename == $ff && pathinfo($ff, PATHINFO_EXTENSION) == $fileextention){
+            move_uploaded_file($filetempname, "$dir/$ff");
+            $numberofupdated++;
+        }
+        else {
+            //Load file to temp folder.
+            echo "<script type='text/javascript'>alert('$dir/$ff');</script>";
+            move_uploaded_file($filetempname, "$dir/$ff");
+        }
+    }
+}
+
 /**
  * Create the zip file for this ARLEM file and replace it in file system
  * @global string $userdirpath The path of the user directory which is created in temp folder
@@ -221,7 +250,7 @@ function zipFiles($arlem) {
     // Zip archive will be created only after closing object
     $zip->close();
 
-    upload_new_zip("$rootpath/$newfilename", $arlem->filename, $newfilename, $newtitle);
+    //upload_new_zip("$rootpath/$newfilename", $arlem->filename, $newfilename, $newtitle);
 }
 
 /**
