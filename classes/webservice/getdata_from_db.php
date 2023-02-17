@@ -38,6 +38,8 @@ $itemid = optional_param('itemid', null, PARAM_INT);
 $sessionid = optional_param('sessionid', null, PARAM_RAW);
 $userid = optional_param('userid', null, PARAM_INT);
 $token = optional_param('token', null, PARAM_RAW);
+$result_offset = optional_param('offset', 0, PARAM_RAW);
+$result_quantity = optional_param('quantity', 0, PARAM_RAW);
 
 //Check the request and do what needs be done
 switch ($request) {
@@ -68,7 +70,7 @@ switch ($request) {
  */
 function get_arlem_list() {
 
-    global $DB, $userid, $token;
+    global $DB, $userid, $token, $result_offset, $result_quantity;
 
     $fields = "id , contextid , fileid , userid , itemid , sessionid , filename , title , views , filesize , upublic , rate , timecreated , timemodified";
 
@@ -85,7 +87,7 @@ function get_arlem_list() {
             $params = [1, $userid];
             //All public and user's ARLEMs
             $sql = ' upublic = ? OR userid = ? ';
-            $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC', $fields);
+            $unsortedarlems = $DB->get_records_select('arete_allarlems', $sql, $params, 'timecreated DESC', $fields, $result_offset, $result_quantity);
 
             //The moudules that the user enrolled to their activitie
             $usermoduleids = get_user_arete_modules_ids();
@@ -111,7 +113,7 @@ function get_arlem_list() {
     }
 
     //Get only the public ARLEMs
-    $arlems = $DB->get_records('arete_allarlems', array('upublic' => 1), 'timecreated DESC', $fields);
+    $arlems = $DB->get_records('arete_allarlems', array('upublic' => 1), 'timecreated DESC', $fields, $result_offset, $result_quantity);
     //
     //Adding author name to the ARLEM object
     foreach ($arlems as $arlem) {
