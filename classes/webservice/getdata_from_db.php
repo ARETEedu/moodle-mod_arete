@@ -70,7 +70,7 @@ switch ($request) {
  */
 function get_arlem_list() {
 
-    global $DB, $userid, $token;
+    global $DB, $userid, $token, $result_offset, $result_quantity;
 
     $fields = "id , contextid , fileid , userid , itemid , sessionid , filename , title , views , filesize , upublic , rate , timecreated , timemodified";
 
