@@ -364,11 +364,26 @@ function delete_arlem_from_plugin($fileReference, $itemid, $sessionid, $fileid){
  * @global int $itemid The id of the ARLEM in arete_allalrems table 
  */
 function update_views() {
-    global $DB, $itemid;
-    $currentviews = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+    global $DB, $itemid, $token;
 
-    if ($currentviews !== null) {
-        $currentviews->views += 1;
-        $DB->update_record('arete_allarlems', $currentviews);
+    $viewContainer = new \stdClass();
+    if (isset($itemid) && $itemid != '' && isset($token)){
+
+        $service_record = $DB->get_record('external_services', ['component' => 'mod_arete']);
+        $token_record = $DB->get_record('external_tokens',
+            ['externalserviceid' => $service_record->id,
+                'token' => $token]);
+        $user_contextid = $token_record->userid;
+
+        if ($user_contextid != null) {
+            $currentviews = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
+
+            if ($currentviews !== null) {
+                $viewContainer->views = $currentviews->views + 1;
+                $currentviews->views = $viewContainer->views;
+                $DB->update_record('arete_allarlems', $currentviews);
+            }
+        }
     }
+    print_r (json_encode($viewContainer));
 }
