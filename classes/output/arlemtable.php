@@ -173,6 +173,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
     $playtitle = get_string('playtitle', 'arete');
     $downloadtitle = get_string('downloadtitle', 'arete');
     $edittitle = get_string('editbutton', 'arete');
+    $visualedittitle = get_string('visualeditbutton', 'arete');
     $qrtitle = get_string('qrtitle', 'arete');
     $publictitle = get_string('publictitle', 'arete');
     $deletetitle = get_string('deletetitle', 'arete');
@@ -265,6 +266,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
             $authortitle,
             $playtitle,
             $downloadtitle,
+            $visualedittitle,
             $edittitle,
             $qrtitle,
             $publictitle,
@@ -392,6 +394,26 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         );
         $editbutton = html_writer::start_tag('a', $editbuttonparams) . $editbuttonimage . html_writer::end_tag('a');
         
+        
+        //Visual editing page queries
+        $visualeditpageurlparams = array(
+            $CFG->wwwroot . '/mod/arete/view.php?',
+            $queries['id'],
+            $queries['pnum'],
+            $queries['sort'],
+            $queries['order'],
+            '&mode=vedit',
+            '&itemid=' . $arlem->itemid,
+            '&author=' . $arlem->userid,
+            '&sesskey=' . sesskey()
+        );
+        $visualeditbuttonparams = array(
+            'name' => 'veBtn' . $arlem->fileid,
+            'href' => implode('', $visualeditpageurlparams)
+        );
+        $visualeditbutton = html_writer::start_tag('a', $visualeditbuttonparams) . $editbuttonimage . html_writer::end_tag('a');
+        
+        
         //The QR code button information
         $qrbuttonimageparams = array(
             'class' => 'tableicons',
@@ -468,6 +490,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
                 $author,
                 $playbutton,
                 $downloadbutton,
+                $visualeditbutton,
                 $editbutton,
                 $qrbutton,
                 $publicbutton . $publichidden,

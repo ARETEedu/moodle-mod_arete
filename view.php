@@ -29,6 +29,7 @@ use function \mod_arete\output\searchbox as searchbox;
 use function \mod_arete\output\draw_table_for_teachers as draw_table_for_teachers;
 use \mod_arete\output\pagination as pagination;
 use \mod_arete\output\edit_arlem as edit_arlem;
+use \mod_arete\output\visual_edit_arlem as visual_edit_arlem;
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once("$CFG->dirroot/mod/arete/locallib.php");
@@ -91,9 +92,9 @@ $context = context_course::instance($course->id);
 if (has_capability('mod/arete:view', $context)) {
 
     //If it is the edit mode
-    if ($pagemode == "edit") {
+    if ($pagemode == "edit" || $pagemode == "vedit") {
         $editpageTitle = html_writer::start_tag('span', ['class' => 'titles']);
-        $editpageTitle .= get_string('editpagetitle', 'arete');
+        $editpageTitle .= $pagemode == "edit" ? get_string('editpagetitle', 'arete') : get_string('visualeditpagetitle', 'arete');
         $editpageTitle .= html_writer::end_tag('span');
         $editpageTitle .= html_writer::empty_tag('br');
         $editpageTitle .= html_writer::empty_tag('br');
@@ -116,12 +117,12 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
     init(0);
 
     //Create the top menu(not on edit/structure page)
-    if ($pagemode != 'edit') {
+    if ($pagemode != 'edit' && $pagemode != 'vedit') {
         echo create_student_menu();
     }
 
     //Do not show on edit mode and on the user page
-    if ($pagemode != 'edit' && $pagemode != 'user') {
+    if ($pagemode != 'edit' && $pagemode != 'user' && $pagemode != 'vedit') {
         //Add the role to the top of the advtivity
         $roles = get_user_roles($context, $USER->id);
         foreach ($roles as $role) {
@@ -164,14 +165,14 @@ if (has_capability('mod/arete:assignedarlemfile', $context) || has_capability('m
 
 //Create the edit page
 if ($pagemode == 'edit') {
-
     $editarlem = new edit_arlem();
+} else if ($pagemode == 'vedit') {
+    $visualeditarlem = new visual_edit_arlem();
 } else if ($pagemode == 'user') {
     //show only User arlems
     $arlemslist = search_result(true);
     generate_arlem_table($arlemslist, 1);
 } else {
-
     //Teachers View
     if (has_capability('mod/arete:arlemfulllist', $context)) {
         $arlemslist = search_result(false);
@@ -205,7 +206,6 @@ function search_result($is_user_table) {
 
     return $arlemslist;
 }
-
 
 /**
  * Generate the main ARLEM table
