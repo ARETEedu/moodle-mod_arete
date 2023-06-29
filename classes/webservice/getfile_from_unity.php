@@ -82,13 +82,7 @@ function mod_arete_process() {
         //Convert the file to base64 string
         $filebase64 = base64_encode(file_get_contents($file));
 
-        //Get the thumbnail
-        $thumbbase64 = '';
-        if (isset($_FILES['thumbnail'])) {
-            $thumbnail = $_FILES['thumbnail']['tmp_name'];
-
-            $thumbbase64 = base64_encode(file_get_contents($thumbnail)); //Convert the thumbnail  to base64 string
-        }
+        $thumbbase64 = get_thumbnail($file, $CFG);
 
         //Check public key if exist and is true
         if (isset($public) && $public == 1) {
@@ -129,4 +123,40 @@ function mod_arete_process() {
         //The text will be used on the webservice app, therefore it is hardcoded
         echo '[error] there is no data with name [myfile]';
     }
+}
+
+/**
+ * @param $file the arlem
+ * @param $content the content of the arlem
+ * @param $CFG
+ * @return string
+ */
+function get_thumbnail($file, $CFG): string
+{
+    //Get the thumbnail
+    $thumbbase64 = '';
+
+    $zip = new \ZipArchive;
+    $res = $zip->open($file);
+    if ($res === TRUE) {
+        $root = "{$CFG->tempdir}/" . rand() . "/";
+        $zip->extractTo($root);
+        $zip->close();
+        $all_of_them = array_slice(scandir($root),2);
+        for ($item_index = 0; $item_index < sizeof($all_of_them); $item_index += 1) {
+            $items_in_session = array();
+            if (is_dir($root . '/' . $all_of_them[$item_index])){
+                $items_in_session =  array_slice(scandir($root .'/'. $all_of_them[$item_index]),2);
+            }
+            for ($items_in_session_index = 0; $items_in_session_index < sizeof($items_in_session); $items_in_session_index += 1){
+                if (strpos($items_in_session[$items_in_session_index], 'thumbnail.jpg') !== false) {
+                    $thumbnail_item = $root .'/'. $all_of_them[$item_index] .'/'. $items_in_session[$items_in_session_index];
+                    $thumbbase64 = base64_encode(file_get_contents($thumbnail_item));
+                    break 2;
+                }
+            }
+        }
+        unset($root);
+    }
+    return $thumbbase64;
 }

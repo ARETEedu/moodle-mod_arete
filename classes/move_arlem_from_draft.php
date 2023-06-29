@@ -42,6 +42,7 @@ require_once(dirname(__FILE__) . '/../../../config.php');
  */
 function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
             $component, $filearea, $itemid, array $options = null, $text = null, $forcehttps = false) {
+    $result = array( 'text' => null, 'url' => null);
     $usercontext = context_user::instance($userid);
     $fs = get_file_storage();
 
@@ -74,7 +75,7 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
     // should have taken place before, unless the user is doing something nauthly. If so, let's just not save
     // anything at all in the next area.
     if (file_is_draft_area_limit_reached($draftitemid, $options['areamaxbytes'])) {
-        return null;
+        return $result;
     }
 
     $draftfiles = $fs->get_area_files($usercontext->id, 'user', 'draft', $draftitemid, 'id');
@@ -219,15 +220,19 @@ function move_file_from_draft_area_to_arete($userid, $draftitemid, $contextid,
                     $file_record['reference'] = $reference;
                 }
             }
-
-            $fs->create_file_from_storedfile($file_record, $file);
+            $file_made=$fs->create_file_from_storedfile($file_record, $file);
+            $url = moodle_url::make_pluginfile_url($file_made->get_contextid(), $file_made->get_component(), $file_made->get_filearea(), $file_made->get_itemid(), $file_made->get_filepath(), $file_made->get_filename(), false);
         }
     }
 
 
     if (is_null($text)) {
-        return null;
+        $result['url'] = $url;
+        return $result;
     } else {
-        return file_rewrite_urls_to_pluginfile($text, $draftitemid, $forcehttps);
+        $value = file_rewrite_urls_to_pluginfile($text, $draftitemid, $forcehttps);
+        $result ['text'] = $value;
+        $result ['url' ] = $url;
+        return $result;
     }
 }

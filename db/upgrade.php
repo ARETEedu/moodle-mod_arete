@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 function xmldb_arete_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
     // Automatically generated Moodle v3.5.0 release upgrade line.
@@ -38,6 +38,19 @@ function xmldb_arete_upgrade($oldversion) {
     // Put any upgrade step following this.
     // Automatically generated Moodle v3.9.0 release upgrade line.
     // Put any upgrade step following this.
+
+    if ($oldversion < 2022121202) {
+        $table = new xmldb_table('arete_allarlems');
+        $field = new xmldb_field('thumbnail', XMLDB_TYPE_TEXT);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+
+        // arete_allarlems savepoint reached.
+        upgrade_mod_savepoint(true, 2022121202, 'arete');
+    }
 
     if ($oldversion < 2021112500) {
         // Define field title to be added to arete_allarlems.
@@ -55,4 +68,7 @@ function xmldb_arete_upgrade($oldversion) {
     // Automatically generated Moodle v3.10.0 release upgrade line.
     // Put any upgrade step following this.
     return true;
+
+
+
 }

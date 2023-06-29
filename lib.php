@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/mod/arete/classes/utilities.php');
 require_once($CFG->dirroot . '/mod/arete/classes/filemanager.php');
-
 function arete_add_instance($data, $mform) {
     global $DB;
 

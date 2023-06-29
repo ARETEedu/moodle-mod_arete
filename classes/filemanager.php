@@ -429,18 +429,10 @@ function mod_arete_delete_arlem_from_plugin($filename, $itemid = null) {
             $fileitemid, $fileinfo['filepath'], $fileinfo['filename']);
 
 
-    $thumbnail = $filestorage->get_file($systemcontext, $fileinfo['component'], 'thumbnail',
-            $fileitemid, $fileinfo['filepath'], 'thumbnail.jpg');
+
 
     // Delete it if it exists
     if ($file) {
-
-        //delete thumbnail
-        if ($thumbnail) {
-            $thumbnail->delete();
-        }
-
-
 
         //Delete the zip file
         $file->delete();

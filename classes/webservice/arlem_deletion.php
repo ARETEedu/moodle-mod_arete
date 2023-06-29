@@ -20,4 +20,27 @@ class arlem_deletion
         $DB->delete_records('arete_arlem', array('arlemid' => $fileid));
         $DB->delete_records('arete_rating', array('itemid' => $itemid));
     }
+/**
+     * Delete the jpg linked to the arlem from moodle
+     *
+     * @param $jpg_url the url of the jpg linked to the arlem
+     * @return void
+     */
+    public function delete_jpg($jpg_url){
+        $items = explode('/', $jpg_url);
+
+        $systemcontext = $items[0];
+        $reference = $items[4];
+        $itemid = $items[3];
+
+        $fs = get_file_storage();
+
+        $thumbnail = $fs->get_file($systemcontext, get_string('component', 'arete'), 'thumbnail',
+            $itemid, '/', $reference);
+
+        //delete thumbnail
+        if ($thumbnail) {
+            $thumbnail->delete();
+        }
+    }
 }
