@@ -28,14 +28,14 @@ require_once('../../../../config.php');
 require_once("{$CFG->dirroot}/mod/arete/classes/utilities.php");
 
 //The variables which  are passed from Unity application
-$token = filter_input(INPUT_POST, 'token');
-$userid = filter_input(INPUT_POST, 'userid');
-$sessionid = filter_input(INPUT_POST, 'sessionid');
-$title = filter_input(INPUT_POST, 'title');
-$public = filter_input(INPUT_POST, 'public');
-$updatefile = filter_input(INPUT_POST, 'updatefile');
-$activityjson = filter_input(INPUT_POST, 'activity');
-$workplacejson = filter_input(INPUT_POST, 'workplace');
+$token = required_param('token', PARAM_RAW);
+$userid = required_param('userid', PARAM_INT);
+$sessionid = required_param('sessionid', PARAM_RAW);
+$title = optional_param('title', null, PARAM_RAW);
+$public = optional_param('public', 0, PARAM_INT);
+$updatefile = required_param('updatefile', PARAM_INT);
+$activityjson = required_param('activity', PARAM_RAW);
+$workplacejson = required_param( 'workplace', PARAM_RAW);
 
 
 //If the file exist 

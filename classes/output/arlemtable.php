@@ -36,7 +36,7 @@ require_once("$CFG->dirroot/mod/arete/classes/filemanager.php");
 require_once("$CFG->dirroot/mod/arete/classes/utilities.php");
 require_once("$CFG->dirroot/mod/arete/classes/output/teacher_top_buttons.php");
 
-$searchfield = filter_input(INPUT_GET, 'qword');
+$searchfield = optional_param('qword', null, PARAM_TEXT);
 
 /**
  * Print the activity table for the teachers which will show all available activities
@@ -184,8 +184,8 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
     if ($teacherview) {
 
         //Time created column header
-        $sortmode = filter_input(INPUT_GET, 'sort');
-        $defaultorderIcon = filter_input(INPUT_GET, 'order') == 'ASC' ? ' ↑' : ' ↓';
+        $sortmode = optional_param('sort', null, PARAM_TEXT);
+        $defaultorderIcon = optional_param('order', null, PARAM_TEXT) == 'ASC' ? ' ↑' : ' ↓';
 
         if ($sortmode == 'timecreated' || !isset($sortmode)) {
             $timecreatedorderIcon = $defaultorderIcon;
@@ -201,10 +201,10 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $datetitle .= html_writer::end_div();
 
         //The status of table order
-        $ordericon = filter_input(INPUT_GET, 'order') == 'DESC' ? ' ↑' : ' ↓';
+        $ordericon = optional_param('order', null, PARAM_TEXT) == 'DESC' ? ' ↑' : ' ↓';
 
         //Time modifiled column header
-        $timemodifiedorderIcon = filter_input(INPUT_GET, 'sort') == 'timemodified' ? $ordericon : '';
+        $timemodifiedorderIcon = optional_param('sort', null, PARAM_TEXT) == 'timemodified' ? $ordericon : '';
         $modifieddatetitle = html_writer::start_div('headers', array('id' => 'timemodified'));
         $timemodifiedparams = array('onclick' => 'reverse_sorting("timemodified");');
         $modifieddatetitle .= html_writer::start_tag('a', $timemodifiedparams);
@@ -212,7 +212,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $modifieddatetitle .= html_writer::end_div();
 
         //Filename column header
-        $filenameorderIcon = filter_input(INPUT_GET, 'sort') == 'filename' ? $ordericon : '';
+        $filenameorderIcon = optional_param('sort', null, PARAM_TEXT) == 'filename' ? $ordericon : '';
         $arlemtitle = html_writer::start_div('headers', array('id' => 'filename'));
         $filenameparams = array('onclick' => 'reverse_sorting("filename");');
         $arlemtitle .= html_writer::start_tag('a', $filenameparams);
@@ -220,7 +220,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $arlemtitle .= html_writer::end_div();
 
         //Views Column header
-        $viewsorderIcon = filter_input(INPUT_GET, 'sort') == 'views' ? $ordericon : '';
+        $viewsorderIcon = optional_param('sort', null, PARAM_TEXT) == 'views' ? $ordericon : '';
         $viewstitle = html_writer::start_div('headers', array('id' => 'views'));
         $viewparams = array('onclick' => 'reverse_sorting("views");');
         $viewstitle .= html_writer::start_tag('a', $viewparams);
@@ -228,7 +228,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $viewstitle .= html_writer::end_div();
 
         //File size column header
-        $filesizeorderIcon = filter_input(INPUT_GET, 'sort') == 'filesize' ? $ordericon : '';
+        $filesizeorderIcon = optional_param('sort', null, PARAM_TEXT) == 'filesize' ? $ordericon : '';
         $sizetitle = html_writer::start_div('headers', array('id' => 'filesize'));
         $filesizeparams = array('onclick' => 'reverse_sorting("filesize");');
         $sizetitle .= html_writer::start_tag('a', $filesizeparams) . get_string('sizetitle', 'arete');
@@ -236,7 +236,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $sizetitle .= html_writer::end_div();
 
         //Author column header
-        $authororderIcon = filter_input(INPUT_GET, 'sort') == 'author' ? $ordericon : '';
+        $authororderIcon = optional_param('sort', null, PARAM_TEXT) == 'author' ? $ordericon : '';
         $authortitle = html_writer::start_div('headers', array('id' => 'author'));
         $authorparams = array('onclick' => 'reverse_sorting("author");');
         $authortitle .= html_writer::start_tag('a', $authorparams);
@@ -244,7 +244,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $authortitle .= html_writer::end_div();
 
         //rating column header
-        $rateorderIcon = filter_input(INPUT_GET, 'sort') == 'rate' ? $ordericon : '';
+        $rateorderIcon = optional_param('sort', null, PARAM_TEXT) == 'rate' ? $ordericon : '';
         $ratingtitle = html_writer::start_div('headers', array('id' => 'rate'));
         $rateparams = array('onclick' => 'reverse_sorting("rate");');
         $ratingtitle .= html_writer::start_tag('a', $rateparams);

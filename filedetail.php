@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $DB;
 
-$itemid = filter_input(INPUT_GET, 'itemid');
+$itemid = required_param('itemid', PARAM_INT);
 
 $activity = $DB->get_record('arete_allarlems', array('itemid' => $itemid));
 

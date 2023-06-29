@@ -35,14 +35,14 @@ require_once("$CFG->dirroot/mod/arete/classes/utilities.php");
 
 defined('MOODLE_INTERNAL') || die;
 
-$itemid = filter_input(INPUT_POST, 'itemid');
-$sessionid = filter_input(INPUT_POST, 'sessionID');
-$pageid = filter_input(INPUT_POST, 'id');
-$pnum = filter_input(INPUT_POST, 'pnum');
-$sorting = filter_input(INPUT_POST, 'sort');
-$order = filter_input(INPUT_POST, 'order');
-$searchquery = filter_input(INPUT_POST, 'qword');
-$userdirpath = filter_input(INPUT_POST, 'userDirPath');
+$itemid = required_param('itemid', PARAM_INT);
+$sessionid =  required_param('sessionID', PARAM_TEXT);
+$pageid = required_param('id', PARAM_INT);
+$pnum = required_param('pnum', PARAM_INT);
+$sorting = optional_param('sort', null, PARAM_TEXT);
+$order = optional_param('order', null, PARAM_TEXT);
+$searchquery = optional_param('qword', null, PARAM_TEXT);
+$userdirpath = required_param('userDirPath', PARAM_TEXT);
 
 global $USER;
 
@@ -55,7 +55,8 @@ $sortingmode = isset($sorting) && $sorting != '' ? "&sort=$sorting" : '';
 $ordermode = isset($order) && $order != '' ? "&order=$order" : '';
 
 //If cancel button is pressed
-if (filter_input(INPUT_POST, 'cancelBtn') !== null) {
+$cancelBtn = optional_param('cancelBtn', null, PARAM_TEXT);
+if ($cancelBtn !== null) {
 
     //Remove temp dir which is used on editing
     $tempdir = "$userdirpath/";
@@ -75,7 +76,7 @@ $lastfile = end($uploadedfile);
 //Replace user selected files
 if (!empty(array_filter($_FILES['files']['name']))) {
 
-    $sesskey = filter_input(INPUT_POST, 'sesskey');
+    $sesskey = optional_param('sesskey', null, PARAM_TEXT);
     if (!isset($sesskey) || $sesskey !== sesskey()) {
         echo get_string('accessdenied', 'arete');
         die;
