@@ -401,7 +401,7 @@ function draw_table($arlemslist, $tableid, $teacherview = false, $moduleid = nul
         $qrbuttonimage = html_writer::start_tag('img', $qrbuttonimageparams);
         $qrbuttonparams = array(
             'name' => 'dlBtn' . $arlem->fileid,
-            'href' => "https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl={$playurl}",
+            'href' => "https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl=" . urlencode($playurl) . "",
             'target' => '_blank'
         );
         $qrbutton = html_writer::start_tag('a', $qrbuttonparams) . $qrbuttonimage . html_writer::end_tag('a');
